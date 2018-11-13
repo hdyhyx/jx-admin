@@ -58,12 +58,9 @@ export default {
             return
           }
           const data = res.data
-          const key = Object.assign({
-            data
-          }, {
-            token: 'super_admin'
-          })
-          commit('setToken', key.token)
+          console.log(data);
+
+          commit('setToken', data.message)
           resolve()
         }).catch(err => {
           reject(err)
@@ -97,9 +94,9 @@ export default {
       return new Promise((resolve, reject) => {
         try {
           getUserInfo(state.token).then(res => {
-            console.log(res.data.data);
-            const data = res.data.data
-            commit('setAvator', data.avator)
+            console.log(res);
+            const data = res.data.results
+            // commit('setAvator', data.avator)
             commit('setUserName', data.name)
             commit('setUserId', data.user_id)
             commit('setAccess', data.access)

@@ -172,7 +172,8 @@ export default [{
   path: '/incentive',
   name: 'incentive',
   meta: {
-    hide: true
+    hide: true,
+    icon: 'md-flame'
   },
   component: Main,
   children: [{
@@ -183,8 +184,19 @@ export default [{
       title: '正向激励'
     },
     component: () =>
-        import('@/view/incentive/incentive.vue')
-  }]
+          import('@/view/incentive/incentive-page/incentive.vue')
+  },
+  {
+    path: '/incentive_audit',
+    name: 'incentive_audit',
+    meta: {
+      icon: 'md-checkbox-outline',
+      title: '正向激励审批'
+    },
+    component: () =>
+          import('@/view/incentive/incentive-audit/incentive-audit.vue')
+  }
+  ]
 },
 {
   path: '/dynamic_news',
@@ -208,58 +220,58 @@ export default [{
   path: '/investigate',
   name: 'investigate',
   meta: {
-    icon: 'md-menu',
-    title: '多级菜单'
+    icon: 'ios-search',
+    title: '察访工作'
   },
   component: Main,
   children: [{
-    path: 'investigate_page',
-    name: 'investigate_page',
+    path: 'investigate_outbox',
+    name: 'investigate_outbox',
     meta: {
       icon: 'md-funnel',
-      title: '二级-1'
+      title: '已发送文件'
     },
     component: () =>
-          import('@/view/investigate/investigate-all/investigate-all.vue')
+          import('@/view/investigate/investigate-outbox/investigate-outbox.vue')
   },
   {
     path: 'investigate_ide',
     name: 'investigate_ide',
     meta: {
-      icon: 'md-funnel',
-      title: '二级-3'
+      icon: 'ios-create-outline',
+      title: '编辑文件'
     },
     component: () =>
           import('@/view/investigate/investigate-ide/investigate-ide.vue')
   },
   {
-    path: 'investigate_send',
-    name: 'investigate_send',
+    path: 'investigate_inbox',
+    name: 'investigate_inbox',
     meta: {
-      icon: 'md-funnel',
-      title: '二级-3'
+      icon: 'ios-mail-outline',
+      title: '已收到文件'
     },
     component: () =>
-          import('@/view/investigate/investigate-send/investigate-send.vue')
+          import('@/view/investigate/investigate-inbox/investigate-inbox.vue')
   }
   ]
 },
 {
-  path: '/audit_approval',
-  name: 'audit_approval',
+  path: '/six_game',
+  name: 'six_game',
   meta: {
     hide: true
   },
   component: Main,
   children: [{
-    path: 'audit_approval_page',
-    name: 'audit_approval_page',
+    path: 'six_game_page',
+    name: 'six_game_page',
     meta: {
       icon: 'md-checkbox-outline',
       title: '审核审批功能'
     },
     component: () =>
-        import('@/view/audit-approval/audit-approval.vue')
+        import('@/view/six-game/six-game-page.vue')
   }]
 },
 {
@@ -279,6 +291,46 @@ export default [{
     component: () =>
         import('@/view/work-supervision/work-supervision.vue')
   }]
+},
+{
+  path: '/no_entry_unit',
+  name: 'no_entry_unit',
+  meta: {
+    icon: 'ios-search',
+    title: '未录入单位'
+  },
+  component: Main,
+  children: [{
+    path: 'no_entry_unit_county',
+    name: 'no_entry_unit_county',
+    meta: {
+      icon: 'md-funnel',
+      title: '乡镇指标未录入'
+    },
+    component: () =>
+          import('@/view/no-entry-unit/no-entry-unit-county/no-entry-unit-county.vue')
+  },
+  {
+    path: 'no_entry_unit_game',
+    name: 'no_entry_unit_game',
+    meta: {
+      icon: 'ios-create-outline',
+      title: '六抓六赛未录入'
+    },
+    component: () =>
+          import('@/view/no-entry-unit/no-entry-unit-game/no-entry-unit-game.vue')
+  },
+  {
+    path: 'no_entry_unit_all',
+    name: 'no_entry_unit_all',
+    meta: {
+      icon: 'ios-mail-outline',
+      title: '所以有未录入'
+    },
+    component: () =>
+          import('@/view/no-entry-unit/no-entry-unit-all/no-entry-unit-all.vue')
+  }
+  ]
 },
 {
   path: '/components',

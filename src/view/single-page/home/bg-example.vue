@@ -18,9 +18,7 @@ export default {
       default: ''
     }
   },
-  created () {
-    console.log(this.title);
-  },
+  created () {},
   methods: {
     resize () {
       this.dom.resize();

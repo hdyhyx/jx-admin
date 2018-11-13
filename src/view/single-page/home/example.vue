@@ -16,11 +16,13 @@ export default {
     title: {
       type: String,
       default: ''
+    },
+    yName: {
+      type: String,
+      default: '权数'
     }
   },
-  created () {
-    console.log(this.title);
-  },
+  created () {},
   methods: {
     resize () {
       this.dom.resize();
@@ -30,20 +32,17 @@ export default {
     const option = {
       title: {
         text: this.title,
-        x: 'left'
+        x: 'center'
       },
       tooltip: {
         trigger: 'axis',
-        formatter: '{a}',
         axisPointer: {
-          type: 'cross',
-          label: {
-            backgroundColor: 'rgba(86, 216, 151, 1)'
-          }
+          // 坐标轴指示器，坐标轴触发有效
+          type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
         }
       },
       grid: {
-        top: '13%',
+        top: '8%',
         left: '2%',
         right: '1%',
         bottom: '1%',
@@ -80,12 +79,13 @@ export default {
       ],
       yAxis: [
         {
-          type: 'value'
+          type: 'value',
+          name: '(' + this.yName + ')'
         }
       ],
       series: [
         {
-          name: '运营商/网络服务',
+          name: '权数',
           type: 'line',
           stack: '总量',
           symbol: 'circle',

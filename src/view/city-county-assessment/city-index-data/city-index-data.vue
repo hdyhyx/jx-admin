@@ -5,7 +5,55 @@
   <div>
     <Row>
       <Card>
-        <Table :row-class-name="rowClassName" border :columns="columns1" :data="data1"></Table>
+          <Form ref="searchData" :model="searchData" :rules="searchReg" :label-width="100">
+            <Row>
+              <i-col :xs="24" :md="12" :lg="6" >
+                <FormItem label="指标搜索" prop="seachLevel_1">
+                      <Cascader :data="data" change-on-select @on-change="selectIndex"></Cascader>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="6" >
+                <FormItem label="责任单位">
+                    <Input search placeholder="请输入搜索内容" v-model="searchData.ducyUnit" style="width: auto">
+                        <Icon type="ios-search" slot="suffix" />
+                    </Input>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="6" >
+                <FormItem label="牵头单位">
+                    <Input search placeholder="请输入搜索内容" v-model="searchData.leadUnit" style="width: auto">
+                        <Icon type="ios-search" slot="suffix" />
+                    </Input>
+                </FormItem>
+              </i-col>
+            </Row>
+            <Row>
+              <i-col :xs="24" :md="12" :lg="6" >
+                <FormItem label="方向">
+                    <Select v-model="searchData.direction" placeholder="请选择方向">
+                        <Option value="+">+</Option>
+                        <Option value="-">-</Option>
+                    </Select>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="6" >
+                <FormItem label="指标名称">
+                    <Input search placeholder="请输入指标名称" v-model="searchData.indexName" style="width: auto">
+                        <Icon type="ios-search" slot="suffix" />
+                    </Input>
+                </FormItem>
+              </i-col>
+            </Row>
+                <FormItem>
+                  <Button type="primary" @click="seachSubmit('searchData')">提交搜索</Button>
+                  <Button @click="seachReset('searchData')" style="margin-left: 8px">重置</Button>
+              </FormItem>
+          </Form>
+        </Card>
+    </Row>
+    <Row>
+      <Card>
+        <Table stripe border :columns="columns1" :data="data1"></Table>
         <div style="margin-top:20px;margin-left:40%">
           <Page :total="100" />
         </div>
@@ -47,6 +95,7 @@ import excel from '@/libs/excel';
 export default {
   data () {
     return {
+      // updata 上传
       uploadLoading: false,
       progressPercent: 0,
       showProgress: false,
@@ -54,18 +103,120 @@ export default {
       file: null,
       tableData: [],
       tableTitle: [],
+      // 数据
       tableLoading: false,
+      pageTotal: 0,
+      pageSize: 10,
+      pageNumber: 1,
+      searchData: {
+        ducyUnit: '',
+        leadUnit: '',
+        indexName: '',
+        direction: ''
+      },
+      searchReg: {
+        seachLevel_1: [
+          {
+            required: true,
+            message: '请选择审核结果',
+            trigger: 'change'
+          }
+        ]
+      },
+      data: [
+        {
+          value: '全部',
+          label: '全部'
+        },
+        {
+          value: '经济发展',
+          label: '经济发展',
+          children: [
+            {
+              value: '地方财政收入增长率',
+              label: '地方财政收入增长率'
+            },
+            {
+              value: '服务业增加增长率',
+              label: '服务业增加增长率'
+            },
+            {
+              value: '每万元投资产出GDP',
+              label: '每万元投资产出GDP'
+            }
+          ]
+        },
+        {
+          value: ' 有效投资',
+          label: '有效投资',
+          children: [
+            {
+              value: '固定资产投资增长率',
+              label: '固定资产投资增长率'
+            },
+            {
+              value: '先进制造业投资增长率',
+              label: '先进制造业投资增长率'
+            }
+          ]
+        }
+      ],
       columns1: [
         {
           title: '一级指标',
-          key: 'level_1'
+          key: 'level_1',
+          render: (h, params) => {
+            const row = params.row;
+            var color = '';
+            var text = row.level_1 + '（' + row.score + '）';
+            // if (row.一级指标 === '经济发展') {
+            //   color = '#e91e63';
+            // } else if (row.一级指标 === '有效投资') {
+            //   color = '#9c27b0';
+            // }
+            switch (row.level_1) {
+              case '经济发展':
+                color = '#e91e63';
+                break;
+              case '有效投资':
+                color = '#9c27b0';
+                break;
+              case '机制创新':
+                color = '#673ab7';
+                break;
+              case '创新驱动':
+                color = '#3f51b5';
+                break;
+              case '生态文明':
+                color = '#2196f3';
+                break;
+              case '民生保障':
+                color = '#4caf50';
+                break;
+              case '政务服务':
+                color = '#00bcd4';
+                break;
+              default:
+                break;
+            }
+            return h(
+              'Tag',
+              {
+                props: {
+                  type: 'dot',
+                  color: color
+                }
+              },
+              text
+            );
+          }
         },
         {
           title: '二级指标',
           key: 'level_2'
         },
         {
-          title: '标准局',
+          title: '标准值',
           key: 'standard'
         },
         {
@@ -104,134 +255,134 @@ export default {
       ],
       data1: [
         {
-          level_1: '1.经济发展（235分）',
+          level_1: '经济发展',
           level_2: '地方财政收入增长率',
           standard: '前三年加 权平均值',
           pull_unit: '科技文体局',
           duty_unit: '科技文体局',
           weight_max: '10',
           actual_weight: '',
-          score: '',
+          score: '235',
           rank: '',
           direction: '-'
         },
         {
-          level_1: '1.经济发展（235分）',
+          level_1: '经济发展',
           level_2: '服务业增长率',
           standard: '前三年加 权平均值',
           pull_unit: '科技文体局',
           duty_unit: '科技文体局',
           weight_max: '10',
           actual_weight: '',
-          score: '',
+          score: '235',
           rank: '',
           direction: '-'
         },
         {
-          level_1: '1.经济发展（235分）',
+          level_1: '经济发展',
           level_2: '每万元投资产出GDP（元）',
           standard: '前三年加 权平均值',
           pull_unit: '科技文体局',
           duty_unit: '科技文体局',
           weight_max: '10',
           actual_weight: '',
-          score: '',
+          score: '235',
           rank: '',
           direction: '-'
         },
         {
-          level_1: '1.经济发展（235分）',
+          level_1: '经济发展',
           level_2: '社会消费品零售总额增长率',
           standard: '前三年加 权平均值',
           pull_unit: '科技文体局',
           duty_unit: '科技文体局',
           weight_max: '10',
           actual_weight: '',
-          score: '',
+          score: '235',
           rank: '',
           direction: '-'
         },
         {
-          level_1: '1.经济发展（235分）',
+          level_1: '经济发展',
           level_2: '规模以上工业增长值增长率',
           standard: '前三年加权平均值',
           pull_unit: '科技文体局',
           duty_unit: '科技文体局',
           weight_max: '10',
           actual_weight: '',
-          score: '',
+          score: '235',
           rank: '',
           direction: '-'
         },
         {
-          level_1: '2.有效投资（170分）',
+          level_1: '有效投资',
           level_2: '规模以上工业增长值增长率',
           standard: '前三年加权平均值',
           pull_unit: '科技文体局',
           duty_unit: '科技文体局',
           weight_max: '10',
           actual_weight: '',
-          score: '',
+          score: '170',
           rank: '',
           direction: '-'
         },
         {
-          level_1: '3.机制创新（55分）',
+          level_1: '机制创新',
           level_2: '规模以上工业增长值增长率',
           standard: '前三年加权平均值',
           pull_unit: '科技文体局',
           duty_unit: '科技文体局',
           weight_max: '10',
           actual_weight: '',
-          score: '',
+          score: '110',
           rank: '',
           direction: '-'
         },
         {
-          level_1: '4.创新驱动（60分）',
+          level_1: '创新驱动',
           level_2: '规模以上工业增长值增长率',
           standard: '前三年加权平均值',
           pull_unit: '科技文体局',
           duty_unit: '科技文体局',
           weight_max: '10',
           actual_weight: '',
-          score: '',
+          score: '90',
           rank: '',
           direction: '-'
         },
         {
-          level_1: '5.生态文明（110分）',
+          level_1: '生态文明',
           level_2: '规模以上工业增长值增长率',
           standard: '前三年加权平均值',
           pull_unit: '科技文体局',
           duty_unit: '科技文体局',
           weight_max: '10',
           actual_weight: '',
-          score: '',
+          score: '110',
           rank: '',
           direction: '-'
         },
         {
-          level_1: '6.民生保障（169分）',
+          level_1: '民生保障',
           level_2: '规模以上工业增长值增长率',
           standard: '前三年加权平均值',
           pull_unit: '科技文体局',
           duty_unit: '科技文体局',
           weight_max: '10',
           actual_weight: '',
-          score: '',
+          score: '140',
           rank: '',
           direction: '-'
         },
         {
-          level_1: '7.政务服务（171分）',
+          level_1: '政务服务',
           level_2: '规模以上工业增长值增长率',
           standard: '前三年加权平均值',
           pull_unit: '科技文体局',
           duty_unit: '科技文体局',
           weight_max: '10',
           actual_weight: '',
-          score: '',
+          score: '80',
           rank: '',
           direction: '+'
         }
@@ -239,22 +390,28 @@ export default {
     };
   },
   methods: {
-    rowClassName (row, index) {
-      if (row.level_1 === '1.经济发展（235分）') {
-        return 'demo-table-red-row';
-      } else if (row.level_1 === '2.有效投资（170分）') {
-        return 'demo-table-indigo-row';
-      } else if (row.level_1 === '3.机制创新（55分）') {
-        return 'demo-table-info-row';
-      } else if (row.level_1 === '4.创新驱动（60分）') {
-        return 'demo-table-cyan-row';
-      } else if (row.level_1 === '5.生态文明（110分）') {
-        return 'demo-table-teal-row';
-      } else if (row.level_1 === '6.民生保障（169分）') {
-        return 'demo-table-green-row';
-      }
-      return 'demo-table-brown-row';
+    // 指标管理关联 on-change
+    selectIndex (value) {
+      console.log(value);
+      this.searchData.seachLevel_1 = value[0];
+      this.searchData.seachLevel_2 = value[1];
     },
+    // 提交搜索
+    seachSubmit (name) {
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          console.log(this.searchData);
+          this.$Message.success('成功');
+        } else {
+          this.$Message.error('带*不可为空');
+        }
+      });
+    },
+    // 重置搜索
+    seachReset (name) {
+      this.$refs[name].resetFields();
+    },
+    rowClassName (row, index) {},
     initUpload () {
       this.file = null;
       this.showProgress = false;

@@ -1,7 +1,9 @@
 <template>
   <div>
+    <!-- 首页顶部四个框 -->
     <Row :gutter="20">
-      <i-col :xs="12" :md="12" :lg="6"  style="height: 160px;padding-bottom: 10px;">
+      <!-- 县绩效考核总分 -->
+      <i-col :xs="24" :md="12" :lg="6"  style="height: 160px;padding-bottom: 10px;">
         <infor-card shadow :icon-size="36" :color="inforCardData[0].color">
           <div class="henader-nav">
             <h2 class="head-title"><count-to :decimals="1" :end="inforCardData[0].count" count-class="count-style"/></h2>
@@ -12,7 +14,8 @@
           </div>
         </infor-card>
       </i-col>
-      <i-col :xs="12" :md="12" :lg="6"  style="height: 160px;padding-bottom: 10px;">
+      <!-- 县绩效考核排名 -->
+      <i-col :xs="24" :md="12" :lg="6"  style="height: 160px;padding-bottom: 10px;">
         <infor-card shadow :icon-size="36" :color="inforCardData[1].color">
           <div class="henader-nav">
             <h2 class="head-title">第 <count-to :end="inforCardData[1].count" count-class="count-style"/> 名</h2>
@@ -23,81 +26,194 @@
           </div>
         </infor-card>
       </i-col>
-      <i-col :xs="12" :md="12" :lg="6"  style="height: 160px;padding-bottom: 10px;">
+        <!-- 指标预警 -->
+      <i-col :xs="24" :md="12" :lg="6"  style="height: 160px;padding-bottom: 10px;">
         <infor-card shadow :icon-size="36" :color="inforCardData[2].color">
           <div class="henader-nav">
-            <h2 class="head-title blod-font">六抓六赛</h2>
-            <p class="sub-text">排名末三乡镇</p>
+            <h2 class="head-title blod-font">指标预警</h2>
           </div>
-          <Row style="margin-top:70px;color:#fff;font-size:14px">
+          <Row style="margin-top:50px;color:#fff;font-size:14px">
             <i-col :xs="8" :md="8" :lg="8">
-              <p>第19名</p>
-              <p style="font-size:18px;">红星乡</p>
+              <p>市指标</p>
+              <h2 style="font-size:18px; margin-top:10px;">2项</h2>
             </i-col>
             <i-col :xs="8" :md="8" :lg="8">
-              <p>第20名</p>
-              <h2 style="font-size:18px;">红星乡</h2>
+              <p>县指标</p>
+              <h2 style="font-size:18px; margin-top:10px;">1项</h2>
             </i-col>
             <i-col :xs="8" :md="8" :lg="8">
-              <p>第21名</p>
-              <h2 style="font-size:18px;">红星乡</h2>
+              <p>六抓六赛</p>
+              <h2 style="font-size:18px; margin-top:10px;">10项</h2>
             </i-col>
           </Row>
         </infor-card>
       </i-col>
-      <i-col :xs="12" :md="12" :lg="6"  style="height: 160px;padding-bottom: 10px;">
+      <!-- 未录入指标单位 -->
+      <i-col :xs="24" :md="12" :lg="6"  style="height: 160px;padding-bottom: 10px;">
       <infor-card shadow :icon-size="36" :color="inforCardData[3].color">
           <div class="henader-nav">
-            <h2 class="head-title blod-font">专项工作督查</h2>
-            <p class="sub-text">扣分单位</p>
+            <h2 class="head-title blod-font">未录入指标单位</h2>
           </div>
-          <div>....</div>
+          <Row style="margin-top:50px;color:#fff;font-size:14px">
+            <i-col :xs="8" :md="8" :lg="8">
+              <p>市指标</p>
+              <h2 style="font-size:18px; margin-top:10px;">2项</h2>
+            </i-col>
+            <i-col :xs="8" :md="8" :lg="8">
+              <p>县指标</p>
+              <h2 style="font-size:18px; margin-top:10px;">1项</h2>
+            </i-col>
+            <i-col :xs="8" :md="8" :lg="8">
+              <p>六抓六赛</p>
+              <h2 style="font-size:18px; margin-top:10px;">10项</h2>
+            </i-col>
+          </Row>
         </infor-card>
       </i-col>
     </Row>
+    <!-- 雷达图 -->
     <Row :gutter="20" style="margin-top: 10px;" >
       <i-col :md="24" :lg="12" style="margin-bottom: 20px;">
         <Card shadow>
-          <!-- <chart-pie style="height: 300px;" :value="pieData" text="用户访问来源"></chart-pie> -->
           <radar style="height:500px"></Radar>
         </Card>
       </i-col>
+      <!-- 市对县专项工作督查 -->
       <i-col :md="24" :lg="12" style="margin-bottom: 20px;">
         <Card shadow style="height:530px">
-          <!-- <chart-bar style="height: 500px;" :value="barData" text="每周用户活跃量"/> -->
           <Row>
            <i-col class="title" :md="20" :lg="20">
               <h2 style="display: inline-block;font-size:18px">市对县专项工作督查</h2>
            </i-col>
            <i-col class="title" :md="4" :lg="4">
-            <Button type="success" style="margin-bottom: 5px;margin-right:0">备注</Button>
+            <Button type="success" style="float:right">备注</Button>
            </i-col>
           </Row>
-          <div>
+          <div style="margin-top:20px">
             <Table highlight-row stripe border ref="currentRowTable" :columns="columns3" :data="data1"></Table>
           </div>
         </Card>
       </i-col>
     </Row>
-    <Row v-if="viewAccessAll">
+    <!-- 福州市对永泰县绩效考核指标 -->
+    <Row  style="">
       <Card shadow>
-        <Row class="xz-index-warpper">
-          <div class="xz-index-item" @click="IndexActive(index)" :class="{xzIndexActive:index===xzInex}" v-for="(item,index) in xzIndexList" :key="index" v-if="index===index">{{item}}
-          </div>
+        <Row>
+          <i-col :md="24" :lg="8">
+            <h2 style="font-size:18px">福州市对永泰县绩效考核指标</h2>
+          </i-col>
+          <i-col :md="24" :lg="16">
+            <Menu mode="horizontal" class="select-nav" active-name="1" @on-select="barSelect">
+              <MenuItem name="1">
+              <Icon type="ios-stats"  :size="20" />
+                  总分
+              </MenuItem>
+              <Submenu name="2">
+                  <template slot="title">
+                      <Icon type="md-trending-up" :size="20" />
+                      经济发展
+                  </template>
+                      <MenuItem name="2-1">新增和启动</MenuItem>
+                      <MenuItem name="2-2">活跃分析</MenuItem>
+                      <MenuItem name="2-3">时段分析</MenuItem>
+                      <MenuItem name="2-4">用户留存</MenuItem>
+                      <MenuItem name="2-5">流失用户</MenuItem>
+              </Submenu>
+              <Submenu name="3">
+                  <template slot="title">
+                      <Icon type="logo-yen" />
+                      有效投资
+                  </template>
+                      <MenuItem name="3-1">新增和启动</MenuItem>
+                      <MenuItem name="3-2">活跃分析</MenuItem>
+                      <MenuItem name="3-3">时段分析</MenuItem>
+                      <MenuItem name="3-4">用户留存</MenuItem>
+                      <MenuItem name="3-5">流失用户</MenuItem>
+              </Submenu>
+              <MenuItem name="4">
+                  <Icon type="ios-construct"  />
+                  创新驱动
+              </MenuItem>
+              <MenuItem name="5">
+                  <Icon type="md-infinite" :size="20"/>
+                  生态文明
+              </MenuItem>
+              <MenuItem name="6">
+                  <Icon type="ios-people" :size="20" />
+                  政务服务
+              </MenuItem>
+          </Menu>
+          </i-col>
         </Row>
-        <div style="margin-top:80px">
-          <example style="height: 510px;"/>
+        <div style="margin-top:60px">
+          <barStack @clickData="getClickBar" :title="'总分'" style="height: 510px;"/>
         </div>
       </Card>
     </Row>
+    <!-- 各乡镇六抓六赛考核指标 -->
+    <Row  style="margin-top:20px">
+      <Card shadow>
+        <Row>
+          <i-col :lg="6">
+            <h2 style="font-size:18px">各乡镇六抓六赛考核指标</h2>
+          </i-col>
+          <i-col :lg="18" style="float:left">
+            <Menu mode="horizontal"  class="select-nav"  active-name="1" @on-select="barSelect">
+              <MenuItem name="1">
+              <Icon type="ios-stats"  :size="20" />
+                  总分
+              </MenuItem>
+              <Submenu name="2">
+                  <template slot="title">
+                      <Icon type="md-trending-up" :size="20" />
+                      经济发展
+                  </template>
+                      <MenuItem name="2-1">新增和启动</MenuItem>
+                      <MenuItem name="2-2">活跃分析</MenuItem>
+                      <MenuItem name="2-3">时段分析</MenuItem>
+                      <MenuItem name="2-4">用户留存</MenuItem>
+                      <MenuItem name="2-5">流失用户</MenuItem>
+              </Submenu>
+              <Submenu name="3">
+                  <template slot="title">
+                      <Icon type="logo-yen" />
+                      有效投资
+                  </template>
+                      <MenuItem name="3-1">新增和启动</MenuItem>
+                      <MenuItem name="3-2">活跃分析</MenuItem>
+                      <MenuItem name="3-3">时段分析</MenuItem>
+                      <MenuItem name="3-4">用户留存</MenuItem>
+                      <MenuItem name="3-5">流失用户</MenuItem>
+              </Submenu>
+              <MenuItem name="4">
+                  <Icon type="ios-construct"  />
+                  创新驱动
+              </MenuItem>
+              <MenuItem name="5">
+                  <Icon type="md-infinite" :size="20"/>
+                  生态文明
+              </MenuItem>
+              <MenuItem name="6">
+                  <Icon type="ios-people" :size="20" />
+                  政务服务
+              </MenuItem>
+          </Menu>
+          </i-col>
+        </Row>
+        <div style="margin-top:60px">
+          <example :title="'总分'" style="height: 510px;"/>
+        </div>
+      </Card>
+    </Row>
+    <!-- 各乡镇绩效考核指标 -->
     <Row>
       <Card shadow style="margin-top: 20px;">
         <Row>
-          <i-col :lg="12">
+          <i-col :lg="8">
             <h2 style="font-size:18px">各乡镇绩效考核指标</h2>
           </i-col>
-          <i-col :lg="12">
-            <Menu mode="horizontal"  active-name="1" @on-select="barSelect">
+          <i-col :lg="16" >
+            <Menu mode="horizontal"  class="select-nav" active-name="1" @on-select="barSelect">
               <MenuItem name="1">
               <Icon type="ios-stats"  :size="20" />
                   总分
@@ -135,6 +251,7 @@
         <chart-bar style="height: 500px;" :value="barData" text="每周用户活跃量"/>
       </Card>
     </Row>
+    <!-- 测评模块 -->
     <Row :gutter="20" style="margin-top: 20px;" >
       <i-col :md="24" :lg="12" style="margin-bottom: 20px;">
         <Card shadow>
@@ -163,14 +280,29 @@
         </Card>
       </i-col>
     </Row>
+    <!-- 模态框 -->
+    <Modal
+        v-model="isShowLineBar" scrollable width="800px" title="总分">
+    <div class="city-model">
+      <p class="item">所属区县：<span>{{lineBarData.name}}</span></p>
+      <p class="item">牵头单位：<span></span></p>
+      <p class="item">指标级别：<span></span></p>
+      <p class="item">二级指标所属类别：<span></span></p>
+      <p class="item">年份：
+        <DatePicker type="year" placeholder="选择年份" style="width: 100px"></DatePicker>
+      </p>
+    </div>
+    <char-line-bar style="height:380px;width:800px"></char-line-bar>
+    </Modal>
   </div>
 </template>
 
 <script>
 import InforCard from '_c/info-card';
 import CountTo from '_c/count-to';
-import { ChartPie, ChartBar } from '_c/charts';
+import { ChartPie, ChartBar, CharLineBar } from '_c/charts';
 import Example from './example.vue';
+import barStack from './bar-stack';
 import BgExample from './bg-example.vue';
 import BgBar from './bg-bar.vue';
 import { hasOneOf } from '@/libs/tools';
@@ -187,11 +319,15 @@ export default {
     Radar,
     MyProgress,
     BgExample,
-    BgBar
+    BgBar,
+    barStack,
+    CharLineBar
   },
   data () {
     return {
       xzInex: 0,
+      isShowLineBar: false,
+      lineBarData: {},
       inforCardData: [
         {
           title: '新增用户',
@@ -244,28 +380,20 @@ export default {
           width: 160,
           render: (h, params) => {
             return h('div', [
-              h(
-                'div',
-                {
-                  style: {
-                    position: 'relative',
-                    width: '120px',
-                    height: '20px',
-                    marginRight: '5px',
-                    fontSize: '16px',
-                    lineHeight: '20px',
-                    textAlign: 'center',
-                    background: '#999',
-                    color: '#fff'
-                  },
-                  on: {
-                    click: () => {
-                      console.log(params.row.score);
-                    }
-                  }
+              h('div', {
+                style: {
+                  position: 'relative',
+                  width: '120px',
+                  height: '20px',
+                  marginRight: '5px',
+                  background: '#999'
                 },
-                params.row.score
-              ),
+                on: {
+                  click: () => {
+                    console.log(params.row.score);
+                  }
+                }
+              }),
               h(
                 'div',
                 {
@@ -283,6 +411,25 @@ export default {
                   }
                 },
                 ''
+              ),
+              h(
+                'div',
+                {
+                  style: {
+                    position: 'absolute',
+                    marginTop: '-20px',
+                    width: '120px',
+                    fontSize: '16px',
+                    textAlign: 'center',
+                    color: '#fff'
+                  },
+                  on: {
+                    click: () => {
+                      this.remove(params.index);
+                    }
+                  }
+                },
+                params.row.score
               )
             ]);
           }
@@ -407,22 +554,27 @@ export default {
     },
     barSelect (name) {
       console.log(name);
+    },
+    getClickBar (val) {
+      console.log(val);
+      this.isShowLineBar = true;
+      this.lineBarData = val;
     }
   },
   mounted () {
     //
-  },
-  computed: {
-    access () {
-      return this.$store.state.user.access;
-    },
-    viewAccessAll () {
-      return hasOneOf(['super_admin', 'admin'], this.access);
-    },
-    viewAccessSuper () {
-      return hasOneOf(['sssssss'], this.access);
-    }
   }
+  // computed: {
+  //   access () {
+  //     return this.$store.state.user.access;
+  //   },
+  //   viewAccessAll () {
+  //     return hasOneOf(['super_admin', 'admin'], this.access);
+  //   },
+  //   viewAccessSuper () {
+  //     return hasOneOf(['sssssss'], this.access);
+  //   }
+  // }
 };
 </script>
 
@@ -486,5 +638,12 @@ export default {
 }
 .tip-wrapper .tip-container .tip-title {
   font-size: 16px;
+}
+.city-model .item {
+  display: inline-block;
+  padding-left: 45px;
+}
+.select-nav {
+  float: right;
 }
 </style>

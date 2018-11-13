@@ -16,9 +16,9 @@ export default {
   multilevel: '多级菜单',
   directive_page: '指令',
   investigate: '绩效管理察访核验工作',
-  investigate_page: '所有文件',
+  investigate_outbox: '已发送文件',
   investigate_ide: '编写文件',
-  investigate_send: '已发送文件',
+  investigate_inbox: '已收到文件',
   investigate_feedback: '反馈',
   city_assess_page: '市对县指标考核数据',
   county_assess_page: '县对乡镇指标考核数据',
@@ -37,7 +37,7 @@ export default {
   error_store_page: '错误收集',
   error_logger_page: '错误日志',
   target_management_page: '指标管理',
-  audit_approval_page: '审核审批功能',
+  six_game_page: '六抓六赛考核指标',
   work_supervision_page: '专项工作督查',
   city_county_assessment: '市对县绩效考核指标',
   city_index_management: '市对县指标管理',
@@ -45,5 +45,11 @@ export default {
   county_town_assessment: '县对乡镇绩效考核指标',
   county_index_management: '县对乡镇指标管理',
   county_index_data: '县对乡镇指标考核数据',
-  county_index_audit: '指标审核审批'
+  county_index_audit: '指标审核审批',
+  incentive: '正向激励',
+  incentive_audit: '正向激励审核审批',
+  no_entry_unit: '录入指标单位',
+  no_entry_unit_county: '乡镇指标填写时间',
+  no_entry_unit_game: '六抓六赛指标填写时间',
+  no_entry_unit_all: '指标未录入预警'
 }

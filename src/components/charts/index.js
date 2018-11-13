@@ -1,3 +1,8 @@
 import ChartPie from './pie.vue'
 import ChartBar from './bar.vue'
-export { ChartPie, ChartBar }
+import CharLineBar from './line-bar.vue'
+export {
+  ChartPie,
+  ChartBar,
+  CharLineBar
+}

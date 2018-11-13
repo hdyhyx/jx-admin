@@ -1,8 +1,10 @@
 import axios from 'axios'
 import store from '@/store'
+import Cookies from 'js-cookie'
 import {
   Message
 } from 'iview'
+const TOKEN_KEY = 'token'
 // import { Spin } from 'iview'
 const addErrorLog = errorInfo => {
   const {
@@ -23,7 +25,7 @@ const addErrorLog = errorInfo => {
 
 class HttpRequest {
   constructor (baseUrl = baseURL) {
-    this.baseUrl = baseUrl
+    this.baseUrl = ''
     this.queue = {}
   }
   getInsideConfig () {
@@ -63,12 +65,16 @@ class HttpRequest {
       console.log(data);
       if (data.code !== '200') {
         // 后端服务在个别情况下回报201，待确认
-        if (data.code === '501') {
+        if (data.code === '40002') {
           Cookies.remove(TOKEN_KEY)
-          window.location.href = '/#/login'
           Message.error('未登录，或登录失效，请登录')
-        } else {
-          if (data.message) Message.error(data.message)
+          window.location.href = '/#/login'
+        } else if (data.code === '500') {
+          if (data.message) {
+            Message.error(data.message)
+          } else {
+            Message.error('请联系管理员')
+          }
         }
         return false
       }

@@ -37,51 +37,64 @@ export default {
               {
                 text: '经济发展',
                 max: 235,
-                percent: 10
+                percent: 10,
+                rank: 1
               },
               {
                 text: '有效投资',
                 max: 170,
-                percent: 30
+                percent: 30,
+                rank: 3
               },
               {
                 text: '机制创新 ',
                 max: 55,
-                percent: 12
+                percent: 12,
+                rank: 4
               },
               {
                 text: '创新驱动',
                 max: 90,
-                percent: 20
+                percent: 20,
+                rank: 5
               },
               {
                 text: '生态文明',
                 max: 110,
-                percent: 30
+                percent: 30,
+                rank: 5
               },
               {
                 text: '民生保障',
                 max: 169,
-                percent: 30
+                percent: 30,
+                rank: 8
               },
               {
                 text: '政务服务',
                 max: 171,
-                percent: 30
+                percent: 30,
+                rank: 9
               }
             ],
             center: ['50%', '50%'],
-            radius: '80%',
+            radius: '70%',
             shape: 'circle',
             name: {
               formatter: function (value, indicator) {
                 var npercent = indicator.max;
-                console.log(value, indicator);
-                return value + ':' + indicator.max + '分';
+                return (
+                  value +
+                  '\n' +
+                  '总分：' +
+                  indicator.max +
+                  '分\n' +
+                  '排名：' +
+                  indicator.rank
+                );
               },
               textStyle: {
-                color: '#fff',
-                backgroundColor: '#999',
+                color: '#000',
                 borderRadius: 5,
                 padding: [5, 9],
                 fontSize: 15
@@ -102,7 +115,7 @@ export default {
               emphasis: {}
             },
             itemStyle: {
-              borderColor: 'rgba(50,202,246,0.1);',
+              borderColor: 'rgba(50,202,246,1);',
               borderWidth: 10
             },
             data: [
@@ -112,6 +125,7 @@ export default {
                   normal: {
                     show: true,
                     fontSize: 20,
+                    color: '#000',
                     formatter: function (params, index = 1) {
                       return params.value + '分';
                     }
@@ -122,7 +136,7 @@ export default {
                     opacity: 0.8,
                     color: new echarts.graphic.RadialGradient(0.5, 0.5, 1, [
                       {
-                        color: '#32CAF6',
+                        color: 'rgba(50,202,246,0.7)',
                         offset: 1
                       },
                       {

@@ -1,17 +1,17 @@
 import axios from '@/libs/api.request'
 
+const Url = '/api'
 export const login = ({
   userName,
-  password,
-  validCode = ''
+  password
 }) => {
   const data = {
-    mobile: userName,
-    password,
-    validCode
+    userName,
+    userPassword: password
   }
+  console.log(data);
   return axios.request({
-    url: 'https://www.fzzhengxinyun.com/api/user/newlogin',
+    url: Url + '/Login/loginGetToken',
     data,
     method: 'post'
   })
@@ -20,11 +20,11 @@ export const login = ({
 export const getUserInfo = (token) => {
   console.log(token)
   return axios.request({
-    url: 'get_info',
-    params: {
-      token
+    url: Url + '/Login/loginUserInfo',
+    data: {
+      value: token
     },
-    method: 'get'
+    method: 'post'
   })
 }
 

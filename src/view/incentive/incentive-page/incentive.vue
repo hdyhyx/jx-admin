@@ -27,7 +27,7 @@
     <Row :gutter="20" style="margin-top: 20px;" >
       <i-col :md="24" :lg="12" style="margin-bottom: 20px;">
         <Card shadow >
-          <chart-pie style="height: 400px;" :value="pieData" text="用户访问来源"></chart-pie>
+          <chart-pie style="height: 400px;" :value="pieData" text="加分类别占比"></chart-pie>
         </Card>
       </i-col>
       <i-col :md="24" :lg="12" style="margin-bottom: 20px;">
@@ -58,7 +58,7 @@
        <div style="margin-bottom:5px">
         证明材料附件：
         <div style="text-align:center;border-bottom:1px solid #C0C0C0;padding-bottom:10px">
-         <img src="" width="380px" height="180px">
+         <img :src="lookRowContent.imageUrl" width="350px" height="200px">
         </div>
         <div style="margin-bottom:5px;margin-top:10px">
         加分类别：<span style="color:#000;padding-left:60%">加分分值：<strong>0.3</strong></span>
@@ -267,11 +267,11 @@ export default {
         ]
       },
       pieData: [
-        { value: 335, name: '直接访问' },
-        { value: 310, name: '邮件营销' },
-        { value: 234, name: '联盟广告' },
-        { value: 135, name: '视频广告' },
-        { value: 1548, name: '搜索引擎' }
+        { value: 335, name: '1类' },
+        { value: 310, name: '2类' },
+        { value: 234, name: '3类' },
+        { value: 135, name: '4类' },
+        { value: 1548, name: '5类' }
       ],
       columns7: [
         {
@@ -400,8 +400,16 @@ export default {
       data6: [
         {
           name: '生态文明',
-          recognition:
-            '福州人民政府福州人民政府福州人民政府福州人民政府福州人民政府',
+          recognition: '福州人民政府福',
+          honored: '永泰县',
+          plusCategory: '3',
+          material: '牌匾、环保部2017年48号公告',
+          imageUrl:
+            'https://o5wwk8baw.qnssl.com/bc7521e033abdd1e92222d733590f104/avatar'
+        },
+        {
+          name: '生态文明',
+          recognition: '福州人民政府',
           honored: '永泰县',
           plusCategory: '3',
           material: '牌匾、环保部2017年48号公告',
@@ -412,63 +420,63 @@ export default {
           recognition: '福州人民政府',
           honored: '永泰县',
           plusCategory: '3',
-          material: 'https://....'
+          material: '牌匾、环保部2017年48号公告',
+          imageUrl: 'https://....'
+        },
+        {
+          name: '生态文明',
+          recognition: '福州人民政府',
+          honored: '永泰县',
+          material: '牌匾、环保部2017年48号公告',
+          imageUrl: 'https://....'
         },
         {
           name: '生态文明',
           recognition: '福州人民政府',
           honored: '永泰县',
           plusCategory: '3',
-          material: 'https://....'
+          material: '牌匾、环保部2017年48号公告',
+          imageUrl: 'https://....'
         },
         {
           name: '生态文明',
           recognition: '福州人民政府',
           honored: '永泰县',
           plusCategory: '3',
-          material: 'https://....'
+          material: '牌匾、环保部2017年48号公告',
+          imageUrl: 'https://....'
         },
         {
           name: '生态文明',
           recognition: '福州人民政府',
           honored: '永泰县',
           plusCategory: '3',
-          material: 'https://....'
+          material: '牌匾、环保部2017年48号公告',
+          imageUrl: 'https://....'
         },
         {
           name: '生态文明',
           recognition: '福州人民政府',
           honored: '永泰县',
           plusCategory: '3',
-          material: 'https://....'
+          material: '牌匾、环保部2017年48号公告',
+          imageUrl: 'https://....'
         },
         {
           name: '生态文明',
           recognition: '福州人民政府',
           honored: '永泰县',
           plusCategory: '3',
-          material: 'https://....'
+          material: '牌匾、环保部2017年48号公告',
+          imageUrl: 'https://....'
         },
         {
           name: '生态文明',
           recognition: '福州人民政府',
           honored: '永泰县',
           plusCategory: '3',
-          material: 'https://....'
-        },
-        {
-          name: '生态文明',
-          recognition: '福州人民政府',
-          honored: '永泰县',
-          plusCategory: '3',
-          material: 'https://....'
-        },
-        {
-          name: '生态文明',
-          recognition: '福州人民政府',
-          honored: '永泰县',
-          plusCategory: '3',
-          material: 'https://....'
+          material: '牌匾、环保部2017年48号公告',
+          imageUrl: 'https://....'
         }
       ]
     };

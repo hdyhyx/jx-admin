@@ -18,7 +18,8 @@ module.exports = {
     'no-unused-expressions': 0,
     'no-return-await': 0,
     'no-return-assign': 0,
-    'no-else-return': 0
+    'no-else-return': 0,
+    'prefer-promise-reject-errors': 0
   },
   parserOptions: {
     parser: 'babel-eslint'

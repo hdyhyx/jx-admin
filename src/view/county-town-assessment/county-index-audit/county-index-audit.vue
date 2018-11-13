@@ -85,7 +85,7 @@
               <Input v-model="formValidate.indexName" placeholder="请输入指标名称" style="width:500px"></Input>
           </FormItem>
           <FormItem label="指标等级" prop="Level">
-              <Select v-model="formValidate.Level" placeholder="请选择指标等级" style="width:500px">
+              <Select v-model="formValidate.indexVal" placeholder="请选择指标等级" style="width:500px">
                   <Option value="一级指标">一级指标</Option>
                   <Option value="二级指标">二级指标</Option>
                   <Option value="三级指标">三级指标</Option>
@@ -268,7 +268,7 @@ export default {
         },
         {
           title: '责任单位',
-          key: 'dutyName'
+          key: 'dutyUint'
         },
         {
           title: '权数',
@@ -297,15 +297,16 @@ export default {
                     click: () => {
                       console.log(params);
                       this.addIndex = true;
-                      this.formValidate = {
-                        indexName: params.row.indexName,
-                        Level: params.row.indexVal,
-                        superior: params.row.superior,
-                        leadUnit: params.row.leadUnit,
-                        dutyUint: params.row.dutyName,
-                        score: '',
-                        weight: params.row.weight
-                      };
+                      // this.formValidate = {
+                      //   indexName: params.row.indexName,
+                      //   Level: params.row.indexVal,
+                      //   superior: params.row.superior,
+                      //   leadUnit: params.row.leadUnit,
+                      //   dutyUint: params.row.dutyName,
+                      //   score: '',
+                      //   weight: params.row.weight
+                      // };
+                      this.formValidate = Object.assign({}, params.row);
                       console.log(this.formValidate);
                       this.isFormFlase = true;
                       this.isFormTrue = false;
@@ -339,7 +340,38 @@ export default {
           indexVal: '二级指标',
           leadUnit: '科技文体局',
           indexName: '地方财政收入增长率',
-          dutyName: '科技文体局',
+          dutyUint: '科技文体局',
+          superior: '经济发展',
+          standard: '前三年加权平均值',
+          direction: '+',
+          weight: 30,
+          tangQ: 20, // 塘前
+          geL: 30, // 葛岭
+          zhangC: 20, // 樟城
+          chengF: 25, // 城峰
+          qingL: 28, // 情侣
+          fuQ: 29, // 福泉
+          lingL: 30, // 岭路
+          chiX: 27, // 赤锡
+          wuT: 26, // 梧桐
+          songK: 24, // 嵩口
+          fuK: 21, // 伏口
+          gaiY: 22, // 盖洋
+          changQ: 27, // 长庆
+          dongY: 28, // 东洋
+          xiaB: 30, // 霞拔
+          tongA: 27, // 同安
+          daY: 29, // 大洋
+          panG: 28, // 盘谷
+          hongX: 29, // 红星
+          baiY: 27, // 白云
+          danY: 21 // 丹云
+        },
+        {
+          indexVal: '二级指标',
+          leadUnit: '科技文体局',
+          indexName: '地方财政收入增长率',
+          dutyUint: '科技文体局',
           superior: '经济发展',
           standard: '前三年加权平均值',
           direction: '+',
@@ -349,7 +381,7 @@ export default {
           indexVal: '二级指标',
           leadUnit: '科技文体局',
           indexName: '地方财政收入增长率',
-          dutyName: '科技文体局',
+          dutyUint: '科技文体局',
           superior: '经济发展',
           standard: '前三年加权平均值',
           direction: '+',
@@ -359,7 +391,7 @@ export default {
           indexVal: '二级指标',
           leadUnit: '科技文体局',
           indexName: '地方财政收入增长率',
-          dutyName: '科技文体局',
+          dutyUint: '科技文体局',
           superior: '经济发展',
           standard: '前三年加权平均值',
           direction: '+',
@@ -369,7 +401,7 @@ export default {
           indexVal: '二级指标',
           leadUnit: '科技文体局',
           indexName: '地方财政收入增长率',
-          dutyName: '科技文体局',
+          dutyUint: '科技文体局',
           superior: '经济发展',
           standard: '前三年加权平均值',
           direction: '+',
@@ -379,7 +411,7 @@ export default {
           indexVal: '二级指标',
           leadUnit: '科技文体局',
           indexName: '地方财政收入增长率',
-          dutyName: '科技文体局',
+          dutyUint: '科技文体局',
           superior: '经济发展',
           standard: '前三年加权平均值',
           direction: '+',
@@ -389,7 +421,7 @@ export default {
           indexVal: '二级指标',
           leadUnit: '科技文体局',
           indexName: '地方财政收入增长率',
-          dutyName: '科技文体局',
+          dutyUint: '科技文体局',
           superior: '经济发展',
           standard: '前三年加权平均值',
           direction: '+',
@@ -399,7 +431,7 @@ export default {
           indexVal: '二级指标',
           leadUnit: '科技文体局',
           indexName: '地方财政收入增长率',
-          dutyName: '科技文体局',
+          dutyUint: '科技文体局',
           superior: '经济发展',
           standard: '前三年加权平均值',
           direction: '+',
@@ -409,7 +441,7 @@ export default {
           indexVal: '二级指标',
           leadUnit: '科技文体局',
           indexName: '地方财政收入增长率',
-          dutyName: '科技文体局',
+          dutyUint: '科技文体局',
           superior: '经济发展',
           standard: '前三年加权平均值',
           direction: '+',
@@ -419,17 +451,7 @@ export default {
           indexVal: '二级指标',
           leadUnit: '科技文体局',
           indexName: '地方财政收入增长率',
-          dutyName: '科技文体局',
-          superior: '经济发展',
-          standard: '前三年加权平均值',
-          direction: '+',
-          weight: 30
-        },
-        {
-          indexVal: '二级指标',
-          leadUnit: '科技文体局',
-          indexName: '地方财政收入增长率',
-          dutyName: '科技文体局',
+          dutyUint: '科技文体局',
           superior: '经济发展',
           standard: '前三年加权平均值',
           direction: '+',
@@ -463,7 +485,7 @@ export default {
       },
       formValidate: {
         indexName: '',
-        Level: '',
+        indexVal: '',
         superior: '',
         leadUnit: '',
         dutyUint: '',
