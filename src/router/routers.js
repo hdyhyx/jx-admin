@@ -71,6 +71,16 @@ export default [{
     },
     component: () =>
           import('@/view/city-county-assessment/city-index-data/city-index-data.vue')
+  },
+  {
+    path: '/city_index_audit',
+    name: 'city_index_audit',
+    meta: {
+      icon: 'md-checkbox-outline',
+      title: '指标审核审批'
+    },
+    component: () =>
+          import('@/view/city-county-assessment/city-index-audit/city-index-audit.vue')
   }
   ]
 },

@@ -51,5 +51,6 @@ export default {
   no_entry_unit: '录入指标单位',
   no_entry_unit_county: '乡镇指标填写时间',
   no_entry_unit_game: '六抓六赛指标填写时间',
-  no_entry_unit_all: '指标未录入预警'
+  no_entry_unit_all: '指标未录入预警',
+  city_index_audit: '指标审核审批'
 }

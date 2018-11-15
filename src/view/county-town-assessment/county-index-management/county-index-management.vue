@@ -61,7 +61,44 @@
           </div>
         </Card>
     </Row>
-
+  <!-- Excel导入 -->
+    <div>
+      <Card title="导入EXCEL">
+        <Row>
+           <i-col :xs="24" :md="12" :lg="6">
+            <Upload action="" :before-upload="handleBeforeUpload" accept=".xls, .xlsx">
+              <Button icon="ios-cloud-upload-outline" :loading="uploadLoading" @click="handleUploadFile">上传文件</Button>
+            </Upload>
+           </i-col>
+          <!-- <i-col :xs="24" :md="12" :lg="6">
+            <Button type="primary" :loading="UploadLoadingBtn" @click="updateExcel">
+                <span v-if="!UploadLoadingBtn">确认添加</span>
+                <span v-else>Loading...</span>
+            </Button>
+           </i-col> -->
+        </Row>
+        <Row>
+          <div class="ivu-upload-list-file" v-if="file !== null">
+            <Icon type="ios-stats"></Icon>
+              {{ file.name }}
+            <Icon v-show="showRemoveFile" type="ios-close" class="ivu-upload-list-remove" @click.native="handleRemove()"></Icon>
+          </div>
+        </Row>
+        <Row>
+          <transition name="fade">
+            <Progress v-if="showProgress" :percent="progressPercent" :stroke-width="2">
+              <div v-if="progressPercent == 100">
+                <Icon type="ios-checkmark-circle"></Icon>
+                <span>成功</span>
+              </div>
+            </Progress>
+          </transition>
+        </Row>
+      </Card>
+      <Row class="margin-top-10">
+        <Table :columns="tableTitle" :data="tableData" :loading="tableLoading"></Table>
+      </Row>
+    </div>
     <!-- 模态框  增加指标-->
     <Modal
         v-model="addIndex"
@@ -202,10 +239,10 @@
             <Button @click="closeAddIndex">取消</Button>
         </div>
     </Modal>
-
   </div>
 </template>
 <script>
+import excel from '@/libs/excel';
 import { getToken } from '@/libs/util';
 import { getIndexList, AddIndex, updateIndex, removeIndex } from '@/api/city';
 const token = getToken();
@@ -231,6 +268,16 @@ export default {
         leadUnit: '',
         indexName: ''
       },
+      // 上传表格
+      uploadLoading: false,
+      progressPercent: 0,
+      showProgress: false,
+      showRemoveFile: false,
+      file: null,
+      tableData: [],
+      tableTitle: [],
+      tableLoading: false,
+      UploadLoadingBtn: false,
       colIndexOne: [
         {
           type: 'index',
@@ -847,6 +894,119 @@ export default {
           }
         });
       });
+    },
+    // Excel导入
+    // 上传elcel
+    initUpload () {
+      this.file = null;
+      this.showProgress = false;
+      this.loadingProgress = 0;
+      this.tableData = [];
+      this.tableTitle = [];
+    },
+    // 点击上传触发函数
+    handleUploadFile () {
+      this.initUpload();
+    },
+    // 删除Excel
+    handleRemove () {
+      this.initUpload();
+      this.$Message.info('上传的文件已删除！');
+    },
+    handleBeforeUpload (file) {
+      const fileExt = file.name
+        .split('.')
+        .pop()
+        .toLocaleLowerCase();
+      if (fileExt === 'xlsx' || fileExt === 'xls') {
+        this.readFile(file);
+        this.file = file;
+      } else {
+        this.$Notice.warning({
+          title: '文件类型错误',
+          desc:
+            '文件：' +
+            file.name +
+            '不是EXCEL文件，请选择后缀为.xlsx或者.xls的EXCEL文件。'
+        });
+      }
+      return false;
+    },
+    // 读取文件
+    readFile (file) {
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onloadstart = e => {
+        this.uploadLoading = true;
+        this.tableLoading = true;
+        this.showProgress = true;
+      };
+      reader.onprogress = e => {
+        this.progressPercent = Math.round((e.loaded / e.total) * 100);
+      };
+      reader.onerror = e => {
+        this.$Message.error('文件读取出错');
+      };
+      reader.onload = e => {
+        this.$Message.info('文件读取成功');
+        const data = e.target.result;
+        var { header, results } = excel.read(data, 'array');
+        header = header.slice(0, 26);
+        var tableTitle = header.map((item, i) => {
+          return { title: results[0][item], key: item };
+        });
+        // 验证表头
+        const regExcel = err => {
+          this.$Notice.error({
+            title: 'Excel格式错误',
+            desc: 'Excel："' + err + '"   格式错误,请核对Excel模块。'
+          });
+          results = ''; // 表内容
+          tableTitle = ''; // 表头
+          this.uploadLoading = false;
+          this.tableLoading = false;
+          this.showRemoveFile = true;
+        };
+        // 对Excel行进处理 提醒用户是不是导入Excel模板错误
+        for (let i = 0; i < tableTitle.length; i++) {
+          if (tableTitle[i].key === 'indexTypeOne') {
+            if (tableTitle[i].title !== '一级指标') {
+              regExcel('一级指标');
+              return;
+            }
+          } else if (tableTitle[i].key === 'indexTypeTwo') {
+            if (tableTitle[i].title !== '二级指标') {
+              regExcel('二级指标');
+              return;
+            }
+          } else if (tableTitle[i].key === 'weightOne') {
+            if (tableTitle[i].title !== '一级权数') {
+              regExcel('一级权数');
+              return;
+            }
+          } else if (tableTitle[i].key === 'weightTwo') {
+            if (tableTitle[i].title !== '二级权数') {
+              regExcel('二级权数');
+              return;
+            }
+          } else if (tableTitle[i].key === 'leadUnit') {
+            if (tableTitle[i].title !== '牵头单位') {
+              regExcel('牵头单位');
+              return;
+            }
+          } else if (tableTitle[i].key === 'responsibilityUnit') {
+            if (tableTitle[i].title !== '责任单位') {
+              regExcel('责任单位');
+              return;
+            }
+          }
+        }
+        this.tableData = results.slice(1);
+        this.tableTitle = tableTitle;
+        this.uploadLoading = false;
+        this.tableLoading = false;
+        this.showRemoveFile = true;
+      };
     }
   },
   watch: {
@@ -862,18 +1022,6 @@ export default {
       },
       deep: true
     }
-    // searchData: {
-    //   handler (newVal) {
-    //     if (newVal.indexType === '一级指标') {
-    //       this.isIndexOne = true;
-    //     } else if (newVal.indexType === '二级指标') {
-    //       this.isIndexOne = false;
-    //     } else {
-    //       this.isIndexOne = false;
-    //     }
-    //   },
-    //   deep: true
-    // }
   },
   created () {
     this._getCountyList(

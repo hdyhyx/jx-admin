@@ -1,5 +1,5 @@
 <style lang="less">
-@import "./common.less";
+@import "./../common.less";
 </style>
 <template>
   <div>
@@ -29,8 +29,16 @@
             </Row>
             <Row>
               <i-col :xs="24" :md="12" :lg="6" >
+                <FormItem label="审核状态">
+                    <Select v-model="searchData.auditState" placeholder="请选择方向" style="width: auto">
+                        <Option value="未审核">未审核</Option>
+                        <Option value="已审核">已审核</Option>
+                    </Select>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="6" >
                 <FormItem label="方向">
-                    <Select v-model="searchData.direction" placeholder="请选择方向">
+                    <Select v-model="searchData.direction" placeholder="请选择方向" style="width: auto">
                         <Option value="+">+</Option>
                         <Option value="-">-</Option>
                     </Select>
@@ -51,7 +59,8 @@
           </Form>
         </Card>
     </Row>
-    <Row>
+    <!-- 指标数据 -->
+    <Row style="margin-top:20px">
       <Card>
         <Table stripe border :columns="columns1" :data="data1"></Table>
         <div style="margin-top:20px;margin-left:40%">
@@ -59,35 +68,81 @@
         </div>
       </Card>
     </Row>
-      <div>
-        <Card title="导入EXCEL">
+    <!-- 模态框 -->
+    <Modal
+        v-model="addIndex"
+        :title="'指标得分填写'"
+        width='700px'
+        >
+        <div>
+        <Form  ref="formValidate" :model="formValidate" :rules="regForm" >
           <Row>
-            <Upload action="" :before-upload="handleBeforeUpload" accept=".xls, .xlsx">
-              <Button icon="ios-cloud-upload-outline" :loading="uploadLoading" @click="handleUploadFile">上传文件</Button>
-            </Upload>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="一级指标" prop="weight"  :label-width="60">
+                    <Input v-model="formValidate.weight" placeholder="请输入权数值" ></Input>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="一级分值" prop="weight"  :label-width="80">
+                    <Input v-model="formValidate.weight" placeholder="请输入权数值"></Input>
+                </FormItem>
+              </i-col>
           </Row>
           <Row>
-            <div class="ivu-upload-list-file" v-if="file !== null">
-              <Icon type="ios-stats"></Icon>
-                {{ file.name }}
-              <Icon v-show="showRemoveFile" type="ios-close" class="ivu-upload-list-remove" @click.native="handleRemove()"></Icon>
-            </div>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="二级指标" prop="weight"  :label-width="60">
+                    <Input v-model="formValidate.weight" placeholder="请输入权数值" ></Input>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="标准值" prop="weight"  :label-width="80">
+                    <Input v-model="formValidate.weight" placeholder="请输入权数值"></Input>
+                </FormItem>
+              </i-col>
           </Row>
           <Row>
-            <transition name="fade">
-              <Progress v-if="showProgress" :percent="progressPercent" :stroke-width="2">
-                <div v-if="progressPercent == 100">
-                  <Icon type="ios-checkmark-circle"></Icon>
-                  <span>成功</span>
-                </div>
-              </Progress>
-            </transition>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="牵头单位" prop="weight"  :label-width="60">
+                    <Input v-model="formValidate.weight" placeholder="请输入权数值" ></Input>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="责任单位" prop="weight"  :label-width="80">
+                    <Input v-model="formValidate.weight" placeholder="请输入权数值"></Input>
+                </FormItem>
+              </i-col>
           </Row>
-        </Card>
-        <Row class="margin-top-10">
-          <Table :columns="tableTitle" :data="tableData" :loading="tableLoading"></Table>
-        </Row>
-      </div>
+          <Row>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="权数上限" prop="weight"  :label-width="60">
+                    <Input v-model="formValidate.weight" placeholder="请输入权数值" ></Input>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="得分率" prop="weight"  :label-width="80">
+                    <Input v-model="formValidate.weight" placeholder="请输入权数值"></Input>
+                </FormItem>
+              </i-col>
+          </Row>
+          <Row>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="得分" prop="score"  :label-width="60">
+                    <InputNumber :max="100" :min="0" v-model="formValidate.score"></InputNumber>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="排名" prop="rank"  :label-width="80">
+                    <Input v-model="formValidate.weight" placeholder="请输入权数值"></Input>
+                </FormItem>
+              </i-col>
+          </Row>
+        </Form>
+        </div>
+        <div slot="footer">
+            <Button type="success" size="large" :loading="ModalLoading" @click="asyncOK">审核通过</Button>
+            <Button size="large" @click="closeAudit">取消</Button>
+        </div>
+    </Modal>
   </div>
 </template>
 <script>
@@ -95,31 +150,43 @@ import excel from '@/libs/excel';
 export default {
   data () {
     return {
-      // updata 上传
-      uploadLoading: false,
-      progressPercent: 0,
-      showProgress: false,
-      showRemoveFile: false,
-      file: null,
-      tableData: [],
-      tableTitle: [],
       // 数据
+      ModalLoading: false,
+      addIndex: false,
       tableLoading: false,
       pageTotal: 0,
       pageSize: 10,
       pageNumber: 1,
       searchData: {
-        ducyUnit: '',
+        superiorIndexId: '',
         leadUnit: '',
         indexName: '',
-        direction: ''
+        direction: '',
+        auditState: ''
       },
+      formValidate: {},
       searchReg: {
         seachLevel_1: [
           {
             required: true,
             message: '请选择审核结果',
             trigger: 'change'
+          }
+        ]
+      },
+      regForm: {
+        score: [
+          {
+            required: true,
+            message: '请填写得分',
+            trigger: 'blur'
+          }
+        ],
+        rank: [
+          {
+            required: true,
+            message: '请填写排名',
+            trigger: 'blur'
           }
         ]
       },
@@ -169,11 +236,6 @@ export default {
             const row = params.row;
             var color = '';
             var text = row.level_1 + '（' + row.score + '）';
-            // if (row.一级指标 === '经济发展') {
-            //   color = '#e91e63';
-            // } else if (row.一级指标 === '有效投资') {
-            //   color = '#9c27b0';
-            // }
             switch (row.level_1) {
               case '经济发展':
                 color = '#e91e63';
@@ -228,29 +290,69 @@ export default {
           key: 'duty_unit'
         },
         {
+          title: '审核状态',
+          maxWidth: 90,
+          key: 'auditState'
+        },
+        {
           title: '权数上限',
-          width: 100,
+          maxWidth: 70,
           key: 'weight_max'
         },
         {
           title: '实际权数',
-          width: 100,
+          maxWidth: 70,
           key: 'actual_weight'
         },
         {
           title: '得分率',
-          width: 100,
+          maxWidth: 80,
           key: 'score'
         },
         {
           title: '排名',
-          width: 60,
+          maxWidth: 60,
           key: 'rank'
         },
         {
           title: '方向',
-          width: 60,
+          maxWidth: 60,
           key: 'direction'
+        },
+        {
+          title: '操作',
+          key: 'action',
+          maxWidth: 100,
+          align: 'center',
+          render: (h, params) => {
+            var isDisabled = '';
+            if (params.row.auditState === '已审核') {
+              isDisabled = true;
+            } else {
+              isDisabled = false;
+            }
+            return h('div', [
+              h(
+                'Button',
+                {
+                  props: {
+                    type: 'primary',
+                    size: 'small',
+                    disabled: isDisabled
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      this.addIndex = true;
+                    }
+                  }
+                },
+                '填入分数'
+              )
+            ]);
+          }
         }
       ],
       data1: [
@@ -390,11 +492,28 @@ export default {
     };
   },
   methods: {
+    // 关闭模态框
+    closeAudit () {
+      this.addIndex = false;
+    },
+    // 确认提交分数
+    asyncOK () {
+      this.ModalLoading = true;
+      setTimeout(() => {
+        this.ModalLoading = false;
+        this.addIndex = false;
+      }, 2000);
+    },
     // 指标管理关联 on-change
     selectIndex (value) {
       console.log(value);
-      this.searchData.seachLevel_1 = value[0];
-      this.searchData.seachLevel_2 = value[1];
+      if (value[1] !== undefined) {
+        this.searchData.seachLevel_2 = value[1];
+        this.searchData.seachLevel_1 = value[0];
+      } else {
+        this.searchData.seachLevel_1 = value[0];
+        this.searchData.seachLevel_2 = '';
+      }
     },
     // 提交搜索
     seachSubmit (name) {
@@ -411,70 +530,7 @@ export default {
     seachReset (name) {
       this.$refs[name].resetFields();
     },
-    rowClassName (row, index) {},
-    initUpload () {
-      this.file = null;
-      this.showProgress = false;
-      this.loadingProgress = 0;
-      this.tableData = [];
-      this.tableTitle = [];
-    },
-    handleUploadFile () {
-      this.initUpload();
-    },
-    handleRemove () {
-      this.initUpload();
-      this.$Message.info('上传的文件已删除！');
-    },
-    handleBeforeUpload (file) {
-      const fileExt = file.name
-        .split('.')
-        .pop()
-        .toLocaleLowerCase();
-      if (fileExt === 'xlsx' || fileExt === 'xls') {
-        this.readFile(file);
-        this.file = file;
-      } else {
-        this.$Notice.warning({
-          title: '文件类型错误',
-          desc:
-            '文件：' +
-            file.name +
-            '不是EXCEL文件，请选择后缀为.xlsx或者.xls的EXCEL文件。'
-        });
-      }
-      return false;
-    },
-    // 读取文件
-    readFile (file) {
-      const reader = new FileReader();
-      reader.readAsArrayBuffer(file);
-      reader.onloadstart = e => {
-        this.uploadLoading = true;
-        this.tableLoading = true;
-        this.showProgress = true;
-      };
-      reader.onprogress = e => {
-        this.progressPercent = Math.round((e.loaded / e.total) * 100);
-      };
-      reader.onerror = e => {
-        this.$Message.error('文件读取出错');
-      };
-      reader.onload = e => {
-        this.$Message.info('文件读取成功');
-        const data = e.target.result;
-        const { header, results } = excel.read(data, 'array');
-        console.log(header, results);
-        const tableTitle = header.map(item => {
-          return { title: item, key: item };
-        });
-        this.tableData = results;
-        this.tableTitle = tableTitle;
-        this.uploadLoading = false;
-        this.tableLoading = false;
-        this.showRemoveFile = true;
-      };
-    }
+    rowClassName (row, index) {}
   }
 };
 </script>

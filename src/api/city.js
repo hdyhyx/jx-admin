@@ -12,19 +12,23 @@ function citylData (token, formData, KEY_1) {
   data['tokenEntity'] = {
     value: token
   }
-  data[KEY_1] = {
-    id: formData.id,
-    indexName: formData.indexName,
-    indexType: formData.indexType,
-    superiorIndexId: formData.superiorIndexId,
-    leadUnit: formData.leadUnit,
-    responsibilityUnit: formData.responsibilityUnit,
-    score: formData.score,
-    standardValue: formData.standardValue,
-    direction: formData.direction,
-    weight: formData.weight,
-    pageSize: formData.pageSize,
-    pageNumber: formData.pageNumber
+  if (typeof (formData) === 'object') {
+    data[KEY_1] = {
+      id: formData.id, // id
+      indexName: formData.indexName, // 指标名称
+      indexType: formData.indexType, // 指标类型
+      superiorIndexId: formData.superiorIndexId, // 上级单位
+      leadUnit: formData.leadUnit, // 牵头单位
+      responsibilityUnit: formData.responsibilityUnit, // 责任单位
+      score: formData.score, // 分数
+      standardValue: formData.standardValue, // 分数
+      direction: formData.direction, // 方向
+      weight: formData.weight, // 权重
+      pageSize: formData.pageSize, // 页数
+      pageNumber: formData.pageNumber // 页码
+    }
+  } else {
+    console.log(formData);
   }
   return data
 }
