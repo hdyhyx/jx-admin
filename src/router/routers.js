@@ -124,6 +124,24 @@ export default [{
   }
   ]
 },
+{
+  path: '/six_game',
+  name: 'six_game',
+  meta: {
+    hide: true
+  },
+  component: Main,
+  children: [{
+    path: 'six_game_page',
+    name: 'six_game_page',
+    meta: {
+      icon: 'md-checkbox-outline',
+      title: '六抓六赛考核指标'
+    },
+    component: () =>
+        import('@/view/six-game/six-game-page.vue')
+  }]
+},
   // {
   //   path: '/target_management',
   //   name: 'target_management',
@@ -265,24 +283,6 @@ export default [{
           import('@/view/investigate/investigate-inbox/investigate-inbox.vue')
   }
   ]
-},
-{
-  path: '/six_game',
-  name: 'six_game',
-  meta: {
-    hide: true
-  },
-  component: Main,
-  children: [{
-    path: 'six_game_page',
-    name: 'six_game_page',
-    meta: {
-      icon: 'md-checkbox-outline',
-      title: '审核审批功能'
-    },
-    component: () =>
-        import('@/view/six-game/six-game-page.vue')
-  }]
 },
 {
   path: '/work_supervision',

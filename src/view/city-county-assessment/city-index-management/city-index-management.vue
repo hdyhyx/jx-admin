@@ -40,6 +40,13 @@
                   </i-col>
                 </Row>
                 <Row>
+                   <i-col :xs="24" :md="12" :lg="6">
+                    <FormItem label="指标年份">
+                        <Col span="12">
+                            <DatePicker type="year" format="yyyy" @on-change="handlerFormat" placeholder="请选择指标年份" style="width:185px"></DatePicker>
+                        </Col>
+                    </FormItem>
+                  </i-col>
                 </Row>
                     <FormItem>
                       <Button type="primary" @click="seachSubmit('searchData')">提交搜索</Button>
@@ -62,7 +69,7 @@
             <Table :loading="TableThreeLoading" border :columns="columns7" :data="data6" v-if="searchData.indexType==='三级指标'"></Table>
           </div>
           <div style="margin:20px 0;margin-left:35%;">
-                <Page @on-change="pageNumberChange" :page-size="pageSize"  :total="pageTotal" @on-page-size-change="pageSizeChange" show-elevator show-sizer />
+                <Page @on-change="pageNumberChange" :current="pageCurrent" :page-size="pageSize"  :total="pageTotal" @on-page-size-change="pageSizeChange" show-elevator show-sizer />
           </div>
         </Card>
     </Row>
@@ -70,12 +77,15 @@
     <div>
       <Card title="导入EXCEL">
         <Row>
-           <i-col :xs="24" :md="12" :lg="6">
+           <i-col :xs="24" :md="8" :lg="3">
             <Upload action="" :before-upload="handleBeforeUpload" accept=".xls, .xlsx">
               <Button icon="ios-cloud-upload-outline" :loading="uploadLoading" @click="handleUploadFile">上传文件</Button>
             </Upload>
            </i-col>
-          <i-col :xs="24" :md="12" :lg="6">
+          <i-col :xs="24" :md="8" :lg="3">
+            <DatePicker  type="year" format="yyyy" value="formCityList.year" @on-change="updateTime" placeholder="请选择指标年份" style="width: auto"></DatePicker>
+          </i-col>
+          <i-col :xs="24" :md="8" :lg="3">
             <Button type="primary" :loading="UploadLoadingBtn" @click="updateExcel">
                 <span v-if="!UploadLoadingBtn">确认添加</span>
                 <span v-else>Loading...</span>
@@ -152,6 +162,9 @@
           <FormItem label="权数" prop="weight">
               <Input v-model="formCityList.weight" placeholder="请输入权数值" style="width:500px"></Input>
           </FormItem>
+          <FormItem label="指标年份"  prop="year">
+             <DatePicker  type="year" format="yyyy" value="formCityList.year" @on-change="IndexFormat" placeholder="请选择指标年份" style="width:185px"></DatePicker>
+          </FormItem>
         </Form>
         <div slot="footer">
               <Button type="success" :loading="submitloading" style="width:120px" @click="BtnSubmit($event)">
@@ -161,7 +174,6 @@
               <Button @click="closeAddIndex">取消</Button>
         </div>
     </Modal>
-
   </div>
 </template>
 <script>
@@ -185,14 +197,17 @@ export default {
       pageTotal: 0, // 总页数
       pageSize: 10, // 条数
       pageNumber: 1, // 页码
+      pageCurrent: 1, // 当前页
       indexOne: [], // 一级指标数据
       indexTwo: [], // 二级指标数据
+      excelUpdate: '',
       searchData: {
         // 搜索数据
         indexType: '一级指标',
         ducyUnit: '',
         lead: '',
-        indexName: ''
+        indexName: '',
+        year: ''
       },
       colIndexOne: [
         // 一级指标 表格表头
@@ -375,6 +390,13 @@ export default {
             message: '请选择指标等级',
             trigger: 'change'
           }
+        ],
+        year: [
+          {
+            required: true,
+            message: '请选择年份',
+            trigger: 'change'
+          }
         ]
       },
       // 验证搜索
@@ -397,7 +419,8 @@ export default {
         score: '', // 分数
         standardValue: '', // 标准值
         direction: '', // 方向
-        weight: '' // 权数
+        weight: '', // 权数
+        year: ''
       },
       // 上传表格
       uploadLoading: false,
@@ -412,6 +435,18 @@ export default {
     };
   },
   methods: {
+    // Excel 上传  定义指标年份
+    updateTime (year) {
+      this.excelTime = year;
+    },
+    // FORM表单年份
+    IndexFormat (year) {
+      this.formCityList.year = year;
+    },
+    // 搜索框年份
+    handlerFormat (year) {
+      this.searchData.year = year;
+    },
     // 关闭模态框增加或者编辑
     closeAddIndex () {
       this.addIndex = false;
@@ -443,7 +478,6 @@ export default {
                       this.addIndex = false;
                     });
                   } else if (this.formCityList.indexType === '二级指标') {
-                    console.log(this.formCityList.indexType);
                     let indexType = {
                       indexType: this.formCityList.indexType
                     };
@@ -482,15 +516,15 @@ export default {
     },
     // 删除指标
     remove (params) {
+      this.pageCurrent = this.pageNumber;
       this.$Modal.confirm({
         title: '删除指标',
         content: '<p>删除后将无法恢复</p>',
         onOk: () => {
           this._removeIndexCity(token, { id: params.row.id }).then(res => {
             if (res.code === '200') {
-              // 删除成功重新调用 seachSubmit
               this.$Message.success('删除成功');
-              this.seachSubmit('searchData');
+              this.seachSubmit('searchData', 'remove');
             } else {
               this.$Message.error('操作失败');
             }
@@ -511,16 +545,20 @@ export default {
       this.addIndex = true;
     },
     // 搜索查询
-    seachSubmit (name) {
+    seachSubmit (name, isRemove) {
       this.$refs[name].validate(valid => {
         if (valid) {
           this.TableOneLoading = true;
           this.TableTwoLoading = true;
           // 清除formCityList表单
           this.resetInput();
-          this.pageTotal = 0;
-          this.pageSize = 10;
-          this.pageNumber = 1;
+          if (isRemove) {
+            this.pageNumber = this.pageCurrent;
+          } else {
+            this.pageTotal = 0;
+            this.pageSize = 10;
+            this.pageNumber = 1;
+          }
           const formData = Object.assign(this.formCityList, this.searchData);
           this._getCityList(
             token,
@@ -576,7 +614,8 @@ export default {
           score: '',
           standardValue: '',
           direction: '',
-          weight: ''
+          weight: '',
+          year: ''
         };
       }
     },
@@ -633,8 +672,7 @@ export default {
     },
     // 获取数据
     _getCityList (token, form, pageSize, pageNumber) {
-      console.log(pageSize, pageNumber);
-      const url = '/api/countryIndicators';
+      const url = '/api/countryIndicators/query';
       let formData = Object.assign(form, {
         pageSize: pageSize,
         pageNumber: pageNumber
@@ -651,7 +689,8 @@ export default {
     },
     // 添加指标
     _addIndexCity (token, formData) {
-      const url = '/api/countryIndicators';
+      console.log(formData, 111);
+      const url = '/api/countryIndicators/insert';
       return new Promise((resolve, reject) => {
         AddIndex({ token, formData, url }).then(res => {
           if (res.data.code === '200') {
@@ -664,7 +703,7 @@ export default {
     },
     // 修改指标
     _updateIndexCity (token, formData) {
-      const url = '/api/countryIndicators';
+      const url = '/api/countryIndicators/update';
       return new Promise((resolve, reject) => {
         updateIndex({ token, formData, url }).then(res => {
           if (res.data.code === '200') {
@@ -677,7 +716,7 @@ export default {
     },
     // 删除
     _removeIndexCity (token, formData) {
-      const url = '/api/countryIndicators';
+      const url = '/api/countryIndicators/delete';
       return new Promise((resolve, reject) => {
         removeIndex({ token, formData, url }).then(res => {
           if (res.data.code === '200') {
@@ -814,8 +853,14 @@ export default {
       };
     },
     updateExcel () {
-      const fromIndexOne = []; // 一级指标
-      const formIndexTwo = []; // 二级指标
+      // 判断上传Excel表是不是为空且指标年份不为空
+      console.log(this.tableData);
+      if (!this.tableData.length || this.excelTime === '') {
+        this.$Message.error('请选择上传文件或选择指标年份');
+        return;
+      }
+      const fromIndexOne = { list: [] }; // 一级指标
+      const formIndexTwo = { list: [] }; // 二级指标
       // 处理一级指标
       for (let i = 0; i < this.tableData.length; i++) {
         var indexDataOne = Object.assign(
@@ -836,10 +881,11 @@ export default {
             responsibilityUnit: '',
             score: '',
             standardValue: '',
-            direction: ''
+            direction: '',
+            dateTime: this.excelTime
           }
         );
-        fromIndexOne.push(indexDataOne);
+        fromIndexOne['list'].push(indexDataOne);
       }
       // 处理二级指标
       for (let i = 0; i < this.tableData.length; i++) {
@@ -874,16 +920,33 @@ export default {
             superiorIndexId:
               this.tableData[i].indexTypeOne === undefined
                 ? ''
-                : this.tableData[i].indexTypeOne.trim()
+                : this.tableData[i].indexTypeOne.trim(),
+            dateTime: this.excelTime
           }
         );
-        formIndexTwo.push(indexDataTwo);
+        // 根据后端要求 用户EXCEL上传的数据放在LIST里面
+        formIndexTwo['list'].push(indexDataTwo);
       }
-      console.log(fromIndexOne);
-      console.log(formIndexTwo);
+      this._addIndexCity(token, fromIndexOne).then(res => {
+        if (res.code === '200') {
+          this.tableData.length = 0;
+          this.$Message.info('指标添加成功');
+        } else {
+          this.$Message.info('指标添加失败');
+        }
+      });
+      this._addIndexCity(token, formIndexTwo).then(res => {
+        if (res.code === '200') {
+          this.tableData.length = 0;
+          this.$Message.info('指标添加成功');
+        } else {
+          this.$Message.info('指标添加失败');
+        }
+      });
     }
   },
   watch: {
+    // form表单根据指标等级
     formCityList: {
       handler (newVal) {
         if (newVal.indexType !== undefined) {
@@ -901,6 +964,7 @@ export default {
     }
   },
   created () {
+    // 打开页面
     this._getCityList(
       token,
       this.formCityList,
