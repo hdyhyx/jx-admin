@@ -132,13 +132,8 @@
               </Select>
           </FormItem>
           <FormItem label="上级指标" prop="superiorIndexId" v-if="isFormFlase">
-              <Select v-model="formCityList.superiorIndexId" placeholder="请选择上级指标" style="width:500px">
-                  <Option value="经济发展">经济发展</Option>
-                  <Option value="有效投资">有效投资</Option>
-                  <Option value="机制创新">机制创新</Option>
-                  <Option value="创新驱动">创新驱动</Option>
-                  <Option value="生态文明">生态文明</Option>
-                  <Option value="民生保障">民生保障</Option>
+              <Select v-model="formCityList.superiorIndexId"  placeholder="请选择上级指标" style="width:500px">
+                  <Option v-for="item in superiorIndexId" :value="item.id" :key="item.id">{{ item.indexName }}</Option>
               </Select>
           </FormItem>
           <FormItem label="牵头单位" prop="leadUnit" v-if="isFormFlase">
@@ -200,6 +195,7 @@ export default {
       pageCurrent: 1, // 当前页
       indexOne: [], // 一级指标数据
       indexTwo: [], // 二级指标数据
+      superiorIndexId: [],
       excelUpdate: '',
       searchData: {
         // 搜索数据
@@ -411,6 +407,7 @@ export default {
       },
       // 表单
       formCityList: {
+        id: '',
         indexName: '', // 指标名称
         indexType: '一级指标', // 指标类型
         superiorIndexId: '', // 上级单位 一级指标没有上级单位
@@ -428,8 +425,9 @@ export default {
       showProgress: false,
       showRemoveFile: false,
       file: null,
-      tableData: [],
-      tableTitle: [],
+      tableData: [], // 上传Excel 内容
+      tableTitle: [], //
+      excelTime: '',
       tableLoading: false,
       UploadLoadingBtn: false
     };
@@ -689,7 +687,6 @@ export default {
     },
     // 添加指标
     _addIndexCity (token, formData) {
-      console.log(formData, 111);
       const url = '/api/countryIndicators/insert';
       return new Promise((resolve, reject) => {
         AddIndex({ token, formData, url }).then(res => {
@@ -782,7 +779,9 @@ export default {
         this.$Message.info('文件读取成功');
         const data = e.target.result;
         var { header, results } = excel.read(data, 'array');
-        header = header.slice(0, 8);
+        console.log(header);
+
+        header = header.slice(0, 9); // 截取有效数据
         var tableTitle = header.map((item, i) => {
           return { title: results[0][item], key: item };
         });
@@ -840,6 +839,11 @@ export default {
               regExcel('责任单位');
               return;
             }
+          } else if (tableTitle[i].key === 'associated') {
+            if (tableTitle[i].title !== '关联指标') {
+              regExcel('关联指标');
+              return;
+            }
           } else {
             regExcel('');
             return;
@@ -854,13 +858,13 @@ export default {
     },
     updateExcel () {
       // 判断上传Excel表是不是为空且指标年份不为空
-      console.log(this.tableData);
       if (!this.tableData.length || this.excelTime === '') {
         this.$Message.error('请选择上传文件或选择指标年份');
         return;
       }
       const fromIndexOne = { list: [] }; // 一级指标
       const formIndexTwo = { list: [] }; // 二级指标
+      const associated = { list: [] };
       // 处理一级指标
       for (let i = 0; i < this.tableData.length; i++) {
         var indexDataOne = Object.assign(
@@ -887,8 +891,49 @@ export default {
         );
         fromIndexOne['list'].push(indexDataOne);
       }
+      for (let i = 0; i < this.tableData.length; i++) {}
       // 处理二级指标
       for (let i = 0; i < this.tableData.length; i++) {
+        if (this.tableData[i].associated !== undefined) {
+          console.log(this.tableData[i].associated);
+          var indexAssociated = Object.assign(
+            {},
+            {
+              indexType: '二级指标',
+              indexName:
+                this.tableData[i].indexTypeTwo === undefined
+                  ? ''
+                  : this.tableData[i].indexTypeTwo.trim(),
+              weight:
+                this.tableData[i].weightTwo === undefined
+                  ? ''
+                  : this.tableData[i].weightTwo.trim(),
+              leadUnit:
+                this.tableData[i].leadUnit === undefined
+                  ? ''
+                  : this.tableData[i].leadUnit.trim(),
+              direction:
+                this.tableData[i].direction === undefined
+                  ? ''
+                  : this.tableData[i].direction.trim(),
+              standardValue:
+                this.tableData[i].standardValue === undefined
+                  ? ''
+                  : this.tableData[i].standardValue.trim(),
+              responsibilityUnit:
+                this.tableData[i].responsibilityUnit === undefined
+                  ? ''
+                  : this.tableData[i].responsibilityUnit.trim(),
+              superiorIndexId:
+                this.tableData[i].associated === undefined
+                  ? ''
+                  : this.tableData[i].associated.trim(),
+              dateTime: this.excelTime
+            }
+          );
+          associated['list'].push(indexAssociated);
+          continue;
+        }
         var indexDataTwo = Object.assign(
           {},
           {
@@ -927,22 +972,24 @@ export default {
         // 根据后端要求 用户EXCEL上传的数据放在LIST里面
         formIndexTwo['list'].push(indexDataTwo);
       }
+      console.log(associated);
       this._addIndexCity(token, fromIndexOne).then(res => {
         if (res.code === '200') {
-          this.tableData.length = 0;
-          this.$Message.info('指标添加成功');
+          this._addIndexCity(token, formIndexTwo).then(res => {
+            if (res.code === '200') {
+              this._addIndexCity(token, associated).then(res => {
+                console.log(res);
+              });
+            } else {
+              this.$Message.info('指标添加失败');
+            }
+          });
         } else {
           this.$Message.info('指标添加失败');
         }
       });
-      this._addIndexCity(token, formIndexTwo).then(res => {
-        if (res.code === '200') {
-          this.tableData.length = 0;
-          this.$Message.info('指标添加成功');
-        } else {
-          this.$Message.info('指标添加失败');
-        }
-      });
+      this.tableData = [];
+      this.excelTime = '';
     }
   },
   watch: {
@@ -971,7 +1018,7 @@ export default {
       this.pageSize,
       this.pageNumber
     ).then(res => {
-      var indexList = res.results.firstIndex;
+      this.superiorIndexId = res.results.firstIndex; // from表单 上级指标 seachSelect
       this.pageTotal = parseInt(res.results.pageTotal) * 10;
       this.indexOne = res.results.list;
       this.TableOneLoading = false;

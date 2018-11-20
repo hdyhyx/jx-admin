@@ -1,4 +1,7 @@
 import axios from '@/libs/api.request'
+import {
+  format
+} from 'path';
 
 /**
  * @param {*} token
@@ -8,7 +11,7 @@ import axios from '@/libs/api.request'
  * 用于市对乡镇指标管理
  */
 function citylData (token, formData, KEY_1) {
-  console.log(formData)
+  console.log(formData);
   let data = {}
   data['tokenEntity'] = {
     value: token
@@ -24,14 +27,16 @@ function citylData (token, formData, KEY_1) {
       standardValue: formData.standardValue, // 标准值
       direction: formData.direction, // 方向
       weight: formData.weight, // 权重
-      dateTime: formData.year, // 指标年份
+      dateTime: formData.yearTime, // 指标年份
       monthTime: formData.monthTime, // 月份
       audit: formData.audit, // 审核状态
-      score: formData.score, // 分数
+      score: formData.score === undefined ? '' : formData.score, // 分数
       finalScore: formData.finalScore, // 实际得分
       pageSize: formData.pageSize, // 页数
-      pageNumber: formData.pageNumber // 页码
-
+      pageNumber: formData.pageNumber, // 页码
+      indicatorsId: formData.id === undefined ? '' : formData.id, // 对应指标ID
+      alternateField1: formData.alternateField1 === undefined ? '' : formData.alternateField1,
+      reason: formData.reason === undefined ? '' : formData.reason // 回退原因
     }
   } else {
     data['list'] = formData['list'] // excle 导入 穿给后台为LIST
@@ -97,11 +102,9 @@ export const getIndexList = ({
   token,
   formData,
   url,
-  inspectionType // 考类类型 ： county 县对各乡镇指标考核
+  inspectionType // 考类类型 ： county 县对各乡镇指标考核  如果没有值未市对县指标考核
 }) => {
   let data = ''
-  console.log(url);
-  console.log(formData)
   // county县对各乡镇            区别传来的数据是市对县的 还是县对各乡镇的
   if (inspectionType === 'county') {
     const KEY_1 = 'townIndicatorsFilter'
@@ -123,7 +126,6 @@ export const AddIndex = ({
   url,
   inspectionType
 }) => {
-  console.log(formData);
   let data = ''
   if (inspectionType === 'county') {
     const KEY_1 = 'townIndicatorsEntity' // 牵头，责任单位，指标名KEY

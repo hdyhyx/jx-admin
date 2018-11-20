@@ -5,6 +5,7 @@
   <div>
     <Row>
       <Card>
+        <!-- 搜索 -->
           <Form ref="searchData" :model="searchData"  :label-width="100">
             <Row>
               <i-col :xs="24" :md="12" :lg="6" >
@@ -31,12 +32,12 @@
               <i-col :xs="24" :md="12" :lg="6" >
                 <FormItem label="审核状态">
                     <Select v-model="searchData.audit" placeholder="请选择审核状态" style="width: 150px">
-                      <!-- 根据后端要求 ''为全部 'null'未未填写 0为未审核 1为已审核 2为退回 -->
-                        <Option value="">全部</Option>
-                        <Option value="null">未填写</Option>
+                        <Option value="5">全部</Option>
+                        <Option value="4">未填写</Option>
                         <Option value="0">未审核</Option>
-                        <Option value="1">已审核</Option>
-                        <Option value="2">退回</Option>
+                        <Option value="1">责任人已审核</Option>
+                        <Option value="2">管理员已审核</Option>
+                        <Option value="3">退回</Option>
                     </Select>
                 </FormItem>
               </i-col>
@@ -86,8 +87,8 @@
                 </FormItem>
               </i-col>
               <i-col :xs="24" :md="12" :lg="12" >
-                <FormItem label="一级权数"   :label-width="80">
-                    <Input v-model="formCityData.fristWeight" disabled  placeholder="一级权数"></Input>
+                <FormItem label="权数" prop="weight"  :label-width="80">
+                    <Input v-model="formCityData.weight" disabled  placeholder="权数" ></Input>
                 </FormItem>
               </i-col>
           </Row>
@@ -117,27 +118,27 @@
           </Row>
           <Row>
               <i-col :xs="24" :md="12" :lg="12" >
-                <FormItem label="权数" prop="weight"  :label-width="60">
-                    <Input v-model="formCityData.weight" disabled  placeholder="权数" ></Input>
+                <FormItem label="得分"  :label-width="60">
+                    <Input  v-model="formCityData.score"></Input>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="排名"  :label-width="80">
+                   <Input   v-model="formCityData.alternateField1"></Input>
                 </FormItem>
               </i-col>
           </Row>
           <Row>
               <i-col :xs="24" :md="12" :lg="12" >
-                <FormItem label="得分" prop="score"  :label-width="60">
-                    <InputNumber :max="100" :min="0"  v-model="formCityData.score"></InputNumber>
-                </FormItem>
-              </i-col>
-              <i-col :xs="24" :md="12" :lg="12" >
-                <FormItem label="排名" prop="score"  :label-width="60">
-                    <InputNumber :max="100" :min="0" v-model="formCityData.rank"></InputNumber>
+                <FormItem label="填入时间"  :label-width="60">
+                  <DatePicker type="month" format="yyyy-MM" :value="selectTime" @on-change="selectMonth" placeholder="Select month" style="width: 200px"></DatePicker>
                 </FormItem>
               </i-col>
           </Row>
         </Form>
         </div>
         <div slot="footer">
-            <Button type="success" size="large" :loading="ModalLoading" @click="asyncOK">确认提交</Button>
+            <Button type="success" size="large" :loading="ModalLoading" @click="submitForm">确认提交</Button>
             <Button size="large" @click="closeAudit">取消</Button>
         </div>
     </Modal>
@@ -157,6 +158,7 @@ export default {
       pageSize: 10, // 页数
       pageNumber: 1, // 页码
       pageCurrent: 1, // 当前页
+      selectTime: '', // form表单里月份选择器
       searchData: {
         superiorIndexId: '', // 一级指标
         leadUnit: '', // 牵头单位
@@ -167,8 +169,8 @@ export default {
         year: '' // 年份
       },
       formCityData: {
-        score: 0, // 得分
-        rank: 0, // 排名
+        score: null, // 得分
+        alternateField1: '', // 排名
         superiorIndexId: '', // 一级指标
         leadUnit: '', // 牵头单位
         responsibilityUnit: '', // 责任单位
@@ -176,7 +178,9 @@ export default {
         audit: '', // 审核状态
         fristWeight: '', // 一级指标权数
         actualWeight: '', // 实际权数
-        weight: ''
+        weight: '', // 权数
+        monthTime: '', // 月份
+        yearTime: '' // 年月
       },
       cityIndexList: [], // Tabel数据
       selectIndexType: [
@@ -191,59 +195,20 @@ export default {
         {
           title: '一级指标',
           key: 'superiorIndexId',
-          render: (h, params) => {
-            const row = params.row;
-            var color = '';
-            var index = row.superiorIndexId.indexOf('(');
-            var col = row.superiorIndexId.slice(0, index);
-            var text = row.superiorIndexId;
-            this.selectIndexType.forEach(item => {
-              console.log(item);
-            });
-            switch (col) {
-              case '经济发展':
-                color = '#e91e63';
-                break;
-              case '有效投资':
-                color = '#9c27b0';
-                break;
-              case '机制创新':
-                color = '#673ab7';
-                break;
-              case '创新驱动':
-                color = '#3f51b5';
-                break;
-              case '生态文明':
-                color = '#2196f3';
-                break;
-              case '民生保障':
-                color = '#4caf50';
-                break;
-              case '政务服务':
-                color = '#00bcd4';
-                break;
-              default:
-                break;
-            }
-            return h(
-              'Tag',
-              {
-                props: {
-                  type: 'dot',
-                  color: color
-                }
-              },
-              text
-            );
-          }
+          minWidth: 70,
+          ellipsis: true,
+          tooltip: true
         },
         {
           title: '二级指标',
-          key: 'indexName'
+          key: 'indexName',
+          minWidth: 70
         },
         {
           title: '标准值',
-          key: 'standardValue'
+          key: 'standardValue',
+          ellipsis: true,
+          tooltip: true
         },
         {
           title: '牵头单位',
@@ -260,19 +225,27 @@ export default {
           render: (h, params) => {
             const row = params.row;
             var color = '';
-            var text = row.audit;
-            switch (text) {
-              case '已审核':
-                color = 'success';
+            var text = '';
+            switch (row.audit) {
+              case '0':
+                color = 'warning';
+                text = '未审核';
                 break;
-              case '未审核':
+              case '1':
                 color = 'primary';
+                text = '责任人审核';
                 break;
-              case '退回':
+              case '2':
+                color = 'success';
+                text = '管理员审核';
+                break;
+              case '3':
                 color = 'error';
+                text = '回退';
                 break;
               default:
-                color = 'warning'; // 未填写
+                color = '#9e9e9e'; // 未填写
+                text = '未填写';
                 break;
             }
             return h(
@@ -318,10 +291,19 @@ export default {
           align: 'center',
           render: (h, params) => {
             var isDisabled = '';
-            if (params.row.audit === '已审核') {
-              isDisabled = true;
-            } else {
+            var text = '';
+            var color = '';
+            if (params.row.audit === '0' || params.row.audit === null) {
               isDisabled = false;
+              text = '填写分数';
+            } else if (params.row.audit === '3') {
+              text = '重新填写';
+              color = 'error';
+              isDisabled = false;
+            } else if (params.row.audit === '1' || params.row.audit === '2') {
+              isDisabled = true;
+              color = 'primary';
+              text = '不可填写';
             }
             return h('div', [
               h(
@@ -338,11 +320,18 @@ export default {
                   on: {
                     click: () => {
                       this.indexModal = true;
-                      this.formCityData = params.row;
+                      console.log(params.row);
+                      var date = [params.row.dateTime, params.row.monthTime];
+                      this.selectTime = date.join('-');
+                      console.log(this.selectTime);
+                      this.formCityData = Object.assign(
+                        this.formCityData,
+                        params.row
+                      );
                     }
                   }
                 },
-                '填入分数'
+                text
               )
             ]);
           }
@@ -351,29 +340,65 @@ export default {
     };
   },
   methods: {
+    selectMonth (date) {
+      this.selectTime = date;
+      var i = date.indexOf('-');
+      this.formCityData.yearTime = date.substring(0, i);
+      this.formCityData.monthTime = date.substring(i + 1);
+      console.log(this.formCityData);
+    },
     handlerFormat (year) {
       this.searchData.year = year;
     },
     // 表格显示条数
     pageSizeChange (size) {
       this.pageSize = size;
+      this.tableLoading = true;
+      this._getCityList(token, this.searchData, this.pageSize, this.pageNumber)
+        .then(result => {
+          this.pageTotal = parseInt(result.results.pageTotal) * 10;
+          this.cityIndexList = result.results.list;
+          this.tableLoading = false;
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
     // 页数改变
     pageNumberChange (number) {
       this.pageNumber = number;
       this.pageCurrent = number;
+      this.tableLoading = true;
+      this._getCityList(token, this.searchData, this.pageSize, this.pageNumber)
+        .then(result => {
+          this.pageTotal = parseInt(result.results.pageTotal) * 10;
+          this.cityIndexList = result.results.list;
+          this.tableLoading = false;
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
     // 关闭模态框
     closeAudit () {
       this.indexModal = false;
     },
     // 确认提交分数
-    asyncOK () {
+    submitForm () {
+      console.log(true || false);
+      if (
+        this.formCityData.yearTime === '' ||
+        this.formCityData.score === null ||
+        this.formCityData.alternateField1 === ''
+      ) {
+        this.$Message.error('请填写完整');
+        return;
+      }
       this.ModalLoading = true;
-      setTimeout(() => {
+      this._addCityIndex(token, this.formCityData).then(result => {
         this.ModalLoading = false;
         this.indexModal = false;
-      }, 2000);
+      });
     },
     // 指标管理关联 on-change
     selectIndex (value) {
@@ -427,30 +452,14 @@ export default {
         });
       });
     },
-    // 删除指标
-    _removeCityIndex (token, form) {
-      const url = '';
+    // 添加分数、排名
+    _addCityIndex (token, formData) {
+      const url = '/api/countryIndicators/insertScore';
       return new Promise((resolve, reject) => {
-        removeIndex(token, form, url)
+        AddIndex({ token, formData, url })
           .then(result => {
-            if (res.data.code === '200') {
-              resolve(res.data);
-            } else {
-              reject();
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      });
-    },
-    // 更新指标
-    _updateCityIndex () {
-      return new Promise((resolve, reject) => {
-        updateIndex()
-          .then(result => {
-            if (res.data.code === '200') {
-              resolve(res.data);
+            if (result.data.code === '200') {
+              resolve(result.data);
             } else {
               reject();
             }
