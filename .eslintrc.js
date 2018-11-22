@@ -19,7 +19,10 @@ module.exports = {
     'no-return-await': 0,
     'no-return-assign': 0,
     'no-else-return': 0,
-    'prefer-promise-reject-errors': 0
+    'prefer-promise-reject-errors': 0,
+    'no-unneeded-ternary': 0,
+    'quotes': 0,
+    'space-before-function-paren': 0
   },
   parserOptions: {
     parser: 'babel-eslint'

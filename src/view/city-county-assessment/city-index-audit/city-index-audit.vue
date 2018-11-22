@@ -1,458 +1,658 @@
+<style lang="less">
+@import "./../common.less";
+</style>
 <template>
   <div>
-    <!-- 搜索 -->
     <Row>
       <Card>
-        <div style="margin-top: 6px">
-              <Form ref="searchData" :model="searchData" :rules="searchReg" :label-width="100">
-                <Row>
-                  <i-col :xs="12" :md="12" :lg="6" >
-                    <FormItem label="选择审核状态" prop="audit">
-                        <Select v-model="searchData.audit" placeholder="请选择指标等级" style="width:185px">
-                            <Option value="全部">全部</Option>
-                            <Option value="已审核">已审核</Option>
-                            <Option value="未审核">未审核</Option>
-                            <Option value="退回">退回</Option>
-                            <Option value="作废">作废</Option>
-                        </Select>
-                    </FormItem>
-                  </i-col>
-                  <i-col :xs="12" :md="12" :lg="6" >
-                    <FormItem label="指标等级" prop="level">
-                        <Select v-model="searchData.level" placeholder="请选择指标等级" style="width:185px">
-                            <Option value="一级指标">一级指标</Option>
-                            <Option value="二级指标">二级指标</Option>
-                            <Option value="三级指标">三级指标</Option>
-                        </Select>
-                    </FormItem>
-                  </i-col>
-                  <i-col :xs="12" :md="12" :lg="6" >
-                    <FormItem label="责任单位">
-                        <Input search placeholder="请输入搜索内容" v-model="searchData.ducyUnit" style="width: auto">
-                            <Icon type="ios-search" slot="suffix" />
-                        </Input>
-                    </FormItem>
-                  </i-col>
-                </Row>
-                <Row>
-                  <i-col :xs="12" :md="12" :lg="6" >
-                    <FormItem label="牵头单位">
-                        <Input search placeholder="请输入牵头单位" v-model="searchData.leadUnit" style="width: auto">
-                            <Icon type="ios-search" slot="suffix" />
-                        </Input>
-                    </FormItem>
-                  </i-col>
-                  <i-col :xs="12" :md="12" :lg="6" >
-                    <FormItem label="指标名称">
-                        <Input search placeholder="请输入指标名称" v-model="searchData.indexName" style="width: auto">
-                            <Icon type="ios-search" slot="suffix" />
-                        </Input>
-                    </FormItem>
-                  </i-col>
-                </Row>
-                    <FormItem>
-                      <Button type="primary" @click="seachSubmit('searchData')">提交搜索</Button>
-                      <Button @click="seachReset('searchData')" style="margin-left: 8px">重置</Button>
-                  </FormItem>
-              </Form>
+        <!-- 搜索 -->
+          <Form ref="searchData" :model="searchData"  :label-width="100">
+            <Row>
+              <i-col :xs="24" :md="12" :lg="6" >
+                <FormItem label="指标搜索" prop="superiorIndexId">
+                      <Cascader :data="selectIndexType" change-on-select @on-change="selectIndex"></Cascader>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="6" >
+                <FormItem label="责任单位">
+                    <Input search placeholder="请输入搜索内容" v-model="searchData.responsibilityUnit" style="width: auto">
+                        <Icon type="ios-search" slot="suffix" />
+                    </Input>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="6" >
+                <FormItem label="牵头单位">
+                    <Input search placeholder="请输入搜索内容" v-model="searchData.leadUnit" style="width: auto">
+                        <Icon type="ios-search" slot="suffix" />
+                    </Input>
+                </FormItem>
+              </i-col>
+            </Row>
+            <Row>
+              <i-col :xs="24" :md="12" :lg="6" >
+                <FormItem label="审核状态">
+                    <Select v-model="searchData.audit" placeholder="请选择审核状态" style="width: 150px">
+                        <Option value="6">全部</Option>
+                        <Option value="0">未审核</Option>
+                        <Option value="1">责任人审核</Option>
+                        <Option value="2">管理员审核</Option>
+                        <Option value="3">回退</Option>
+                    </Select>
+                </FormItem>
+              </i-col>
+            <i-col :xs="24" :md="12" :lg="6" >
+                <FormItem label="选择年份">
+                  <DatePicker type="year" format="yyyy" @on-change="handlerFormat" placeholder="请选择指标年份" style="width:185px"></DatePicker>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="6" >
+                <FormItem label="选择月份">
+                    <Select v-model="searchData.monthTime" placeholder="请选择方向" style="width: 150px">
+                        <Option value="01">1月</Option>
+                        <Option value="02">2月</Option>
+                        <Option value="03">3月</Option>
+                        <Option value="04">4月</Option>
+                        <Option value="05">5月</Option>
+                        <Option value="06">6月</Option>
+                        <Option value="07">7月</Option>
+                        <Option value="08">8月</Option>
+                        <Option value="09">9月</Option>
+                        <Option value="10">10月</Option>
+                        <Option value="11">11月</Option>
+                        <Option value="12">12月</Option>
+                    </Select>
+                </FormItem>
+              </i-col>
+            </Row>
+                <FormItem>
+                 <!-- 10是pageSize,1当前页 -->
+                  <Button type="primary" @click="seachSubmit(10,1)">提交搜索</Button>
+                  <Button @click="seachReset('searchData')" style="margin-left: 8px">重置</Button>
+              </FormItem>
+          </Form>
+        </Card>
+    </Row>
+    <!-- 指标数据 -->
+    <Row style="margin-top:20px">
+      <Card>
+        <Button  :disabled='!allAuditData.length' @click="submitAllAudit" style="margin-bottom:10px">全选通过审核</Button>
+        <Table @on-select-all-cancel="tabelSelectCancel"  @on-select-all="tabelSelectAll" stripe border :columns="columns1" :loading="tableLoading" :data="cityIndexList"></Table>
+        <div style="margin-top:20px;margin-left:40%">
+            <Page @on-change="pageNumberChange" :current="pageCurrent" :page-size="pageSize"  :total="pageTotal" @on-page-size-change="pageSizeChange" show-elevator show-sizer />
         </div>
       </Card>
     </Row>
-    <!-- 指标内容 -->
-    <Row style="margin-top:20px">
-        <Card>
-          <div>
-            <Table :loading="lealTwoLoading" border :columns="colIndexTwo" :data="indexTwo"></Table>
-          </div>
-          <div style="width:100%">
-            <Page style="margin-top:10px;" :total="100" show-elevator />
-          </div>
-        </Card>
-    </Row>
-
-    <!-- 模态框  增加指标-->
+    <!-- 模态框 -->
     <Modal
-        v-model="addIndex"
-        :title="targetName"
+        v-model="indexModal"
+        :title="'指标审核审批'"
         width='700px'
         >
         <div>
-        <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-          <FormItem label="名称指标" prop="indexName">
-              <Input v-model="formValidate.indexName" placeholder="请输入指标名称" style="width:500px"></Input>
-          </FormItem>
-          <FormItem label="指标等级" prop="Level">
-              <Select v-model="formValidate.indexVal" placeholder="请选择指标等级" style="width:500px">
-                  <Option value="一级指标">一级指标</Option>
-                  <Option value="二级指标">二级指标</Option>
-                  <Option value="三级指标">三级指标</Option>
-              </Select>
-          </FormItem>
-          <FormItem label="上级指标" prop="superior" v-if="isFormFlase">
-              <Select v-model="formValidate.superior" placeholder="请选择上级指标" style="width:500px">
-                  <Option value="经济发展">经济发展</Option>
-                  <Option value="有效投资">有效投资</Option>
-                  <Option value="机制创新">机制创新</Option>
-                  <Option value="创新驱动">创新驱动</Option>
-                  <Option value="生态文明">生态文明</Option>
-                  <Option value="民生保障">民生保障</Option>
-              </Select>
-          </FormItem>
-          <FormItem label="牵头单位" prop="leadUnit" v-if="isFormFlase">
-              <Input v-model="formValidate.leadUnit" placeholder="请输入牵头单位" style="width:500px"></Input>
-          </FormItem>
-          <FormItem label="责任单位" prop="dutyUint" v-if="isFormFlase">
-              <Input v-model="formValidate.dutyUint" placeholder="请输入责任单位" style="width:500px"></Input>
-          </FormItem>
-          <FormItem label="分值" prop="score" v-if="isFormTrue">
-              <Input v-model="formValidate.score" placeholder="请输入责任单位" style="width:500px"></Input>
-          </FormItem>
-          <FormItem label="权数" prop="weight" v-if="isFormFlase">
-              <Input v-model="formValidate.weight" placeholder="请输入权数值" style="width:500px"></Input>
-          </FormItem>
+        <Form  ref="formCityData" :model="formCityData" :rules="regForm">
+          <Row>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="一级指标"  :label-width="60">
+                    <Input v-model="formCityData.superiorIndexId" disabled  placeholder="指标名称" ></Input>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="权数"   :label-width="80">
+                    <Input v-model="formCityData.weight" disabled  placeholder="权数" ></Input>
+                </FormItem>
+              </i-col>
+          </Row>
+          <Row>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="二级指标"  :label-width="60">
+                    <Input v-model="formCityData.indexName" disabled  placeholder="二级指标" ></Input>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="标准值"  :label-width="80">
+                    <Input v-model="formCityData.standardValue" disabled  placeholder="标准值"></Input>
+                </FormItem>
+              </i-col>
+          </Row>
+          <Row>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="牵头单位" :label-width="60">
+                    <Input v-model="formCityData.leadUnit" disabled  placeholder="牵头单位" ></Input>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="责任单位" :label-width="80">
+                    <Input v-model="formCityData.responsibilityUnit" disabled  placeholder="责任单位"></Input>
+                </FormItem>
+              </i-col>
+          </Row>
+          <Row>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="得分" prop="score" :label-width="60">
+                    <Input  v-model="formCityData.score"></Input>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="排名" prop="alternateField1" :label-width="80">
+                   <Input   v-model="formCityData.alternateField1"></Input>
+                </FormItem>
+              </i-col>
+          </Row>
+          <Row>
+              <i-col :xs="24" :md="12" :lg="12" >
+                <FormItem label="填入时间"  prop="monthTime" :label-width="60">
+                  <DatePicker type="month" format="yyyy-MM" v-model="selectTime" @on-change="selectMonth" placeholder="Select month" style="width: 200px"></DatePicker>
+                </FormItem>
+              </i-col>
+          </Row>
+          <Row>
+            <i-col  :lg="24">
+            <FormItem label="回退原因" :label-width="60">
+                <Input v-model="formCityData.reason" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="如果回退输入原因，其他操作无需输入"></Input>
+            </FormItem>
+            </i-col>
+          </Row>
         </Form>
         </div>
         <div slot="footer">
-            <Button type="success" size="large" :loading="loading" @click="asyncOK">审核通过</Button>
-            <Button type="warning" size="large">退回</Button>
-            <Button type="error" size="large">作废</Button>
+            <Button type="success" size="large" :loading="ModalLoading" @click="submitForm">审核通过</Button>
+            <Button type="error" size="large" :loading="isFallback" @click="submitFallback">回退</Button>
             <Button size="large" @click="closeAudit">取消</Button>
         </div>
     </Modal>
-
   </div>
 </template>
 <script>
+import { getToken } from "@/libs/util";
+import { cityAjax } from "@/api/city";
+const token = getToken();
+// 验证0-100数字
+const regNumber = new RegExp("^(\\d|[1-9]\\d|100)$");
 export default {
-  data () {
+  data() {
+    const validateScore = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请填写分数"));
+      } else if (!regNumber.test(value)) {
+        callback(new Error("0-100范围内"));
+      } else {
+        callback();
+      }
+    };
+    const validateRank = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请填写分数"));
+      } else if (!regNumber.test(value)) {
+        callback(new Error("0-100范围内"));
+      } else {
+        callback();
+      }
+    };
     return {
-      addIndex: false, // 显示增加模态框
-      TableOne: false,
-      isIndexOne: true, // 显示指标等级一
-      loading: false, // 增加模态框确定loading
-      TableOneLoading: true,
-      isFormFlase: false,
-      isFormTrue: true,
-      isFormWeight: false,
-      targetName: '',
+      isFallback: false, // 回退Loading
+      ModalLoading: false, // 审核通过Loading
+      indexModal: false, // 模态框显示
+      tableLoading: true, // 表格loading
+      pageTotal: 0, // 总页数
+      pageSize: 10, // 页数
+      pageNumber: 1, // 页码
+      pageCurrent: 1, // 当前页
+      selectTime: "", // form表单里月份选择器
+      allAuditData: [],
       searchData: {
-        audit: '',
-        ducyUnit: '',
-        lead: '',
-        indexName: '',
-        level: ''
+        superiorIndexId: "", // 一级指标
+        leadUnit: "", // 牵头单位
+        indexName: "", // 二级指标
+        responsibilityUnit: "", // 责任单位
+        audit: "", // 审核状态
+        year: "", // 年份
+        monthTime: "" // 月份
       },
-      colIndexTwo: [
+      formCityData: {
+        score: null, // 得分
+        alternateField1: "", // 排名
+        superiorIndexId: "", // 一级指标
+        leadUnit: "", // 牵头单位
+        responsibilityUnit: "", // 责任单位
+        direction: "", // 方向
+        audit: "", // 审核状态
+        fristWeight: "", // 一级指标权数
+        actualWeight: "", // 实际权数
+        weight: "", // 权数
+        monthTime: "", // 月份
+        year: "", // 年月
+        reason: "" // 回退原因
+      },
+      cityIndexList: [], // Tabel数据
+      selectIndexType: [
+        // 搜索指标里的关联指标
         {
-          type: 'index',
+          label: "全部",
+          value: "全部"
+        }
+      ],
+      regForm: {
+        score: [{ validator: validateScore, trigger: "blur" }],
+        alternateField1: [{ validator: validateRank, trigger: "blur" }],
+        monthTime: [
+          {
+            required: false,
+            message: "请输入时间",
+            trigger: "change"
+          }
+        ]
+      },
+      columns1: [
+        // 表头
+        {
+          type: "selection",
           width: 60,
-          align: 'center'
+          align: "center"
         },
         {
-          title: '指标等级',
-          key: 'indexVal',
-          width: 100
+          title: "一级指标",
+          key: "superiorIndexId",
+          minWidth: 70,
+          ellipsis: true,
+          tooltip: true
         },
         {
-          title: '上级指标',
-          key: 'superior',
-          width: 150
+          title: "二级指标",
+          key: "indexName",
+          minWidth: 70
         },
         {
-          title: '指标名称',
-          key: 'indexName'
+          title: "标准值",
+          key: "standardValue",
+          ellipsis: true,
+          tooltip: true
         },
         {
-          title: '牵头单位',
-          key: 'leadUnit'
+          title: "牵头单位",
+          key: "leadUnit"
         },
         {
-          title: '责任单位',
-          key: 'dutyUint'
+          title: "责任单位",
+          key: "responsibilityUnit"
         },
         {
-          title: '权数',
-          key: 'weight',
-          width: 70
-        },
-        {
-          title: '操作',
-          key: 'action',
-          width: 150,
-          align: 'center',
-          fixed: 'right',
+          title: "审核状态",
+          minWidth: 1,
+          key: "audit",
+          align: "center",
           render: (h, params) => {
-            return h('div', [
+            const row = params.row;
+            var color = "";
+            var text = "";
+            switch (row.audit) {
+              case "0":
+                color = "warning";
+                text = "未审核";
+                break;
+              case "1":
+                color = "primary";
+                text = "责任人审核";
+                break;
+              case "2":
+                color = "success";
+                text = "管理员审核";
+                break;
+              case "3":
+                color = "error";
+                text = "回退";
+                break;
+            }
+            return h(
+              "Tag",
+              {
+                props: {
+                  color: color
+                }
+              },
+              text
+            );
+          }
+        },
+        {
+          title: "权数上限",
+          maxWidth: 70,
+          key: "weight"
+        },
+        {
+          title: "实际权数",
+          maxWidth: 70,
+          key: "finalScore"
+        },
+        {
+          title: "得分",
+          maxWidth: 80,
+          key: "score"
+        },
+        {
+          title: "排名",
+          maxWidth: 60,
+          key: "alternateField1" // 排名
+        },
+        {
+          title: "方向",
+          maxWidth: 60,
+          key: "direction"
+        },
+        {
+          title: "操作",
+          key: "action",
+          maxWidth: 100,
+          align: "center",
+          render: (h, params) => {
+            var color = "";
+            return h("div", [
               h(
-                'Button',
+                "Button",
                 {
                   props: {
-                    type: 'primary',
-                    size: 'small'
+                    type: "primary",
+                    size: "small"
                   },
                   style: {
-                    marginRight: '5px'
+                    marginRight: "5px"
                   },
                   on: {
                     click: () => {
-                      console.log(params);
-                      this.formValidate = params.row;
-                      this.addIndex = true;
-                      this.isFormFlase = true;
-                      this.isFormTrue = false;
-                      this.targetName = '乡镇指标审核';
+                      this.indexModal = true;
+                      // 判断是不是有月份 如果没有月份的话为新数据
+                      if (params.row.monthTime === "") {
+                        this.selectTime = "";
+                      } else {
+                        var date = [params.row.dateTime, params.row.monthTime];
+                        this.selectTime = date.join("-");
+                        this.formCityData.year = params.row.dateTime;
+                        this.formCityData.monthTime = params.row.monthTime;
+                      }
+
+                      //
+                      this.formCityData = Object.assign(
+                        this.formCityData,
+                        params.row
+                      );
+                      console.log(this.formCityData);
                     }
                   }
                 },
-                '编辑'
-              ),
-              h(
-                'Button',
-                {
-                  props: {
-                    type: 'error',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.remove(params.index);
-                    }
-                  }
-                },
-                '删除'
+                "审核"
               )
             ]);
           }
         }
-      ],
-      indexTwo: [
-        {
-          indexVal: '二级指标',
-          leadUnit: '科技文体局',
-          indexName: '地方财政收入增长率',
-          dutyUint: '科技文体局',
-          superior: '经济发展',
-          standard: '前三年加权平均值',
-          direction: '+',
-          weight: 30
-        },
-        {
-          indexVal: '二级指标',
-          leadUnit: '科技文体局',
-          indexName: '地方财政收入增长率',
-          dutyUint: '科技文体局',
-          superior: '经济发展',
-          standard: '前三年加权平均值',
-          direction: '+',
-          weight: 30
-        },
-        {
-          indexVal: '二级指标',
-          leadUnit: '科技文体局',
-          indexName: '地方财政收入增长率',
-          dutyUint: '科技文体局',
-          superior: '经济发展',
-          standard: '前三年加权平均值',
-          direction: '+',
-          weight: 30
-        },
-        {
-          indexVal: '二级指标',
-          leadUnit: '科技文体局',
-          indexName: '地方财政收入增长率',
-          dutyUint: '科技文体局',
-          superior: '经济发展',
-          standard: '前三年加权平均值',
-          direction: '+',
-          weight: 30
-        },
-        {
-          indexVal: '二级指标',
-          leadUnit: '科技文体局',
-          indexName: '地方财政收入增长率',
-          dutyUint: '科技文体局',
-          superior: '经济发展',
-          standard: '前三年加权平均值',
-          direction: '+',
-          weight: 30
-        },
-        {
-          indexVal: '二级指标',
-          leadUnit: '科技文体局',
-          indexName: '地方财政收入增长率',
-          dutyUint: '科技文体局',
-          superior: '经济发展',
-          standard: '前三年加权平均值',
-          direction: '+',
-          weight: 30
-        },
-        {
-          indexVal: '二级指标',
-          leadUnit: '科技文体局',
-          indexName: '地方财政收入增长率',
-          dutyUint: '科技文体局',
-          superior: '经济发展',
-          standard: '前三年加权平均值',
-          direction: '+',
-          weight: 30
-        },
-        {
-          indexVal: '二级指标',
-          leadUnit: '科技文体局',
-          indexName: '地方财政收入增长率',
-          dutyUint: '科技文体局',
-          superior: '经济发展',
-          standard: '前三年加权平均值',
-          direction: '+',
-          weight: 30
-        },
-        {
-          indexVal: '二级指标',
-          leadUnit: '科技文体局',
-          indexName: '地方财政收入增长率',
-          dutyUint: '科技文体局',
-          superior: '经济发展',
-          standard: '前三年加权平均值',
-          direction: '+',
-          weight: 30
-        },
-        {
-          indexVal: '二级指标',
-          leadUnit: '科技文体局',
-          indexName: '地方财政收入增长率',
-          dutyUint: '科技文体局',
-          superior: '经济发展',
-          standard: '前三年加权平均值',
-          direction: '+',
-          weight: 30
-        }
-      ],
-      ruleValidate: {
-        indexName: [
-          {
-            required: true,
-            message: '请输入指标名称',
-            trigger: 'blur'
-          }
-        ],
-        Level: [
-          {
-            required: true,
-            message: '请选择指标等级',
-            trigger: 'change'
-          }
-        ]
-      },
-      searchReg: {
-        audit: [
-          {
-            required: true,
-            message: '请选择审核结果',
-            trigger: 'change'
-          }
-        ]
-      },
-      formValidate: {
-        indexName: '',
-        indexVal: '',
-        superior: '',
-        leadUnit: '',
-        dutyUint: '',
-        weight: '',
-        score: ''
-      }
+      ]
     };
   },
   methods: {
-    asyncOK () {
-      console.log(this.formValidate);
-      this.loading = true;
-      setTimeout(() => {
-        this.loading = false;
-        this.addIndex = false;
-      }, 2000);
+    // 表格取消全选
+    tabelSelectCancel(selection) {
+      this.allAuditData = selection;
     },
-    show (index) {
-      console.log(index);
-      this.$Modal.info({
-        title: 'User Info',
-        content: `Name：${this.data6[index].name}<br>Age：${
-          this.data6[index].age
-        }<br>Address：${this.data6[index].address}`
+    // 提交全选审核
+    submitAllAudit() {
+      var indexArr = { list: [] };
+      this.allAuditData.forEach(item => {
+        var itemIndex = Object.assign(item);
+        indexArr["list"].push(itemIndex);
       });
-    },
-    remove (index) {
-      this.data6.splice(index, 1);
-    },
-    addTarget (e) {
-      this.targetName = e.target.innerText + '增加';
-      this.addIndex = true;
-      this.$refs['formValidate'].resetFields();
-    },
-    handleSubmit (e) {
-      console.log(e);
-    },
-    seachSubmit (name) {
-      this.$refs[name].validate(valid => {
-        if (valid) {
-          console.log(this.searchData);
-          this.$Message.success('成功');
-        } else {
-          this.$Message.error('带*不可为空');
+      const url = "/api/countryScore/pass";
+      this._addCityIndex(token, indexArr, url).then(result => {
+        if (result.data.code === "200") {
+          this.ModalLoading = false;
+          this.indexModal = false;
+          this.$Message.success("操作成功");
+          this._getCityList(
+            token,
+            this.searchData,
+            this.pageSize,
+            this.pageNumber
+          )
+            .then(result => {
+              this.pageTotal = parseInt(result.results.pageTotal) * 10;
+              this.cityIndexList = result.results.list;
+              this.tableLoading = false;
+            })
+            .catch(err => {
+              console.log(err);
+            });
         }
       });
     },
-    seachReset (name) {
+    // 表格全选
+    tabelSelectAll(selection) {
+      this.allAuditData = selection;
+    },
+    // 获取月份
+    selectMonth(date) {
+      this.selectTime = date;
+      var i = date.indexOf("-");
+      this.formCityData.year = date.substring(0, i);
+      this.formCityData.monthTime = date.substring(i + 1);
+    },
+    // 获取时间
+    handlerFormat(year) {
+      this.searchData.year = year;
+    },
+    // 表格显示条数
+    pageSizeChange(size) {
+      this.pageSize = size;
+      this.tableLoading = true;
+      this._getCityList(token, this.searchData, this.pageSize, this.pageNumber)
+        .then(result => {
+          this.pageTotal = parseInt(result.results.pageTotal) * 10;
+          this.cityIndexList = result.results.list;
+          this.tableLoading = false;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    // 页数改变
+    pageNumberChange(number) {
+      this.pageNumber = number;
+      this.pageCurrent = number;
+      this.tableLoading = true;
+      this._getCityList(token, this.searchData, this.pageSize, this.pageNumber)
+        .then(result => {
+          this.pageTotal = parseInt(result.results.pageTotal) * 10;
+          this.cityIndexList = result.results.list;
+          this.tableLoading = false;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    // 关闭模态框
+    closeAudit() {
+      this.indexModal = false;
+    },
+    submitFallback() {
+      this.$refs["formCityData"].validate(valid => {
+        if (valid) {
+          // Loading
+          this.isFallback = true;
+          const url = "/api/countryIndicators/noPass";
+          this._addCityIndex(token, this.formCityData, url).then(result => {
+            if (result.data.code === "200") {
+              this.isFallback = false;
+              this.indexModal = false;
+              this.$Message.success("操作成功");
+              this._getCityList(
+                token,
+                this.searchData,
+                this.pageSize,
+                this.pageNumber
+              )
+                .then(result => {
+                  this.pageTotal = parseInt(result.results.pageTotal) * 10;
+                  this.cityIndexList = result.results.list;
+                  this.tableLoading = false;
+                })
+                .catch(err => {
+                  console.log(err);
+                });
+            } else if (result.data.code === "500") {
+              this.isFallback = false;
+            }
+          });
+        } else {
+          this.$Message.error("请输入完整");
+        }
+      });
+    },
+    // 审批通过
+    submitForm() {
+      this.$refs["formCityData"].validate(valid => {
+        if (valid) {
+          // Loading
+          this.ModalLoading = true;
+          const url = "/api/countryScore/pass";
+          this._addCityIndex(token, this.formCityData, url).then(result => {
+            if (result.data.code === "200") {
+              this.ModalLoading = false;
+              this.indexModal = false;
+              this.$Message.success("操作成功");
+              this._getCityList(
+                token,
+                this.searchData,
+                this.pageSize,
+                this.pageNumber
+              )
+                .then(result => {
+                  this.pageTotal = parseInt(result.results.pageTotal) * 10;
+                  this.cityIndexList = result.results.list;
+                  this.tableLoading = false;
+                })
+                .catch(err => {
+                  console.log(err);
+                });
+            } else if (result.data.code === "500") {
+              this.ModalLoading = false;
+            }
+          });
+        } else {
+          this.$Message.error("请输入完整");
+        }
+      });
+    },
+    // 指标管理关联 on-change
+    selectIndex(value) {
+      if (value[1] !== undefined) {
+        this.searchData.indexName = value[1];
+        this.searchData.superiorIndexId = value[0] === "全部" ? "" : value[0]; // 选择为全部时 是一个空的字符串
+      } else {
+        this.searchData.superiorIndexId = value[0] === "全部" ? "" : value[0]; // 选择为全部时 是一个空的字符串
+        this.searchData.indexName = "";
+      }
+    },
+    // 提交搜索  pagesize显示条数  pageNumber页码
+    seachSubmit(pageSize, pageNumber) {
+      console.log(this.searchData);
+      this.tableLoading = true;
+      this._getCityList(token, this.searchData, pageSize, pageNumber)
+        .then(result => {
+          this.pageTotal = parseInt(result.results.pageTotal) * 10;
+          this.cityIndexList = result.results.list;
+          this.tableLoading = false;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    // 重置搜索
+    seachReset(name) {
       this.$refs[name].resetFields();
+      this.searchData = {
+        superiorIndexId: "", // 一级指标
+        leadUnit: "", // 牵头单位
+        indexName: "", // 二级指标
+        responsibilityUnit: "", // 责任单位
+        audit: "", // 审核状态
+        direction: ""
+      };
     },
-    TableOneOk () {
-      setTimeout(() => {
-        this.modal6 = false;
-      }, 2000);
+    // 获取city指标
+    _getCityList(token, form, pageSize, pageNumber) {
+      const url = "/api/countryIndicators/queryAudit";
+      const key = "countryIndicatorsFilter";
+      let formData = Object.assign(form, {
+        pageSize,
+        pageNumber
+      });
+      return new Promise((resolve, reject) => {
+        cityAjax({ token, formData, url, key }).then(res => {
+          console.log(res);
+          if (res.data.code === "200") {
+            resolve(res.data);
+          } else {
+            reject();
+          }
+        });
+      });
     },
-    closeAudit () {
-      this.addIndex = false;
+    // 添加分数、排名
+    _addCityIndex(token, formData, url) {
+      const key = "countryScoreEntity";
+      return new Promise((resolve, reject) => {
+        cityAjax({ token, formData, url, key })
+          .then(result => {
+            resolve(result);
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      });
     }
   },
+  created() {
+    this._getCityList(token, this.searchData, this.pageSize, this.pageNumber)
+      .then(result => {
+        // seach指标搜索 组件 需要的数据格式
+        var indexList = result.results.indexMap;
+        indexList.forEach(list => {
+          let children = [];
+          if (list.secondIndex !== undefined) {
+            list.secondIndex.forEach(item => {
+              let listChild = Object.assign(
+                {},
+                {
+                  label: item.indexName,
+                  value: item.indexName
+                }
+              );
+              children.push(listChild);
+            });
+          }
+          let data = Object.assign(
+            {},
+            {
+              label: list.firstName.indexName,
+              value: list.firstName.id,
+              children
+            }
+          );
+          this.selectIndexType.push(data);
+        });
+        this.pageTotal = parseInt(result.results.pageTotal) * 10; // 总页数
+        this.cityIndexList = result.results.list;
+        this.tableLoading = false;
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  },
   watch: {
-    formValidate: {
-      handler (newVal) {
-        if (newVal.Level === '一级指标') {
-          this.isFormFlase = false;
-          this.isFormTrue = true;
-        } else if (newVal.Level === '二级指标') {
-          this.isFormFlase = true;
-          this.isFormTrue = false;
-        }
+    selectIndexType: {
+      handler(newVal) {
+        this.selectIndexType = newVal;
       },
-      deep: true
-    },
-    searchData: {
-      handler (newVal) {},
       deep: true
     }
   }
 };
 </script>
 <style>
-.villages-towns {
-  margin: 0px 0 30px 0px;
-}
-.villages-towns ul {
-  list-style-type: none;
-}
-.villages-towns .item {
-  display: inline-block;
-}
-.villages-towns .item .ivu-input {
-  font-size: 14px;
-}
-.villages-towns .item .item-title {
-  width: 71px;
-  height: 35px;
-  line-height: 35px;
-  text-align: center;
-  background: #03a9f4;
-  color: #ffffff;
-}
 </style>

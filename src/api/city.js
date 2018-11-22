@@ -10,7 +10,7 @@ import {
  * @returns
  * 用于市对乡镇指标管理
  */
-function citylData (token, formData, KEY_1) {
+function citylData(token, formData, KEY_1) {
   console.log(formData);
   let data = {}
   data['tokenEntity'] = {
@@ -27,20 +27,22 @@ function citylData (token, formData, KEY_1) {
       standardValue: formData.standardValue, // 标准值
       direction: formData.direction, // 方向
       weight: formData.weight, // 权重
-      dateTime: formData.yearTime, // 指标年份
-      monthTime: formData.monthTime, // 月份
-      audit: formData.audit, // 审核状态
+      dateTime: formData.year, // 指标年份
+      monthTime: formData.monthTime === undefined ? '' : formData.monthTime, // 月份
+      audit: formData.audit === undefined ? '' : formData.audit, // 审核状态
       score: formData.score === undefined ? '' : formData.score, // 分数
-      finalScore: formData.finalScore, // 实际得分
-      pageSize: formData.pageSize, // 页数
-      pageNumber: formData.pageNumber, // 页码
+      finalScore: formData.finalScore === undefined ? '' : formData.finalScore, // 实际得分
+      pageSize: formData.pageSize === undefined ? '' : formData.pageSize, // 页数
+      pageNumber: formData.pageNumber === undefined ? '' : formData.pageNumber, // 页码
       indicatorsId: formData.id === undefined ? '' : formData.id, // 对应指标ID
       alternateField1: formData.alternateField1 === undefined ? '' : formData.alternateField1,
-      reason: formData.reason === undefined ? '' : formData.reason // 回退原因
+      reason: formData.reason === undefined ? '' : formData.reason, // 回退原因
+      alternateField2: formData.alternateField2 === undefined ? '' : formData.alternateField2 // 考核数据月份提交Id 根据后台要求
     }
   } else {
     data['list'] = formData['list'] // excle 导入 穿给后台为LIST
   }
+  console.log(data);
   return data
 }
 /**
@@ -52,90 +54,130 @@ function citylData (token, formData, KEY_1) {
  * @returns 按照后台的规则返回Data
  * 用于县对乡镇指标管理
  */
-function countyData (token, formData, KEY_1, KEY_2) {
+function countyData(token, formData, KEY_1, KEY_2) {
+  console.log(formData);
   let data = {}
   data['tokenEntity'] = {
     value: token
   }
-  data[KEY_1] = {
-    id: formData.id === undefined ? '' : formData.id,
-    indexName: formData.indexName,
-    indexType: formData.indexType,
-    leadUnit: formData.leadUnit,
-    superiorIndexId: formData.superiorIndexId,
-    responsibilityUnit: formData.responsibilityUnit,
-    score: formData.score,
-    weight: formData.weight,
-    pageSize: formData.pageSize,
-    pageNumber: formData.pageNumber
+  if (formData['list'] === undefined) {
+    data[KEY_1] = {
+      id: formData.id === undefined ? '' : formData.id,
+      indexName: formData.indexName,
+      indexType: formData.indexType,
+      leadUnit: formData.leadUnit,
+      superiorIndexId: formData.superiorIndexId,
+      responsibilityUnit: formData.responsibilityUnit,
+      score: formData.score,
+      weight: formData.weight,
+      pageSize: formData.pageSize,
+      pageNumber: formData.pageNumber,
+      monthTime: formData.monthTime === undefined ? '' : formData.monthTime, // 月份
+      dateTime: formData.dateTime // 指标年份
 
-  }
-  if (formData.indexType === '二级指标' && KEY_2 !== undefined) {
-    data[KEY_2] = {
-      tangQ: formData.tangQ, // 塘前
-      geL: formData.geL, // 葛岭
-      zhangC: formData.zhangC, // 樟城
-      chengF: formData.chengF, // 城峰
-      qingL: formData.qingL, // 清凉
-      fuQ: formData.fuQ, // 福泉
-      lingL: formData.lingL, // 岭路
-      chiX: formData.chiX, // 赤锡
-      wuT: formData.wuT, // 梧桐
-      songK: formData.songK, // 嵩口
-      fuK: formData.fuK, // 伏口
-      gaiY: formData.gaiY, // 盖洋
-      changQ: formData.changQ, // 长庆
-      dongY: formData.dongY, // 东洋
-      xiaB: formData.xiaB, // 霞拔
-      tongA: formData.tongA, // 同安
-      daY: formData.danY, // 大洋
-      panG: formData.panG, // 盘谷
-      hongX: formData.hongX, // 红星
-      baiY: formData.baiY, // 白云
-      danY: formData.danY // 丹云
     }
+    if (formData.indexType === '二级指标' && KEY_2 !== undefined) {
+      data[KEY_2] = [{
+        townName: '塘前乡',
+        weight: formData['塘前乡']
+      },
+      {
+        townName: '葛岭镇',
+        weight: formData['葛岭镇']
+      },
+      {
+        townName: '樟城镇',
+        weight: formData['樟城镇']
+      },
+      {
+        townName: '城峰镇',
+        weight: formData['城峰镇']
+      },
+      {
+        townName: '清凉镇',
+        weight: formData['清凉镇']
+      },
+      {
+        townName: '福泉镇',
+        weight: formData['福泉镇']
+      },
+      {
+        townName: '岭路乡',
+        weight: formData['岭路乡']
+      },
+      {
+        townName: '盖洋乡',
+        weight: formData['盖洋乡']
+      },
+      {
+        townName: '长庆镇',
+        weight: formData['长庆镇']
+      },
+      {
+        townName: '东洋乡',
+        weight: formData['东洋乡']
+      },
+      {
+        townName: '霞拔乡',
+        weight: formData['霞拔乡']
+      },
+      {
+        townName: '同安镇',
+        weight: formData['同安镇']
+      },
+      {
+        townName: '大洋乡',
+        weight: formData['大洋乡']
+      },
+      {
+        townName: '盘谷乡',
+        weight: formData['盘谷乡']
+      },
+      {
+        townName: '洑口乡',
+        weight: formData['洑口乡']
+      },
+      {
+        townName: '红星镇',
+        weight: formData['红星镇']
+      },
+      {
+        townName: '白云乡',
+        weight: formData['白云乡']
+      },
+      {
+        townName: '丹云乡',
+        weight: formData['丹云乡']
+      },
+      {
+        townName: '赤锡乡',
+        weight: formData['赤锡乡']
+      },
+      {
+        townName: '梧桐镇',
+        weight: formData['梧桐镇']
+      },
+      {
+        townName: '嵩口镇',
+        weight: formData['嵩口镇']
+      }
+      ]
+    }
+  } else {
+    data['list'] = formData['list']
   }
+  console.log(data);
   return data
 }
-// 获取
-export const getIndexList = ({
+// 市对县指标考核
+export const cityAjax = ({
   token,
   formData,
   url,
-  inspectionType // 考类类型 ： county 县对各乡镇指标考核  如果没有值未市对县指标考核
+  key
 }) => {
   let data = ''
-  // county县对各乡镇            区别传来的数据是市对县的 还是县对各乡镇的
-  if (inspectionType === 'county') {
-    const KEY_1 = 'townIndicatorsFilter'
-    data = countyData(token, formData, KEY_1)
-  } else {
-    const KEY_1 = 'countryIndicatorsFilter'
-    data = citylData(token, formData, KEY_1);
-  }
-  return axios.request({
-    url: url,
-    data,
-    method: 'post'
-  })
-}
-// 添加
-export const AddIndex = ({
-  token,
-  formData,
-  url,
-  inspectionType
-}) => {
-  let data = ''
-  if (inspectionType === 'county') {
-    const KEY_1 = 'townIndicatorsEntity' // 牵头，责任单位，指标名KEY
-    const KEY_2 = 'townDTO' // 各乡镇的KEY
-    data = countyData(token, formData, KEY_1, KEY_2)
-  } else {
-    const KEY_1 = 'countryIndicatorsEntity'
-    data = citylData(token, formData, KEY_1);
-  }
-
+  data = citylData(token, formData, key);
   return axios.request({
     url: url,
     data,
@@ -143,59 +185,15 @@ export const AddIndex = ({
   })
 }
 // 修改
-export const updateIndex = ({
+export const countyAjax = ({
   token,
   formData,
   url,
-  inspectionType
+  keyOne,
+  keyTwo
 }) => {
   let data = ''
-  if (inspectionType === 'county') {
-    const KEY_1 = 'townIndicatorsEntity' // 牵头，责任单位，指标名KEY
-    const KEY_2 = 'townDTO' // 各乡镇的KEY
-    data = countyData(token, formData, KEY_1, KEY_2)
-  } else {
-    const KEY_1 = 'countryIndicatorsEntity'
-
-    data = citylData(token, formData, KEY_1);
-  }
-  return axios.request({
-    url: url,
-    data,
-    method: 'post'
-  })
-}
-// 删除指标
-export const removeIndex = ({
-  token,
-  formData,
-  url,
-  inspectionType
-}) => {
-  let data = ''
-  if (inspectionType === 'county') {
-    const KEY_1 = 'townIndicatorsEntity'
-    data = {
-      tokenEntity: {
-        value: token
-      },
-      [KEY_1]: {
-        id: formData.id
-      }
-    }
-  } else {
-    const KEY_1 = 'countryIndicatorsEntity'
-    data = {
-      tokenEntity: {
-        value: token
-      },
-      [KEY_1]: {
-        id: formData.id
-      }
-    }
-  }
-  //  const data = dealData(token, formData, objKey);
-  console.log(data);
+  data = countyData(token, formData, keyOne, keyTwo)
   return axios.request({
     url: url,
     data,

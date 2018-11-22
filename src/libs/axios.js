@@ -62,7 +62,7 @@ class HttpRequest {
         data,
         status
       } = res
-      console.log(data);
+      console.log(res);
       if (data.code !== '200') {
         // 后端服务在个别情况下回报201，待确认
         if (data.code === '40002') {
@@ -76,7 +76,9 @@ class HttpRequest {
             Message.error('请联系管理员')
           }
         }
-        return false
+        return {
+          data
+        }
       }
       return {
         data,

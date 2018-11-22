@@ -33,7 +33,7 @@
                   </i-col>
                   <i-col :xs="24" :md="12" :lg="6" v-show="searchData.indexType==='二级指标'">
                     <FormItem label="责任单位">
-                        <Input search placeholder="请输入搜索内容" v-model="searchData.ducyUnit" style="width: auto">
+                        <Input search placeholder="请输入搜索内容" v-model="searchData.responsibilityUnit" style="width: auto">
                             <Icon type="ios-search" slot="suffix" />
                         </Input>
                     </FormItem>
@@ -133,7 +133,7 @@
           </FormItem>
           <FormItem label="上级指标" prop="superiorIndexId" v-if="isFormFlase">
               <Select v-model="formCityList.superiorIndexId"  placeholder="请选择上级指标" style="width:500px">
-                  <Option v-for="item in superiorIndexId" :value="item.id" :key="item.id">{{ item.indexName }}</Option>
+                  <Option v-for="item in superiorIndexId" :value="item.indexName" :key="item.id">{{ item.indexName }}</Option>
               </Select>
           </FormItem>
           <FormItem label="牵头单位" prop="leadUnit" v-if="isFormFlase">
@@ -142,9 +142,6 @@
           <FormItem label="责任单位" prop="dutyUint" v-if="isFormFlase">
               <Input v-model="formCityList.responsibilityUnit" placeholder="请输入责任单位" style="width:500px"></Input>
           </FormItem>
-          <!-- <FormItem label="分值" prop="score" v-if="isFormTrue">
-              <Input v-model="formCityList.score" placeholder="请输入分值" style="width:500px"></Input>
-          </FormItem> -->
           <FormItem label="标准值" prop="standard" v-if="isFormFlase">
               <Input v-model="formCityList.standardValue" placeholder="请输入标准值" style="width:500px"></Input>
           </FormItem>
@@ -158,7 +155,7 @@
               <Input v-model="formCityList.weight" placeholder="请输入权数值" style="width:500px"></Input>
           </FormItem>
           <FormItem label="指标年份"  prop="year">
-             <DatePicker  type="year" format="yyyy" value="formCityList.year" @on-change="IndexFormat" placeholder="请选择指标年份" style="width:185px"></DatePicker>
+             <DatePicker  type="year" format="yyyy" v-model="formSelectTime" @on-change="IndexFormat" placeholder="请选择指标年份" style="width:185px"></DatePicker>
           </FormItem>
         </Form>
         <div slot="footer">
@@ -172,12 +169,12 @@
   </div>
 </template>
 <script>
-import excel from '@/libs/excel';
-import { getToken } from '@/libs/util';
-import { getIndexList, AddIndex, updateIndex, removeIndex } from '@/api/city';
+import excel from "@/libs/excel";
+import { getToken } from "@/libs/util";
+import { cityAjax } from "@/api/city";
 const token = getToken();
 export default {
-  data () {
+  data() {
     return {
       addIndex: false, // 显示增加模态框
       isIndexOne: true, // 是否指标等级一
@@ -188,85 +185,89 @@ export default {
       isFormFlase: false, // form表单显示
       isFormTrue: true, // 一级指标显示Input
       isFormWeight: false, // 二级指标显示Input
-      targetName: '', // 增加或者编辑的Title
+      targetName: "", // 增加或者编辑的Title
       pageTotal: 0, // 总页数
       pageSize: 10, // 条数
       pageNumber: 1, // 页码
       pageCurrent: 1, // 当前页
       indexOne: [], // 一级指标数据
       indexTwo: [], // 二级指标数据
-      superiorIndexId: [],
-      excelUpdate: '',
+      storeSuperiorIndexId: "", // 处理当指标Id与select选择指标的Value不一致
+      superiorIndexId: [], // form选择指标
+      excelUpdate: "",
+      formSelectTime: "",
       searchData: {
         // 搜索数据
-        indexType: '一级指标',
-        ducyUnit: '',
-        lead: '',
-        indexName: '',
-        year: ''
+        indexType: "一级指标",
+        responsibilityUnit: "",
+        lead: "",
+        indexName: "",
+        year: ""
       },
       colIndexOne: [
         // 一级指标 表格表头
         {
-          type: 'index',
+          type: "index",
           width: 60,
-          align: 'center'
+          align: "center"
         },
         {
-          title: '指标等级',
-          key: 'indexType',
+          title: "指标等级",
+          key: "indexType",
           width: 300
         },
         {
-          title: '指标名称',
-          key: 'indexName'
+          title: "指标名称",
+          key: "indexName"
         },
         {
-          title: '权数值',
-          key: 'weight'
+          title: "权数值",
+          key: "weight"
         },
         {
-          title: 'Action',
-          key: 'action',
+          title: "Action",
+          key: "action",
           width: 300,
-          align: 'center',
+          align: "center",
           render: (h, params) => {
-            return h('div', [
+            return h("div", [
               h(
-                'Button',
+                "Button",
                 {
                   props: {
-                    type: 'primary',
-                    size: 'small'
+                    type: "primary",
+                    size: "small"
                   },
                   style: {
-                    marginRight: '20px'
+                    marginRight: "20px"
                   },
                   on: {
                     click: () => {
                       // 显示模态框
                       this.addIndex = true;
-                      let row = params.row;
-                      if (params.row.id !== '') {
-                        this.formCityList = row;
+                      console.log(this.formCityList);
+                      if (params.row.id !== "") {
+                        this.formCityList = params.row;
+                        this.formCityList.year = params.row.dateTime;
+                        this.formSelectTime = params.row.dateTime;
                       } else {
-                        this.$Message.error('刷新页面后尝试此操作');
+                        this.$Message.error("刷新页面后尝试此操作");
                         return;
                       }
                       this.isFormFlase = false;
                       this.isFormTrue = true;
-                      this.targetName = '编辑指标';
+                      this.targetName = "编辑指标";
                     }
                   }
                 },
-                '编辑'
+                "编辑"
               ),
               h(
-                'Button',
+                "Button",
                 {
                   props: {
-                    type: 'error',
-                    size: 'small'
+                    type: "error",
+                    size: "small"
                   },
                   on: {
                     click: () => {
@@ -274,7 +275,7 @@ export default {
                     }
                   }
                 },
-                '删除'
+                "删除"
               )
             ]);
           }
@@ -283,81 +284,82 @@ export default {
       colIndexTwo: [
         // 二级指标 表格表头
         {
-          title: '指标等级',
-          key: 'indexType',
+          title: "指标等级",
+          key: "indexType",
           width: 100
         },
         {
-          title: '指标名称',
-          key: 'indexName'
+          title: "指标名称",
+          key: "indexName"
         },
         {
-          title: '上级单位',
-          key: 'superiorIndexId'
+          title: "上级单位",
+          key: "superiorIndexId"
         },
         {
-          title: '牵头单位',
-          key: 'leadUnit'
+          title: "牵头单位",
+          key: "leadUnit"
         },
         {
-          title: '责任单位',
-          key: 'responsibilityUnit'
+          title: "责任单位",
+          key: "responsibilityUnit"
         },
         {
-          title: '标准值',
-          key: 'standardValue'
+          title: "标准值",
+          key: "standardValue"
         },
         {
-          title: '权数',
-          key: 'weight'
+          title: "权数",
+          key: "weight"
         },
         {
-          title: '方向',
-          key: 'direction',
+          title: "方向",
+          key: "direction",
           width: 80,
-          align: 'center'
+          align: "center"
         },
         {
-          title: '操作',
-          key: 'action',
+          title: "操作",
+          key: "action",
           width: 150,
-          align: 'center',
+          align: "center",
           render: (h, params) => {
-            return h('div', [
+            return h("div", [
               h(
-                'Button',
+                "Button",
                 {
                   props: {
-                    type: 'primary',
-                    size: 'small'
+                    type: "primary",
+                    size: "small"
                   },
                   style: {
-                    marginRight: '5px'
+                    marginRight: "5px"
                   },
                   on: {
                     click: () => {
+                      this.formSelectTime = "";
                       this.addIndex = true;
                       this.isFormfalse = true;
                       this.isFormTrue = false;
-                      this.targetName = '编辑指标';
-                      console.log(this.isFormTrue, this.isFormfalse);
-                      let row = params.row;
-                      if (params.row.id !== '') {
-                        this.formCityList = row;
+                      this.targetName = "编辑指标";
+                      if (params.row.id !== "") {
+                        this.formCityList = params.row;
+                        this.formCityList.year = params.row.dateTime;
+                        this.formSelectTime = params.row.dateTime;
                       } else {
-                        this.$Message.error('刷新页面后尝试此操作');
+                        this.$Message.error("刷新页面后尝试此操作");
                       }
                     }
                   }
                 },
-                '编辑'
+                "编辑"
               ),
               h(
-                'Button',
+                "Button",
                 {
                   props: {
-                    type: 'error',
-                    size: 'small'
+                    type: "error",
+                    size: "small"
                   },
                   on: {
                     click: () => {
@@ -365,7 +367,7 @@ export default {
                     }
                   }
                 },
-                '删除'
+                "删除"
               )
             ]);
           }
@@ -376,22 +378,15 @@ export default {
         indexName: [
           {
             required: true,
-            message: '请输入指标名称',
-            trigger: 'blur'
+            message: "请输入指标名称",
+            trigger: "blur"
           }
         ],
         indexType: [
           {
             required: true,
-            message: '请选择指标等级',
-            trigger: 'change'
-          }
-        ],
-        year: [
-          {
-            required: true,
-            message: '请选择年份',
-            trigger: 'change'
+            message: "请选择指标等级",
+            trigger: "change"
           }
         ]
       },
@@ -400,24 +395,24 @@ export default {
         indexType: [
           {
             required: true,
-            message: '请选择指标等级',
-            trigger: 'change'
+            message: "请选择指标等级",
+            trigger: "change"
           }
         ]
       },
       // 表单
       formCityList: {
-        id: '',
-        indexName: '', // 指标名称
-        indexType: '一级指标', // 指标类型
-        superiorIndexId: '', // 上级单位 一级指标没有上级单位
-        leadUnit: '', // 牵头单位
-        responsibilityUnit: '', // 责任单位
-        score: '', // 分数
-        standardValue: '', // 标准值
-        direction: '', // 方向
-        weight: '', // 权数
-        year: ''
+        id: "",
+        indexName: "", // 指标名称
+        indexType: "一级指标", // 指标类型
+        superiorIndexId: "", // 上级单位 一级指标没有上级单位
+        leadUnit: "", // 牵头单位
+        responsibilityUnit: "", // 责任单位
+        score: "", // 分数
+        standardValue: "", // 标准值
+        direction: "", // 方向
+        weight: "", // 权数
+        year: ""
       },
       // 上传表格
       uploadLoading: false,
@@ -427,41 +422,42 @@ export default {
       file: null,
       tableData: [], // 上传Excel 内容
       tableTitle: [], //
-      excelTime: '',
+      excelTime: "",
       tableLoading: false,
       UploadLoadingBtn: false
     };
   },
   methods: {
     // Excel 上传  定义指标年份
-    updateTime (year) {
+    updateTime(year) {
       this.excelTime = year;
     },
     // FORM表单年份
-    IndexFormat (year) {
+    IndexFormat(year) {
       this.formCityList.year = year;
+      this.formSelectTime = year;
     },
     // 搜索框年份
-    handlerFormat (year) {
+    handlerFormat(year) {
       this.searchData.year = year;
     },
     // 关闭模态框增加或者编辑
-    closeAddIndex () {
+    closeAddIndex() {
       this.addIndex = false;
     },
     // 添加指标 编辑指标
-    BtnSubmit (e) {
-      this.$refs['formCityList'].validate(valid => {
+    BtnSubmit(e) {
+      this.$refs["formCityList"].validate(valid => {
         if (valid) {
           this.submitloading = true;
-          if (this.targetName === '永泰县指标增加') {
+          if (this.targetName === "永泰县指标增加") {
             this._addIndexCity(token, this.formCityList)
               .then(res => {
-                if (res.code === '200') {
-                  this.$Message.success('成功');
+                if (res.code === "200") {
+                  this.$Message.success("成功");
                   this.submitloading = false;
                   // 按照填入的indexType刷新页面
-                  if (this.formCityList.indexType === '一级指标') {
+                  if (this.formCityList.indexType === "一级指标") {
                     let indexType = {
                       indexType: this.formCityList.indexType,
                       pageSize: this.pageSize
@@ -475,7 +471,7 @@ export default {
                       this.indexOne = res.results.list;
                       this.addIndex = false;
                     });
-                  } else if (this.formCityList.indexType === '二级指标') {
+                  } else if (this.formCityList.indexType === "二级指标") {
                     let indexType = {
                       indexType: this.formCityList.indexType
                     };
@@ -498,44 +494,75 @@ export default {
               .catch(err => {
                 console.log(err);
               });
-          } else if (this.targetName === '编辑指标') {
+          } else if (this.targetName === "编辑指标") {
             this._updateIndexCity(token, this.formCityList).then(res => {
-              if (res.code === '200') {
+              if (res.code === "200") {
                 this.submitloading = false;
                 this.addIndex = false;
-                this.$Message.success('修改成功');
+                this.formSelectTime = this.formCityList.year;
+                this.$Message.success("修改成功");
+                if (this.formCityList.indexType === "一级指标") {
+                  let indexType = {
+                    indexType: this.formCityList.indexType
+                  };
+                  this._getCityList(
+                    token,
+                    indexType,
+                    this.pageSize,
+                    this.pageNumber
+                  ).then(res => {
+                    this.indexOne = res.results.list;
+                    this.addIndex = false;
+                  });
+                } else if (this.formCityList.indexType === "二级指标") {
+                  let indexType = {
+                    indexType: this.formCityList.indexType
+                  };
+                  this._getCityList(
+                    token,
+                    indexType,
+                    this.pageSize,
+                    this.pageNumber
+                  ).then(res => {
+                    this.indexTwo = res.results.list;
+                    this.addIndex = false;
+                    this.isIndexOne = false;
+                    this.isIndexTwo = true;
+                    this.TableTwoLoading = false;
+                  });
+                }
               }
             });
           }
         } else {
-          this.$Message.error('带*为必填项');
+          this.$Message.error("带*为必填项");
         }
       });
     },
     // 删除指标
-    remove (params) {
+    remove(params) {
       this.pageCurrent = this.pageNumber;
       this.$Modal.confirm({
-        title: '删除指标',
-        content: '<p>删除后将无法恢复</p>',
+        title: "删除指标",
+        content: "<p>删除后将无法恢复</p>",
         onOk: () => {
           this._removeIndexCity(token, { id: params.row.id }).then(res => {
-            if (res.code === '200') {
-              this.$Message.success('删除成功');
-              this.seachSubmit('searchData', 'remove');
+            if (res.code === "200") {
+              this.$Message.success("删除成功");
+              this.seachSubmit("searchData", "remove");
             } else {
-              this.$Message.error('操作失败');
+              this.$Message.error("操作失败");
             }
           });
         },
         onCancel: () => {
-          this.$Message.info('已取消');
+          this.$Message.info("已取消");
         }
       });
     },
     // 打开模态框
-    addTarget (e) {
-      this.targetName = '永泰县指标增加';
+    addTarget(e) {
+      this.targetName = "永泰县指标增加";
       // 清除INPUT框
       this.resetInput();
       this.isFormFlase = false;
@@ -543,7 +570,7 @@ export default {
       this.addIndex = true;
     },
     // 搜索查询
-    seachSubmit (name, isRemove) {
+    seachSubmit(name, isRemove) {
       this.$refs[name].validate(valid => {
         if (valid) {
           this.TableOneLoading = true;
@@ -564,61 +591,61 @@ export default {
             this.pageSize,
             this.pageNumber
           ).then(res => {
-            if (res.code === '200') {
+            if (res.code === "200") {
               // 按照IndexType类别 填入不同Tabel里
-              if (this.searchData.indexType === '一级指标') {
-                this.$Message.success('查询成功');
+              if (this.searchData.indexType === "一级指标") {
+                this.$Message.success("查询成功");
                 this.indexOne = res.results.list;
                 this.pageTotal = parseInt(res.results.pageTotal) * 10;
                 this.TableOneLoading = false;
                 this.isIndexOne = true;
                 this.isIndexTwo = false;
-              } else if (this.searchData.indexType === '二级指标') {
+              } else if (this.searchData.indexType === "二级指标") {
                 this.isIndexOne = false;
                 this.TableTwoLoading = false;
                 this.isIndexTwo = true;
-                this.$Message.success('查询成功');
+                this.$Message.success("查询成功");
                 this.indexTwo = res.results.list;
                 this.pageTotal = parseInt(res.results.pageTotal) * 10;
               }
             } else {
-              this.$Message.error('查询失败');
+              this.$Message.error("查询失败");
             }
           });
         } else {
-          this.$Message.error('带*不可为空');
+          this.$Message.error("带*不可为空");
         }
       });
     },
     // 重置搜索
-    seachReset (name) {
+    seachReset(name) {
       this.searchData = {
-        indexType: '一级指标',
-        ducyUnit: '',
-        lead: '',
-        indexName: ''
+        indexType: "一级指标",
+        ducyUnit: "",
+        lead: "",
+        indexName: ""
       };
     },
     // 重置表单
-    resetInput () {
-      if (this.formCityList.indexType !== '') {
-        this.$refs['formCityList'].resetFields();
+    resetInput() {
+      if (this.formCityList.indexType !== "") {
+        this.$refs["formCityList"].resetFields();
         this.formCityList = {
-          indexName: '',
-          indexType: '',
-          superiorIndexId: '',
-          leadUnit: '',
-          responsibilityUnit: '',
-          score: '',
-          standardValue: '',
-          direction: '',
-          weight: '',
-          year: ''
+          indexName: "",
+          indexType: "",
+          superiorIndexId: "",
+          leadUnit: "",
+          responsibilityUnit: "",
+          score: "",
+          standardValue: "",
+          direction: "",
+          weight: "",
+          year: ""
         };
       }
     },
     // 页码
-    pageNumberChange (number) {
+    pageNumberChange(number) {
       this.pageNumber = number;
       this._getCityList(
         token,
@@ -626,28 +653,28 @@ export default {
         this.pageSize,
         this.pageNumber
       ).then(res => {
-        if (res.code === '200') {
+        if (res.code === "200") {
           // 按照IndexType类别 填入不同Tabel里
           if (
-            this.formCityList.indexType === '一级指标' ||
-            this.searchData.indexType === '一级指标'
+            this.formCityList.indexType === "一级指标" ||
+            this.searchData.indexType === "一级指标"
           ) {
             this.indexOne = res.results.list;
-            this.$Message.success('查询成功');
+            this.$Message.success("查询成功");
           } else if (
-            this.formCityList.indexType === '二级指标' ||
-            this.searchData.indexType === '二级指标'
+            this.formCityList.indexType === "二级指标" ||
+            this.searchData.indexType === "二级指标"
           ) {
             this.indexTwo = res.results.list;
-            this.$Message.success('查询成功');
+            this.$Message.success("查询成功");
           }
         } else {
-          this.$Message.error('查询失败');
+          this.$Message.error("查询失败");
         }
       });
     },
     // 页数
-    pageSizeChange (pageSize) {
+    pageSizeChange(pageSize) {
       this.pageSize = pageSize;
       this._getCityList(
         token,
@@ -655,29 +682,30 @@ export default {
         this.pageSize,
         this.pageNumber
       ).then(res => {
-        if (res.code === '200') {
+        if (res.code === "200") {
           // 按照IndexType类别 填入不同Tabel里
-          if (this.formCityList.indexType === '一级指标') {
+          if (this.formCityList.indexType === "一级指标") {
             this.indexOne = res.results.list;
-          } else if (this.formCityList.indexType === '二级指标') {
+          } else if (this.formCityList.indexType === "二级指标") {
             this.indexTwo = res.results.list;
-            this.$Message.success('查询成功');
+            this.$Message.success("查询成功");
           }
         } else {
-          this.$Message.error('查询失败');
+          this.$Message.error("查询失败");
         }
       });
     },
     // 获取数据
-    _getCityList (token, form, pageSize, pageNumber) {
-      const url = '/api/countryIndicators/query';
+    _getCityList(token, form, pageSize, pageNumber) {
+      const url = "/api/countryIndicators/query";
+      const key = "countryIndicatorsFilter";
       let formData = Object.assign(form, {
         pageSize: pageSize,
         pageNumber: pageNumber
       });
       return new Promise((resolve, reject) => {
-        getIndexList({ token, formData, url }).then(res => {
-          if (res.data.code === '200') {
+        cityAjax({ token, formData, url, key }).then(res => {
+          if (res.data.code === "200") {
             resolve(res.data);
           } else {
             reject();
@@ -686,11 +714,12 @@ export default {
       });
     },
     // 添加指标
-    _addIndexCity (token, formData) {
-      const url = '/api/countryIndicators/insert';
+    _addIndexCity(token, formData) {
+      const url = "/api/countryIndicators/insert";
+      const key = "countryIndicatorsEntity";
       return new Promise((resolve, reject) => {
-        AddIndex({ token, formData, url }).then(res => {
-          if (res.data.code === '200') {
+        cityAjax({ token, formData, url, key }).then(res => {
+          if (res.data.code === "200") {
             resolve(res.data);
           } else {
             reject();
@@ -699,11 +728,12 @@ export default {
       });
     },
     // 修改指标
-    _updateIndexCity (token, formData) {
-      const url = '/api/countryIndicators/update';
+    _updateIndexCity(token, formData) {
+      const url = "/api/countryIndicators/update";
+      const key = "countryIndicatorsEntity";
       return new Promise((resolve, reject) => {
-        updateIndex({ token, formData, url }).then(res => {
-          if (res.data.code === '200') {
+        cityAjax({ token, formData, url, key }).then(res => {
+          if (res.data.code === "200") {
             resolve(res.data);
           } else {
             reject();
@@ -712,11 +742,12 @@ export default {
       });
     },
     // 删除
-    _removeIndexCity (token, formData) {
-      const url = '/api/countryIndicators/delete';
+    _removeIndexCity(token, formData) {
+      const url = "/api/countryIndicators/delete";
+      const key = "countryIndicatorsEntity";
       return new Promise((resolve, reject) => {
-        removeIndex({ token, formData, url }).then(res => {
-          if (res.data.code === '200') {
+        cityAjax({ token, formData, url, key }).then(res => {
+          if (res.data.code === "200") {
             resolve(res.data);
           } else {
             reject();
@@ -725,7 +756,7 @@ export default {
       });
     },
     // 上传elcel
-    initUpload () {
+    initUpload() {
       this.file = null;
       this.showProgress = false;
       this.loadingProgress = 0;
@@ -733,35 +764,35 @@ export default {
       this.tableTitle = [];
     },
     // 点击上传触发函数
-    handleUploadFile () {
+    handleUploadFile() {
       this.initUpload();
     },
     // 删除Excel
-    handleRemove () {
+    handleRemove() {
       this.initUpload();
-      this.$Message.info('上传的文件已删除！');
+      this.$Message.info("上传的文件已删除！");
     },
-    handleBeforeUpload (file) {
+    handleBeforeUpload(file) {
       const fileExt = file.name
-        .split('.')
+        .split(".")
         .pop()
         .toLocaleLowerCase();
-      if (fileExt === 'xlsx' || fileExt === 'xls') {
+      if (fileExt === "xlsx" || fileExt === "xls") {
         this.readFile(file);
         this.file = file;
       } else {
         this.$Notice.warning({
-          title: '文件类型错误',
+          title: "文件类型错误",
           desc:
-            '文件：' +
+            "文件：" +
             file.name +
-            '不是EXCEL文件，请选择后缀为.xlsx或者.xls的EXCEL文件。'
+            "不是EXCEL文件，请选择后缀为.xlsx或者.xls的EXCEL文件。"
         });
       }
       return false;
     },
     // 读取文件
-    readFile (file) {
+    readFile(file) {
       const reader = new FileReader();
       reader.readAsArrayBuffer(file);
       reader.onloadstart = e => {
@@ -773,12 +804,12 @@ export default {
         this.progressPercent = Math.round((e.loaded / e.total) * 100);
       };
       reader.onerror = e => {
-        this.$Message.error('文件读取出错');
+        this.$Message.error("文件读取出错");
       };
       reader.onload = e => {
-        this.$Message.info('文件读取成功');
+        this.$Message.info("文件读取成功");
         const data = e.target.result;
-        var { header, results } = excel.read(data, 'array');
+        var { header, results } = excel.read(data, "array");
         console.log(header);
 
         header = header.slice(0, 9); // 截取有效数据
@@ -788,64 +819,64 @@ export default {
         // 验证表头
         const regExcel = err => {
           this.$Notice.error({
-            title: 'Excel格式错误',
+            title: "Excel格式错误",
             desc: 'Excel："' + err + '"   格式错误,请核对Excel模块。'
           });
-          results = ''; // 表内容
-          tableTitle = ''; // 表头
+          results = ""; // 表内容
+          tableTitle = ""; // 表头
           this.uploadLoading = false;
           this.tableLoading = false;
           this.showRemoveFile = true;
         };
         // 对Excel行进处理 提醒用户是不是导入Excel模板错误
         for (let i = 0; i < tableTitle.length; i++) {
-          if (tableTitle[i].key === 'indexTypeOne') {
-            if (tableTitle[i].title !== '一级指标') {
-              regExcel('一级指标');
+          if (tableTitle[i].key === "indexTypeOne") {
+            if (tableTitle[i].title !== "一级指标") {
+              regExcel("一级指标");
               return;
             }
-          } else if (tableTitle[i].key === 'indexTypeTwo') {
-            if (tableTitle[i].title !== '二级指标') {
-              regExcel('二级指标');
+          } else if (tableTitle[i].key === "indexTypeTwo") {
+            if (tableTitle[i].title !== "二级指标") {
+              regExcel("二级指标");
               return;
             }
-          } else if (tableTitle[i].key === 'weightOne') {
-            if (tableTitle[i].title !== '一级权数') {
-              regExcel('一级权数');
+          } else if (tableTitle[i].key === "weightOne") {
+            if (tableTitle[i].title !== "一级权数") {
+              regExcel("一级权数");
               return;
             }
-          } else if (tableTitle[i].key === 'weightTwo') {
-            if (tableTitle[i].title !== '二级权数') {
-              regExcel('二级权数');
+          } else if (tableTitle[i].key === "weightTwo") {
+            if (tableTitle[i].title !== "二级权数") {
+              regExcel("二级权数");
               return;
             }
-          } else if (tableTitle[i].key === 'direction') {
-            if (tableTitle[i].title !== '方向') {
-              regExcel('方向');
+          } else if (tableTitle[i].key === "direction") {
+            if (tableTitle[i].title !== "方向") {
+              regExcel("方向");
               return;
             }
-          } else if (tableTitle[i].key === 'standardValue') {
-            if (tableTitle[i].title !== '标准值') {
-              regExcel('标准值');
+          } else if (tableTitle[i].key === "standardValue") {
+            if (tableTitle[i].title !== "标准值") {
+              regExcel("标准值");
               return;
             }
-          } else if (tableTitle[i].key === 'leadUnit') {
-            if (tableTitle[i].title !== '牵头单位') {
-              regExcel('牵头单位');
+          } else if (tableTitle[i].key === "leadUnit") {
+            if (tableTitle[i].title !== "牵头单位") {
+              regExcel("牵头单位");
               return;
             }
-          } else if (tableTitle[i].key === 'responsibilityUnit') {
-            if (tableTitle[i].title !== '责任单位') {
-              regExcel('责任单位');
+          } else if (tableTitle[i].key === "responsibilityUnit") {
+            if (tableTitle[i].title !== "责任单位") {
+              regExcel("责任单位");
               return;
             }
-          } else if (tableTitle[i].key === 'associated') {
-            if (tableTitle[i].title !== '关联指标') {
-              regExcel('关联指标');
+          } else if (tableTitle[i].key === "associated") {
+            if (tableTitle[i].title !== "关联指标") {
+              regExcel("关联指标");
               return;
             }
           } else {
-            regExcel('');
+            regExcel("");
             return;
           }
         }
@@ -856,10 +887,11 @@ export default {
         this.showRemoveFile = true;
       };
     },
-    updateExcel () {
+    updateExcel() {
       // 判断上传Excel表是不是为空且指标年份不为空
-      if (!this.tableData.length || this.excelTime === '') {
-        this.$Message.error('请选择上传文件或选择指标年份');
+      this.UploadLoadingBtn = true;
+      if (!this.tableData.length || this.excelTime === "") {
+        this.$Message.error("请选择上传文件或选择指标年份");
         return;
       }
       const fromIndexOne = { list: [] }; // 一级指标
@@ -870,26 +902,26 @@ export default {
         var indexDataOne = Object.assign(
           {},
           {
-            id: '',
-            indexType: '一级指标',
+            id: "",
+            indexType: "一级指标",
             indexName:
               this.tableData[i].indexTypeOne === undefined
-                ? ''
+                ? ""
                 : this.tableData[i].indexTypeOne.trim(),
             weight:
               this.tableData[i].weightOne === undefined
-                ? ''
+                ? ""
                 : this.tableData[i].weightOne.trim(),
-            superiorIndexId: '',
-            leadUnit: '',
-            responsibilityUnit: '',
-            score: '',
-            standardValue: '',
-            direction: '',
+            superiorIndexId: "",
+            leadUnit: "",
+            responsibilityUnit: "",
+            score: "",
+            standardValue: "",
+            direction: "",
             dateTime: this.excelTime
           }
         );
-        fromIndexOne['list'].push(indexDataOne);
+        fromIndexOne["list"].push(indexDataOne);
       }
       for (let i = 0; i < this.tableData.length; i++) {}
       // 处理二级指标
@@ -899,118 +931,119 @@ export default {
           var indexAssociated = Object.assign(
             {},
             {
-              indexType: '二级指标',
+              indexType: "二级指标",
               indexName:
                 this.tableData[i].indexTypeTwo === undefined
-                  ? ''
+                  ? ""
                   : this.tableData[i].indexTypeTwo.trim(),
               weight:
                 this.tableData[i].weightTwo === undefined
-                  ? ''
+                  ? ""
                   : this.tableData[i].weightTwo.trim(),
               leadUnit:
                 this.tableData[i].leadUnit === undefined
-                  ? ''
+                  ? ""
                   : this.tableData[i].leadUnit.trim(),
               direction:
                 this.tableData[i].direction === undefined
-                  ? ''
+                  ? ""
                   : this.tableData[i].direction.trim(),
               standardValue:
                 this.tableData[i].standardValue === undefined
-                  ? ''
+                  ? ""
                   : this.tableData[i].standardValue.trim(),
               responsibilityUnit:
                 this.tableData[i].responsibilityUnit === undefined
-                  ? ''
+                  ? ""
                   : this.tableData[i].responsibilityUnit.trim(),
               superiorIndexId:
                 this.tableData[i].associated === undefined
-                  ? ''
+                  ? ""
                   : this.tableData[i].associated.trim(),
               dateTime: this.excelTime
             }
           );
-          associated['list'].push(indexAssociated);
+          associated["list"].push(indexAssociated);
           continue;
         }
         var indexDataTwo = Object.assign(
           {},
           {
-            indexType: '二级指标',
+            indexType: "二级指标",
             indexName:
               this.tableData[i].indexTypeTwo === undefined
-                ? ''
+                ? ""
                 : this.tableData[i].indexTypeTwo.trim(),
             weight:
               this.tableData[i].weightTwo === undefined
-                ? ''
+                ? ""
                 : this.tableData[i].weightTwo.trim(),
             leadUnit:
               this.tableData[i].leadUnit === undefined
-                ? ''
+                ? ""
                 : this.tableData[i].leadUnit.trim(),
             direction:
               this.tableData[i].direction === undefined
-                ? ''
+                ? ""
                 : this.tableData[i].direction.trim(),
             standardValue:
               this.tableData[i].standardValue === undefined
-                ? ''
+                ? ""
                 : this.tableData[i].standardValue.trim(),
             responsibilityUnit:
               this.tableData[i].responsibilityUnit === undefined
-                ? ''
+                ? ""
                 : this.tableData[i].responsibilityUnit.trim(),
             superiorIndexId:
               this.tableData[i].indexTypeOne === undefined
-                ? ''
+                ? ""
                 : this.tableData[i].indexTypeOne.trim(),
             dateTime: this.excelTime
           }
         );
         // 根据后端要求 用户EXCEL上传的数据放在LIST里面
-        formIndexTwo['list'].push(indexDataTwo);
+        formIndexTwo["list"].push(indexDataTwo);
       }
       console.log(associated);
       this._addIndexCity(token, fromIndexOne).then(res => {
-        if (res.code === '200') {
+        if (res.code === "200") {
           this._addIndexCity(token, formIndexTwo).then(res => {
-            if (res.code === '200') {
+            if (res.code === "200") {
+              this.UploadLoadingBtn = false;
               this._addIndexCity(token, associated).then(res => {
                 console.log(res);
               });
             } else {
-              this.$Message.info('指标添加失败');
+              this.$Message.info("指标添加失败");
             }
           });
         } else {
-          this.$Message.info('指标添加失败');
+          this.$Message.info("指标添加失败");
         }
       });
       this.tableData = [];
-      this.excelTime = '';
+      this.excelTime = "";
     }
   },
   watch: {
     // form表单根据指标等级
     formCityList: {
-      handler (newVal) {
+      handler(newVal) {
         if (newVal.indexType !== undefined) {
-          if (newVal.indexType === '一级指标') {
+          if (newVal.indexType === "一级指标") {
             this.isFormFlase = false;
             this.isFormTrue = true;
-          } else if (newVal.indexType === '二级指标') {
+          } else if (newVal.indexType === "二级指标") {
             this.isFormFlase = true;
             this.isFormTrue = false;
-            this.formCityList.score = '';
+            this.formCityList.score = "";
           }
         }
       },
       deep: true
     }
   },
-  created () {
+  created() {
     // 打开页面
     this._getCityList(
       token,
