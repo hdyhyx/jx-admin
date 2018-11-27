@@ -35,8 +35,10 @@
                 <FormItem label="审核状态">
                     <Select v-model="searchData.audit" placeholder="请选择审核状态" style="width: 150px">
                         <Option value="5">全部</Option>
+                        <Option value="4">未填写</Option>
                         <Option value="0">未审核</Option>
                         <Option value="1">责任人已审核</Option>
+                        <Option value="2">管理员已审核</Option>
                         <Option value="3">退回</Option>
                     </Select>
                 </FormItem>
@@ -67,7 +69,7 @@
             </Row>
                 <FormItem>
                  <!-- 10是pageSize,1当前页 -->
-                  <Button :loading="searchLoading" type="primary" @click="seachSubmit(1,10)">提交搜索</Button>
+                  <Button :loading="submitloading" type="primary" @click="seachSubmit(1,10)">提交搜索</Button>
                   <Button @click="seachReset('searchData')" style="margin-left: 8px">重置</Button>
               </FormItem>
           </Form>
@@ -75,9 +77,8 @@
     </Row>
     <Row>
       <Card>
-         <Button  :disabled='isAllAuditBnt' @click="submitAllAudit" style="margin-bottom:10px">全选通过审核</Button>
-        <Table  @on-select-all-cancel="tabelSelectCancel"  @on-select-all="tabelSelectAll" v-if="isTabelAllShow" border stripe :loading="isTabelAllLoading"  :columns="tabelShowAll" :data="IndexAll"></Table>
-         <Table  @on-select-all-cancel="tabelSelectCancel"  @on-select-all="tabelSelectAll" v-if=" isTabelInedxShow" border stripe :loading="isTabelInedxLoading" :columns="tabelShowIndex" :data="IndexAll"></Table>
+        <Table v-if="isTabelAllShow" border stripe :loading="isTabelAllLoading"  :columns="tabelShowAll" :data="IndexAll"></Table>
+         <Table v-if=" isTabelInedxShow" border stripe :loading="isTabelInedxLoading" :columns="tabelShowIndex" :data="IndexAll"></Table>
         <div style="margin-top:20px;margin-left:40%">
             <Page @on-change="pageNumberChange" :current="pageCurrent" :page-size="pageSize"  :total="pageTotal" @on-page-size-change="pageSizeChange" show-elevator show-sizer />
         </div>
@@ -88,29 +89,29 @@
             <Row :gutter="32">
                 <Col span="10">
                     <FormItem label="一级指标" label-position="top">
-                        <Input disabled v-model="formData.superiorIndexId" placeholder="please enter user name" />
+                        <Input disabled v-model="formData.superiorIndexId" placeholder="" />
                     </FormItem>
                 </Col>
                 <Col span="10">
                     <FormItem label="二级指标" label-position="top">
-                        <Input disabled v-model="formData.indexName" placeholder="please enter url"></Input>
+                        <Input disabled v-model="formData.indexName" placeholder=""></Input>
                     </FormItem>
                 </Col>
             </Row>
             <Row :gutter="32">
                 <Col span="7">
                     <FormItem label="牵头单位" label-position="top">
-                         <Input disabled v-model="formData.leadUnit" placeholder="please enter url"></Input>
+                         <Input disabled v-model="formData.leadUnit" placeholder=""></Input>
                     </FormItem>
                 </Col>
                 <Col span="7">
                     <FormItem label="责任单位" label-position="top">
-                          <Input disabled v-model="formData.responsibilityUnit" placeholder="please enter url"></Input>
+                          <Input disabled v-model="formData.responsibilityUnit" placeholder=""></Input>
                     </FormItem>
                 </Col>,
                 <Col span="6">
                     <FormItem label="权数" label-position="top">
-                        <Input disabled v-model="formData.weight" placeholder="please enter url"></Input>
+                        <Input disabled v-model="formData.weight" placeholder></Input>
                     </FormItem>
                 </Col>
             </Row>
@@ -139,37 +140,49 @@
                               <Col span="12">
                                 <FormItem prop="score">
                                   <Button  type="error" style="width:100%">得分率</Button>
-                                  <InputNumber style="width:100%" :max="100" :min="0"  v-model="countyList[index].score"></InputNumber>
+                                  <InputNumber :disabled="isScoreDisabled" style="width:100%" :max="100" :min="0"  v-model="countyList[index].score"></InputNumber>
                                 </FormItem>
                               </Col>
                               <Col span="12">
                                 <FormItem>
                                       <Button type="warning" style="width:100%">排名</Button>
-                                  <InputNumber style="width:100%" :max="100" :min="0"  v-model="countyList[index].rank"></InputNumber>
+                                  <InputNumber :disabled="isScoreDisabled" style="width:100%" :max="100" :min="0"  v-model="countyList[index].rank"></InputNumber>
                                 </FormItem>
                               </Col>
                             </Row>
                         </div>
                     </Card>
                 </Col>
-                 <Spin size="large" fix v-if="spinShow"></Spin>
+                <Spin size="large" fix v-if="spinShow"></Spin>
             </Row>
             <Row style="margin-top:20px">
-              <i-col :xs="24" :md="12" :lg="4" >
-                <FormItem  label="填入时间"  prop="monthTime"  :label-width="100">
-                  <DatePicker disabled type="month" format="yyyy-MM" v-model="selectTime" @on-change="selectMonth" placeholder="请选择月份跟年份" style="width: 200px"></DatePicker>
+              <i-col :xs="24" :md="12" :lg="4"  >
+                <FormItem label="选择月份" prop="monthTime">
+                    <Select clearable :disabled="isScoreDisabled"  v-model="formData.monthTime" placeholder="请选择方向" style="width: 150px">
+                        <Option value="01">1月</Option>
+                        <Option value="02">2月</Option>
+                        <Option value="03">3月</Option>
+                        <Option value="04">4月</Option>
+                        <Option value="05">5月</Option>
+                        <Option value="06">6月</Option>
+                        <Option value="07">7月</Option>
+                        <Option value="08">8月</Option>
+                        <Option value="09">9月</Option>
+                        <Option value="10">10月</Option>
+                        <Option value="11">11月</Option>
+                        <Option value="12">12月</Option>
+                    </Select>
                 </FormItem>
               </i-col>
-              <i-col  :lg="11">
-              <FormItem label="回退原因" :label-width="80" prop="reason">
-                  <Input v-model="formData.reason" type="textarea"  :autosize="{minRows: 2,maxRows: 5}" placeholder="如果回退输入原因，其他操作无需输入"></Input>
+              <i-col  :lg="11" v-if="isAuditText">
+              <FormItem label="回退原因" :label-width="60">
+                  <Input v-model="formData.reason" type="textarea" disabled :autosize="{minRows: 2,maxRows: 5}" placeholder="如果回退输入原因，其他操作无需输入"></Input>
               </FormItem>
               </i-col>
             </Row>
         </Form>
         <div class="demo-drawer-footer" style="margin-left:50px">
-            <Button :loading="isSubmitLoading" style="width:200px;margin-right:20px" type="primary" @click="submitAuditIndex">审核通过</Button>
-            <Button :loading="isReasonLoading" style="width:200px;margin-right:20px" type="error" @click="submitReasonIndex">回退</Button>
+            <Button :disabled="isScoreDisabled" :loading="isScoreSubmitLoading" style="width:200px;margin-right:20px" type="primary" @click="submitCountyScore">确认提交</Button>
             <Button   style="width:100px;" @click="closeDrawerShow">取消</Button>
         </div>
     </Drawer>
@@ -179,6 +192,7 @@
 import { getToken } from "@/libs/util";
 import { countyAjax } from "@/api/city";
 const token = getToken();
+const regNumber = new RegExp("^(\\d|[1-9]\\d|100)$");
 export default {
   data() {
     return {
@@ -190,18 +204,16 @@ export default {
       pageTotal: 0, // 总页数
       pageSize: 10, // 显示条数
       pageNumber: 1, // 页码
-      spinShow: false,
       pageCurrent: 1, // 当前页
-      searchLoading: false, // 提交Loading
+      submitloading: false, // 提交Loading
       isAuditText: false, // Audit状态值为3 退回原因
-      allAuditArr: [], // 全选审批选择
-      auditIndex: [], // 单选审批选择
+      setScoreId: "", // 当前添加或改变分数的Id
       selectTime: "", // 填写分数时间
       countyDateTime: "", // 年份
       countyMonthTime: "", // 月份
-      isSubmitLoading: false, // 提交分数Loading
-      isReasonLoading: false, // 回退Loading
-      isAllAuditBnt: true, // 全选审核按钮是否禁用
+      isScoreSubmitLoading: false, // 提交分数Loading
+      spinShow: false, // 侧边Loading
+      isScoreDisabled: false, // 根据Audit 是否可以填写
       IndexAll: [],
       searchData: {
         showDefault: ["showAll", "0"], // 默认显示
@@ -306,25 +318,19 @@ export default {
         responsibilityUnit: "",
         superiorIndexId: "",
         weight: "",
-        reason: ""
+        monthTime: ""
       },
       countyList: {},
       countyReg: {
-        reason: [
+        monthTime: [
           {
             required: true,
-            message: "回退原因不能为空",
-            trigger: "blur"
+            message: "请输入时间",
+            trigger: "change"
           }
         ]
       },
       tabelShowIndex: [
-        {
-          type: "selection",
-          width: 60,
-          align: "center",
-          fixed: "left"
-        },
         {
           title: "二级指标",
           key: "indexName",
@@ -491,6 +497,23 @@ export default {
           align: "center",
           fixed: "right",
           render: (h, params) => {
+            var isDisabled = "";
+            var text = "";
+            var color = "";
+            if (params.row.audit === "0" || params.row.audit === null) {
+              isDisabled = false;
+              text = "填写分数";
+            } else if (params.row.audit === "3") {
+              text = "重新填写";
+              color = "error";
+              this.isAuditText = true;
+
+              isDisabled = false;
+            } else if (params.row.audit === "1" || params.row.audit === "2") {
+              isDisabled = true;
+              color = "primary";
+              text = "不可填写";
+            }
             return h("div", [
               h(
                 "Button",
@@ -504,23 +527,19 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.getIndexItem(params);
+                      this.setScoreId = params.row.id; // id 获取本条Index详情
+                      this.isDrawerShow = true; // 侧边栏显示
+                      this.getIndexItem(this.setScoreId);
                     }
                   }
                 },
-                "编辑"
+                text
               )
             ]);
           }
         }
       ],
       tabelShowAll: [
-        {
-          type: "selection",
-          width: 60,
-          align: "center",
-          fixed: "left"
-        },
         {
           title: "一级指标",
           key: "superiorIndexId",
@@ -703,6 +722,17 @@ export default {
           align: "center",
           fixed: "right",
           render: (h, params) => {
+            var text = "";
+            var color = "";
+            if (params.row.audit === "0" || params.row.audit === null) {
+              text = "填写分数";
+            } else if (params.row.audit === "3") {
+              text = "重新填写";
+              color = "error";
+            } else if (params.row.audit === "1" || params.row.audit === "2") {
+              color = "primary";
+              text = "不可填写";
+            }
             return h("div", [
               h(
                 "Button",
@@ -716,11 +746,13 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.getIndexItem(params);
+                      this.setScoreId = params.row.id; // id 获取本条Index详情
+                      this.isDrawerShow = true; // 侧边栏显示
+                      this.getIndexItem(this.setScoreId);
                     }
                   }
                 },
-                "编辑"
+                text
               )
             ]);
           }
@@ -729,125 +761,62 @@ export default {
     };
   },
   methods: {
-    // 回退
-    submitReasonIndex() {
-      this.$refs["formData"].validate(valid => {
-        if (valid) {
-          this.isReasonLoading = true;
-          const url = "/api/townScore/noPass";
-          const data = Object.assign(
-            {},
-            {
-              id: this.formData.id,
-              monthTime: this.formData.monthTime,
-              reason: this.formData.reason
-            }
-          );
-          this.submitAudit(url, data);
-        } else {
-          this.$Message.error("回退原因不能为空");
-        }
-      });
-    },
-    // 全选审核通过
-    submitAllAudit() {
-      const dataArr = { list: [] };
-      this.allAuditArr.forEach(item => {
-        let data = Object.assign(
-          {},
-          {
-            id: item.id,
-            monthTime: item.monthTime
-          }
-        );
-        dataArr["list"].push(data);
-      });
-      const url = "/api/townScore/pass";
-      this.submitAudit(url, dataArr);
-    },
-    // 单选审核通过
-    submitAuditIndex() {
-      this.isSubmitLoading = true;
-      const dataArr = { list: [] };
-      this.auditIndex.forEach(item => {
-        let data = Object.assign(
-          {},
-          {
-            id: item.id,
-            monthTime: item.monthTime
-          }
-        );
-        dataArr["list"].push(data);
-      });
-      const url = "/api/townScore/pass";
-      this.submitAudit(url, dataArr);
-    },
-    // 表格取消全选
-    tabelSelectCancel(selection) {
-      this.allAuditArr = selection;
-    },
-    // 表格全选
-    tabelSelectAll(selection) {
-      selection.forEach(item => {
-        let data = Object.assign(
-          {},
-          {
-            id: item.id,
-            monthTime: item.monthTime
-          }
-        );
-        this.allAuditArr.push(data);
-      });
-    },
     // 关闭侧边栏
     closeDrawerShow() {
       this.isDrawerShow = false;
-      this.isSubmitLoading = false;
+      this.isScoreSubmitLoading = false;
     },
-    // 选择分数填入时间
-    selectMonth(date) {
-      this.selectTime = date;
-      var i = date.indexOf("-");
-      this.countyDateTime = date.substring(0, i);
-      this.countyMonthTime = date.substring(i + 1);
-    },
-    // 提交审核
-    submitAudit(url, indexArr) {
-      this._addIndexCounty(token, indexArr, url).then(result => {
-        if (result.code === "200") {
-          this.ModalLoading = false;
-          this.indexModal = false;
-          this.isReasonLoading = false;
-          this.isSubmitLoading = false;
-          this.$Message.success({
-            content: "操作成功",
-            duration: 5
-          });
+    // 提交分数
+    submitCountyScore() {
+      this.$refs["formData"].validate(valid => {
+        if (valid) {
+          var setCountyListScore = { list: [] };
+          this.isScoreSubmitLoading = true;
+          if (this.selectTime !== "") {
+            // 组成后台处理格式
+            for (const item in this.countyList) {
+              var countyObj = Object.assign(
+                {},
+                {
+                  id: this.setScoreId,
+                  townName: item,
+                  monthTime: this.formData.monthTime,
+                  score: this.countyList[item].score,
+                  rank: this.countyList[item].rank
+                }
+              );
+              setCountyListScore["list"].push(countyObj);
+            }
+            this._setCountyScore(token, setCountyListScore).then(res => {
+              if (res.code === "200") {
+                this.$Message.success("操作成功");
+                this.isScoreSubmitLoading = false;
+                this.isDrawerShow = false;
+                this.seachSubmit(this.pageNumber, this.pageSize); // 如果填入成功重新刷新页面
+              } else {
+                // 填入失败 打印失败详情
+                this.$Message.error(res.message);
+                this.isScoreSubmitLoading = false;
+              }
+            });
+          } else {
+            this.isScoreSubmitLoading = false;
+            this.$Message.info({
+              content: `填入时间不能为空`,
+              duration: 5
+            });
+          }
         } else {
-          this.$Message.error(result.message);
-          this.isSubmitLoading = false;
-          this.isReasonLoading = false;
+          this.$Message.error("请填写月份");
         }
       });
     },
-    // 获取某一指标的详情
-    getIndexItem(params) {
-      // 显示loading
+    getIndexItem(id) {
       this.spinShow = true;
-      this.auditIndex = [];
-      let data = Object.assign(
-        {},
-        {
-          id: params.row.id,
-          monthTime: params.row.monthTime
-        }
-      );
-      this.auditIndex.push(data);
-      this.isDrawerShow = true;
       const formData = Object.assign(
         {},
         {
-          id: params.row.id,
+          id,
           scoreType: 4
         }
       );
@@ -861,6 +830,17 @@ export default {
           this.formData = res.results.list[0];
           this.countyList = this.formData.townList;
           this.spinShow = false;
+          console.log(this.formData.audit !== "0");
+          if (this.formData.audit !== "1" && this.formData.audit !== "2") {
+            this.isScoreDisabled = false;
+            if (this.formData.audit === "3") {
+              this.isAuditText = true;
+            } else {
+              this.isAuditText = false;
+            }
+          } else {
+            this.isScoreDisabled = true;
+          }
           // 如果指标有时间的话。 就保存起来
           if (this.formData.monthTime === "") {
             this.selectTime = "";
@@ -882,7 +862,6 @@ export default {
       this.searchData.showType = value[0];
       this.searchData.scoreType = value[1];
     },
-    // 选择指标名称
     selectIndexType(value) {
       if (value[1] !== undefined) {
         this.searchData.indexName = value[1];
@@ -894,8 +873,7 @@ export default {
     },
     // 提交搜索
     seachSubmit(pageNumber, pageSize) {
-      this.allAuditArr = [];
-      this.searchLoading = true;
+      this.submitloading = true;
       this.isTabelAllLoading = true;
       this.isTabelInedxLoading = true;
       console.log(this.searchData.showDefault.length);
@@ -907,7 +885,7 @@ export default {
       this._getCountyList(token, this.searchData, pageNumber, pageSize)
         .then(result => {
           if (result.code === "200") {
-            this.searchLoading = false;
+            this.submitloading = false;
             if (this.searchData.showType !== undefined) {
               if (this.searchData.showType === "showAll") {
                 this.isTabelInedxShow = false;
@@ -953,12 +931,12 @@ export default {
         audit: "", // 审核状态
         scoreType: "0"
       };
-      this.searchLoading = false;
+      this.submitloading = false;
     },
     // 查询数据
     _getCountyList(token, form, pageNumber, pageSize) {
-      const url = "/api/townScore/queryForAudit";
-      const keyOne = "townIndicatorsFilter";
+      const url = "/api/sixScore/query";
+      const keyOne = "sixIndicatorsFilter";
       let formData = Object.assign(form, {
         pageNumber: pageNumber,
         pageSize: pageSize
@@ -974,26 +952,47 @@ export default {
       });
     },
     // 添加数据
-    _addIndexCounty(token, formData, url) {
-      const keyOne = "townIndicatorsFilter";
+    _addIndexCounty(token, formData) {
+      const url = "/api/sixIndicators/insert";
+      const keyOne = "xisIndicatorsEntity";
+      const keyTwo = "townList";
       return new Promise((resolve, reject) => {
-        countyAjax({ token, formData, url, keyOne }).then(res => {
-          if (res.data !== undefined) {
+        countyAjax({ token, formData, url, keyOne, keyTwo }).then(res => {
+          if (res.data.code === "200") {
             resolve(res.data);
           } else {
             reject(eer);
           }
         });
       });
-    }
-  },
-  watch: {
-    allAuditArr(val) {
-      if (!val.length) {
-        this.isAllAuditBnt = true;
-      } else {
-        this.isAllAuditBnt = false;
-      }
+    },
+    // 更新修改
+    _updateIndexCounty(token, formData) {
+      const url = "/api/sixIndicators/update";
+      const keyOne = "sixIndicatorsEntity";
+      const keyTwo = "townList";
+      return new Promise((resolve, reject) => {
+        countyAjax({ token, formData, url, keyOne, keyTwo }).then(res => {
+          if (res.data !== undefined) {
+            resolve(res.data);
+          } else {
+            reject(error);
+          }
+        });
+      });
+    },
+    // 添加分数
+    _setCountyScore(token, formData) {
+      const url = "/api/sixScore/setScore";
+      return new Promise((resolve, reject) => {
+        countyAjax({ token, formData, url }).then(res => {
+          if (res.data !== undefined) {
+            resolve(res.data);
+          } else {
+            reject(error);
+          }
+        });
+      });
     }
   },
   created() {

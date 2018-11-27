@@ -37,7 +37,10 @@ export default {
   error_store_page: '错误收集',
   error_logger_page: '错误日志',
   target_management_page: '指标管理',
-  six_game_page: '六抓六赛考核指标',
+  six_game_assessment: '六抓六赛绩效考核指标',
+  six_game_management: '六抓六赛指标管理',
+  six_game_data: '六抓六赛数据考核',
+  six_game_audit: '指标审核审批',
   work_supervision_page: '专项工作督查',
   city_county_assessment: '市对县绩效考核指标',
   city_index_management: '市对县指标管理',
@@ -52,5 +55,6 @@ export default {
   no_entry_unit_county: '乡镇指标填写时间',
   no_entry_unit_game: '六抓六赛指标填写时间',
   no_entry_unit_all: '指标未录入预警',
-  city_index_audit: '指标审核审批'
+  city_index_audit: '指标审核审批',
+  six_game_page: ''
 }

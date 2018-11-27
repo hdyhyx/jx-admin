@@ -57,7 +57,8 @@ export default [{
     name: 'city_index_management',
     meta: {
       icon: 'md-trending-up',
-      title: '市对县指标管理'
+      title: '市对县指标管理',
+      access: ['admin']
     },
     component: () =>
           import('@/view/city-county-assessment/city-index-management/city-index-management.vue')
@@ -97,7 +98,8 @@ export default [{
     name: 'county_index_management',
     meta: {
       icon: 'md-trending-up',
-      title: '市对县指标管理'
+      title: '市对县指标管理',
+      access: ['admin']
     },
     component: () =>
           import('@/view/county-town-assessment/county-index-management/county-index-management.vue')
@@ -125,22 +127,45 @@ export default [{
   ]
 },
 {
-  path: '/six_game',
-  name: 'six_game',
+  path: '/six_game_assessment',
+  name: 'six_game_assessment',
   meta: {
-    hide: true
+    icon: 'md-menu',
+    title: '六抓六赛绩效指标考核'
   },
   component: Main,
   children: [{
-    path: 'six_game_page',
-    name: 'six_game_page',
+    path: '/six_game_management',
+    name: 'six_game_management',
     meta: {
-      icon: 'md-checkbox-outline',
-      title: '六抓六赛考核指标'
+      icon: 'md-trending-up',
+      title: '市对县指标管理',
+      access: ['admin']
     },
     component: () =>
-        import('@/view/six-game/six-game-page.vue')
-  }]
+          import('@/view/six-game-assessment/six-game-management/six-game-management.vue')
+  },
+  {
+    path: '/six_game_data',
+    name: 'six_game_data',
+    meta: {
+      icon: 'md-stats',
+      title: '市对县的指标考核数据'
+    },
+    component: () =>
+          import('@/view/six-game-assessment/six-game-data/six-game-data.vue')
+  },
+  {
+    path: '/six_game_audit',
+    name: 'six_game_audit',
+    meta: {
+      icon: 'md-checkbox-outline',
+      title: '指标审核审批'
+    },
+    component: () =>
+          import('@/view/six-game-assessment/six-game-audit/six-game-audit.vue')
+  }
+  ]
 },
   // {
   //   path: '/target_management',

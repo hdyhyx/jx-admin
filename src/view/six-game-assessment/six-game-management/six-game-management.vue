@@ -835,8 +835,8 @@ export default {
     },
     // 查询数据
     _getCountyList(token, form, pageNumber, pageSize) {
-      const url = "/api/townIndicators/query";
-      const keyOne = "townIndicatorsFilter";
+      const url = "/api/sixIndicators/query";
+      const keyOne = "sixIndicatorsFilter";
       let formData = Object.assign(form, {
         pageSize: pageSize,
         pageNumber: pageNumber
@@ -853,27 +853,27 @@ export default {
     },
     // 添加数据
     _addIndexCounty(token, formData) {
-      const url = "/api/townIndicators/insert";
-      const keyOne = "townIndicatorsEntity";
+      const url = "/api/sixIndicators/insert";
+      const keyOne = "sixIndicatorsEntity";
       const keyTwo = "townList";
       return new Promise((resolve, reject) => {
         countyAjax({ token, formData, url, keyOne, keyTwo }).then(res => {
-          if (res.data.code === "200") {
+          if (res.data !== undefined) {
             resolve(res.data);
           } else {
-            reject(eer);
+            reject();
           }
         });
       });
     },
     // 更新修改
     _updateIndexCounty(token, formData) {
-      const url = "/api/townIndicators/update";
-      const keyOne = "townIndicatorsEntity";
+      const url = "/api/sixIndicators/update";
+      const keyOne = "sixIndicatorsEntity";
       const keyTwo = "townList";
       return new Promise((resolve, reject) => {
         countyAjax({ token, formData, url, keyOne, keyTwo }).then(res => {
-          if (res.data.code === "200") {
+          if (res.data !== undefined) {
             resolve(res.data);
           } else {
             reject();
@@ -884,14 +884,14 @@ export default {
     // 删除
     _removeIndexCounty(token, formData) {
       const url = "/api/townIndicators/delete";
-      const keyOne = "townIndicatorsEntity";
+      const keyOne = "sixIndicatorsEntity";
       const keyTwo = "townList";
       return new Promise((resolve, reject) => {
         countyAjax({ token, formData, url, keyOne, keyTwo }).then(res => {
-          if (res.data.code === "200") {
+          if (res.data !== undefined) {
             resolve(res.data);
           } else {
-            reject(eer);
+            reject();
           }
         });
       });
@@ -1025,7 +1025,7 @@ export default {
       // 处理一级指标
       for (let i = 0; i < this.tableData.length; i++) {
         var indexDataOne = {};
-        indexDataOne["townIndicatorsEntity"] = Object.assign(
+        indexDataOne["sixIndicatorsEntity"] = Object.assign(
           {},
           {
             id: "",
@@ -1083,7 +1083,7 @@ export default {
           associated["list"].push(indexAssociated);
           continue;
         }
-        countyAllIndex["townIndicatorsEntity"] = Object.assign(
+        countyAllIndex["sixIndicatorsEntity"] = Object.assign(
           {},
           {
             indexType: "二级指标",
@@ -1110,7 +1110,7 @@ export default {
             dateTime: this.excelTime
           }
         );
-        countyAllIndex["townList"] = [
+        countyAllIndex["sixTownList"] = [
           {
             townName: "塘前乡",
             weight: this.tableData[i]["塘前乡"]

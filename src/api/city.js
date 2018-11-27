@@ -62,18 +62,21 @@ function countyData(token, formData, KEY_1, KEY_2) {
   }
   if (formData['list'] === undefined) {
     data[KEY_1] = {
-      id: formData.id === undefined ? '' : formData.id,
-      indexName: formData.indexName,
-      indexType: formData.indexType,
-      leadUnit: formData.leadUnit,
-      superiorIndexId: formData.superiorIndexId,
-      responsibilityUnit: formData.responsibilityUnit,
-      score: formData.score,
-      weight: formData.weight,
-      pageSize: formData.pageSize,
-      pageNumber: formData.pageNumber,
+      id: formData.id === undefined ? '' : formData.id, // id
+      indexName: formData.indexName, // 指标名称
+      indexType: formData.indexType, // 指标类型
+      leadUnit: formData.leadUnit, // 牵头单位
+      superiorIndexId: formData.superiorIndexId, // 上级单位
+      responsibilityUnit: formData.responsibilityUnit, // 责任单位
+      score: formData.score, // 分数
+      weight: formData.weight, // 招权重
+      pageSize: formData.pageSize, // 显示页数
+      pageNumber: formData.pageNumber, // 页码
+      audit: formData.audit === undefined ? '' : formData.audit, // 审核状态
       monthTime: formData.monthTime === undefined ? '' : formData.monthTime, // 月份
-      dateTime: formData.dateTime // 指标年份
+      dateTime: formData.dateTime, // 指标年份
+      scoreType: formData.scoreType === undefined ? '' : formData.scoreType, // 分数类型
+      reason: formData.reason === undefined ? '' : formData.reason // 回退原因
 
     }
     if (formData.indexType === '二级指标' && KEY_2 !== undefined) {

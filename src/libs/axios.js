@@ -24,11 +24,11 @@ const addErrorLog = errorInfo => {
 }
 
 class HttpRequest {
-  constructor (baseUrl = baseURL) {
+  constructor(baseUrl = baseURL) {
     this.baseUrl = ''
     this.queue = {}
   }
-  getInsideConfig () {
+  getInsideConfig() {
     const config = {
       baseURL: this.baseUrl,
       headers: {
@@ -37,13 +37,13 @@ class HttpRequest {
     }
     return config
   }
-  destroy (url) {
+  destroy(url) {
     delete this.queue[url]
     if (!Object.keys(this.queue).length) {
       // Spin.hide()
     }
   }
-  interceptors (instance, url) {
+  interceptors(instance, url) {
     // 请求拦截
     instance.interceptors.request.use(config => {
       // 添加全局的loading...
@@ -63,22 +63,12 @@ class HttpRequest {
         status
       } = res
       console.log(res);
-      if (data.code !== '200') {
+      if (data.code === '40002') {
         // 后端服务在个别情况下回报201，待确认
-        if (data.code === '40002') {
-          Cookies.remove(TOKEN_KEY)
-          Message.error('未登录，或登录失效，请登录')
-          window.location.href = '/#/login'
-        } else if (data.code === '500') {
-          if (data.message) {
-            Message.error(data.message)
-          } else {
-            Message.error('请联系管理员')
-          }
-        }
-        return {
-          data
-        }
+        Cookies.remove(TOKEN_KEY)
+        Message.error('未登录，或登录失效，请登录')
+        window.location.href = '/#/login'
+        return false
       }
       return {
         data,
@@ -90,7 +80,7 @@ class HttpRequest {
       return Promise.reject(error)
     })
   }
-  request (options) {
+  request(options) {
     const instance = axios.create()
     options = Object.assign(this.getInsideConfig(), options)
     this.interceptors(instance, options.url)

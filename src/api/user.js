@@ -18,7 +18,6 @@ export const login = ({
 }
 
 export const getUserInfo = (token) => {
-  console.log(token)
   return axios.request({
     url: Url + '/Login/loginUserInfo',
     data: {
@@ -30,7 +29,10 @@ export const getUserInfo = (token) => {
 
 export const logout = (token) => {
   return axios.request({
-    url: 'logout',
+    url: Url + '/Login/exit',
+    data: {
+      value: token
+    },
     method: 'post'
   })
 }

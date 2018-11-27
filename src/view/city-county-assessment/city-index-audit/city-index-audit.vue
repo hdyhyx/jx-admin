@@ -35,7 +35,6 @@
                         <Option value="6">全部</Option>
                         <Option value="0">未审核</Option>
                         <Option value="1">责任人审核</Option>
-                        <Option value="2">管理员审核</Option>
                         <Option value="3">回退</Option>
                     </Select>
                 </FormItem>
@@ -129,25 +128,25 @@
           <Row>
               <i-col :xs="24" :md="12" :lg="12" >
                 <FormItem label="得分" prop="score" :label-width="60">
-                    <Input  v-model="formCityData.score"></Input>
+                    <Input  v-model="formCityData.score" disabled></Input>
                 </FormItem>
               </i-col>
               <i-col :xs="24" :md="12" :lg="12" >
                 <FormItem label="排名" prop="alternateField1" :label-width="80">
-                   <Input   v-model="formCityData.alternateField1"></Input>
+                   <Input   v-model="formCityData.alternateField1" disabled></Input>
                 </FormItem>
               </i-col>
           </Row>
           <Row>
               <i-col :xs="24" :md="12" :lg="12" >
                 <FormItem label="填入时间"  prop="monthTime" :label-width="60">
-                  <DatePicker type="month" format="yyyy-MM" v-model="selectTime" @on-change="selectMonth" placeholder="Select month" style="width: 200px"></DatePicker>
+                  <DatePicker disabled type="month" format="yyyy-MM" v-model="selectTime" @on-change="selectMonth" placeholder="Select month" style="width: 200px"></DatePicker>
                 </FormItem>
               </i-col>
           </Row>
           <Row>
             <i-col  :lg="24">
-            <FormItem label="回退原因" :label-width="60">
+            <FormItem label="回退原因" :label-width="50" prop="reason">
                 <Input v-model="formCityData.reason" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="如果回退输入原因，其他操作无需输入"></Input>
             </FormItem>
             </i-col>
@@ -239,6 +238,13 @@ export default {
             required: false,
             message: "请输入时间",
             trigger: "change"
+          }
+        ],
+        reason: [
+          {
+            required: true,
+            message: "请输入回退原因",
+            trigger: "blur"
           }
         ]
       },
@@ -368,13 +374,11 @@ export default {
                         this.formCityData.year = params.row.dateTime;
                         this.formCityData.monthTime = params.row.monthTime;
                       }
-
                       //
                       this.formCityData = Object.assign(
                         this.formCityData,
                         params.row
                       );
-                      console.log(this.formCityData);
                     }
                   }
                 },
@@ -474,7 +478,7 @@ export default {
         if (valid) {
           // Loading
           this.isFallback = true;
-          const url = "/api/countryIndicators/noPass";
+          const url = "/api/countryScore/noPass";
           this._addCityIndex(token, this.formCityData, url).then(result => {
             if (result.data.code === "200") {
               this.isFallback = false;
@@ -505,36 +509,31 @@ export default {
     },
     // 审批通过
     submitForm() {
-      this.$refs["formCityData"].validate(valid => {
-        if (valid) {
-          // Loading
-          this.ModalLoading = true;
-          const url = "/api/countryScore/pass";
-          this._addCityIndex(token, this.formCityData, url).then(result => {
-            if (result.data.code === "200") {
-              this.ModalLoading = false;
-              this.indexModal = false;
-              this.$Message.success("操作成功");
-              this._getCityList(
-                token,
-                this.searchData,
-                this.pageSize,
-                this.pageNumber
-              )
-                .then(result => {
-                  this.pageTotal = parseInt(result.results.pageTotal) * 10;
-                  this.cityIndexList = result.results.list;
-                  this.tableLoading = false;
-                })
-                .catch(err => {
-                  console.log(err);
-                });
-            } else if (result.data.code === "500") {
-              this.ModalLoading = false;
-            }
-          });
-        } else {
-          this.$Message.error("请输入完整");
+      // Loading
+      this.ModalLoading = true;
+      const url = "/api/countryScore/pass";
+      this._addCityIndex(token, this.formCityData, url).then(result => {
+        if (result.data.code === "200") {
+          this.ModalLoading = false;
+          this.indexModal = false;
+          this.$Message.success("操作成功");
+          this._getCityList(
+            token,
+            this.searchData,
+            this.pageSize,
+            this.pageNumber
+          )
+            .then(result => {
+              this.pageTotal = parseInt(result.results.pageTotal) * 10;
+              this.cityIndexList = result.results.list;
+              this.tableLoading = false;
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        } else if (result.data.code === "500") {
+          this.$Message.error(result.data.message);
+          this.ModalLoading = false;
         }
       });
     },
@@ -585,7 +584,7 @@ export default {
       return new Promise((resolve, reject) => {
         cityAjax({ token, formData, url, key }).then(res => {
           console.log(res);
-          if (res.data.code === "200") {
+          if (res.data !== undefined) {
             resolve(res.data);
           } else {
             reject();
@@ -655,4 +654,8 @@ export default {
 };
 </script>
 <style>
+.ivu-input[disabled],
+fieldset[disabled] .ivu-input {
+  color: #333;
+}
 </style>

@@ -48,7 +48,7 @@
               </i-col>
               <i-col :xs="24" :md="12" :lg="6" >
                 <FormItem label="选择月份">
-                    <Select clearable  v-model="searchData.monthTime" placeholder="请选择方向" style="width: 150px">
+                    <Select clearable  v-model="searchData.monthTime" placeholder="请选择月份" style="width: 150px">
                         <Option value="01">1月</Option>
                         <Option value="02">2月</Option>
                         <Option value="03">3月</Option>
@@ -734,7 +734,7 @@ export default {
       this.$refs["formData"].validate(valid => {
         if (valid) {
           this.isReasonLoading = true;
-          const url = "/api/townScore/noPass";
+          const url = "/api/sixScore/noPass";
           const data = Object.assign(
             {},
             {
@@ -762,7 +762,7 @@ export default {
         );
         dataArr["list"].push(data);
       });
-      const url = "/api/townScore/pass";
+      const url = "/api/sixScore/pass";
       this.submitAudit(url, dataArr);
     },
     // 单选审核通过
@@ -779,7 +779,7 @@ export default {
         );
         dataArr["list"].push(data);
       });
-      const url = "/api/townScore/pass";
+      const url = "/api/sixScore/pass";
       this.submitAudit(url, dataArr);
     },
     // 表格取消全选
@@ -957,8 +957,8 @@ export default {
     },
     // 查询数据
     _getCountyList(token, form, pageNumber, pageSize) {
-      const url = "/api/townScore/queryForAudit";
-      const keyOne = "townIndicatorsFilter";
+      const url = "/api/sixScore/queryForAudit";
+      const keyOne = "sixIndicatorsFilter";
       let formData = Object.assign(form, {
         pageNumber: pageNumber,
         pageSize: pageSize
@@ -975,7 +975,7 @@ export default {
     },
     // 添加数据
     _addIndexCounty(token, formData, url) {
-      const keyOne = "townIndicatorsFilter";
+      const keyOne = "sixIndicatorsFilter";
       return new Promise((resolve, reject) => {
         countyAjax({ token, formData, url, keyOne }).then(res => {
           if (res.data !== undefined) {

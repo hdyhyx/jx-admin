@@ -130,8 +130,21 @@
           </Row>
           <Row>
               <i-col :xs="24" :md="12" :lg="12" >
-                <FormItem label="填入时间"  prop="monthTime" :label-width="60">
-                  <DatePicker type="month" format="yyyy-MM" v-model="selectTime" @on-change="selectMonth" placeholder="Select month" style="width: 200px"></DatePicker>
+                <FormItem label="选择月份" prop="monthTime">
+                    <Select clearable   v-model="formCityData.monthTime" placeholder="请选择方向" style="width: 150px">
+                        <Option value="01">1月</Option>
+                        <Option value="02">2月</Option>
+                        <Option value="03">3月</Option>
+                        <Option value="04">4月</Option>
+                        <Option value="05">5月</Option>
+                        <Option value="06">6月</Option>
+                        <Option value="07">7月</Option>
+                        <Option value="08">8月</Option>
+                        <Option value="09">9月</Option>
+                        <Option value="10">10月</Option>
+                        <Option value="11">11月</Option>
+                        <Option value="12">12月</Option>
+                    </Select>
                 </FormItem>
               </i-col>
           </Row>
@@ -589,13 +602,8 @@ export default {
 };
 </script>
 
-<style scoped>
-.ivu-input[disabled],
-fieldset[disabled] .ivu-input {
-  color: #666;
-}
-.ivu-input-wrapper .ivu-input[disabled],
-fieldset[disabled] .ivu-input {
-  color: #666;
+<style>
+.ivu-input-number-disabled .ivu-input-number-input {
+  color: #333;
 }
 </style>

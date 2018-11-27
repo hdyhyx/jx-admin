@@ -83,7 +83,7 @@
             </Upload>
            </i-col>
           <i-col :xs="24" :md="8" :lg="3">
-            <DatePicker  type="year" format="yyyy" value="formCityList.year" @on-change="updateTime" placeholder="请选择指标年份" style="width: auto"></DatePicker>
+            <DatePicker  type="year" format="yyyy" value="formCityList.monthTime" @on-change="updateTime" placeholder="请选择指标年份" style="width: auto"></DatePicker>
           </i-col>
           <i-col :xs="24" :md="8" :lg="3">
             <Button type="primary" :loading="UploadLoadingBtn" @click="updateExcel">
@@ -133,7 +133,7 @@
           </FormItem>
           <FormItem label="上级指标" prop="superiorIndexId" v-if="isFormFlase">
               <Select v-model="formCityList.superiorIndexId"  placeholder="请选择上级指标" style="width:500px">
-                  <Option v-for="item in superiorIndexId" :value="item.indexName" :key="item.id">{{ item.indexName }}</Option>
+                  <Option v-for="item in superiorIndexSelect" :value="item" :key="item">{{ item }}</Option>
               </Select>
           </FormItem>
           <FormItem label="牵头单位" prop="leadUnit" v-if="isFormFlase">
@@ -193,7 +193,7 @@ export default {
       indexOne: [], // 一级指标数据
       indexTwo: [], // 二级指标数据
       storeSuperiorIndexId: "", // 处理当指标Id与select选择指标的Value不一致
-      superiorIndexId: [], // form选择指标
+      superiorIndexSelect: [], // form选择指标
       excelUpdate: "",
       formSelectTime: "",
       searchData: {
@@ -248,7 +248,7 @@ export default {
                       console.log(this.formCityList);
                       if (params.row.id !== "") {
                         this.formCityList = params.row;
-                        this.formCityList.year = params.row.dateTime;
+                        this.formCityList.monthTime = params.row.dateTime;
                         this.formSelectTime = params.row.dateTime;
                       } else {
                         this.$Message.error("刷新页面后尝试此操作");
@@ -344,7 +344,7 @@ export default {
                       this.targetName = "编辑指标";
                       if (params.row.id !== "") {
                         this.formCityList = params.row;
-                        this.formCityList.year = params.row.dateTime;
+                        this.formCityList.monthTime = params.row.dateTime;
                         this.formSelectTime = params.row.dateTime;
                       } else {
                         this.$Message.error("刷新页面后尝试此操作");
@@ -387,6 +387,13 @@ export default {
             required: true,
             message: "请选择指标等级",
             trigger: "change"
+          }
+        ],
+        weight: [
+          {
+            required: true,
+            message: "请输入权数值",
+            trigger: "blur"
           }
         ]
       },
@@ -434,7 +441,7 @@ export default {
     },
     // FORM表单年份
     IndexFormat(year) {
-      this.formCityList.year = year;
+      this.formCityList.monthTime = year;
       this.formSelectTime = year;
     },
     // 搜索框年份
@@ -448,6 +455,7 @@ export default {
     // 添加指标 编辑指标
     BtnSubmit(e) {
       this.$refs["formCityList"].validate(valid => {
+        console.log(this.formCityList);
         if (valid) {
           this.submitloading = true;
           if (this.targetName === "永泰县指标增加") {
@@ -468,6 +476,10 @@ export default {
                       this.pageSize,
                       this.page
                     ).then(res => {
+                      this.superiorIndexSelect = [];
+                      res.results.firstIndex.forEach(item => {
+                        this.superiorIndexSelect.push(item.indexName);
+                      });
                       this.indexOne = res.results.list;
                       this.addIndex = false;
                     });
@@ -499,7 +511,7 @@ export default {
               if (res.code === "200") {
                 this.submitloading = false;
                 this.addIndex = false;
-                this.formSelectTime = this.formCityList.year;
+                this.formSelectTime = this.formCityList.monthTime;
                 this.$Message.success("修改成功");
                 if (this.formCityList.indexType === "一级指标") {
                   let indexType = {
@@ -568,6 +580,7 @@ export default {
       this.isFormFlase = false;
       this.isFormTrue = true;
       this.addIndex = true;
+      this.formSelectTime = "";
     },
     // 搜索查询
     seachSubmit(name, isRemove) {
@@ -892,6 +905,7 @@ export default {
       this.UploadLoadingBtn = true;
       if (!this.tableData.length || this.excelTime === "") {
         this.$Message.error("请选择上传文件或选择指标年份");
+        this.UploadLoadingBtn = false;
         return;
       }
       const fromIndexOne = { list: [] }; // 一级指标
@@ -1007,11 +1021,11 @@ export default {
       console.log(associated);
       this._addIndexCity(token, fromIndexOne).then(res => {
         if (res.code === "200") {
+          this.UploadLoadingBtn = false;
           this._addIndexCity(token, formIndexTwo).then(res => {
             if (res.code === "200") {
-              this.UploadLoadingBtn = false;
               this._addIndexCity(token, associated).then(res => {
-                console.log(res);
+                this.$Message.info("添加成功");
               });
             } else {
               this.$Message.info("指标添加失败");
@@ -1019,6 +1033,7 @@ export default {
           });
         } else {
           this.$Message.info("指标添加失败");
+          this.UploadLoadingBtn = false;
         }
       });
       this.tableData = [];
@@ -1051,7 +1066,10 @@ export default {
       this.pageSize,
       this.pageNumber
     ).then(res => {
-      this.superiorIndexId = res.results.firstIndex; // from表单 上级指标 seachSelect
+      res.results.firstIndex; // from表单 上级指标 seachSelect
+      res.results.firstIndex.forEach(item => {
+        this.superiorIndexSelect.push(item.indexName);
+      });
       this.pageTotal = parseInt(res.results.pageTotal) * 10;
       this.indexOne = res.results.list;
       this.TableOneLoading = false;
