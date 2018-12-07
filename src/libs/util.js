@@ -159,7 +159,6 @@ export const getNewTagList = (list, newRoute) => {
  * @param {*} route 路由列表
  */
 const hasAccess = (access, route) => {
-  console.log(access, route)
   if (route.meta && route.meta.access) return hasOneOf(access, route.meta.access)
   else return true
 }
@@ -172,7 +171,6 @@ const hasAccess = (access, route) => {
  * @description 用户是否可跳转到该页
  */
 export const canTurnTo = (name, access, routes) => {
-  debugger
   const routePermissionJudge = (list) => {
     return list.some(item => {
       if (item.children && item.children.length) {
@@ -355,3 +353,7 @@ export const localSave = (key, value) => {
 export const localRead = (key) => {
   return localStorage.getItem(key) || ''
 }
+
+// 本地 http: //http://192.168.8.107:8080/api
+// 线上 http: //http://119.23.191.0:80
+export const HOST = "http://119.23.191.0:80"

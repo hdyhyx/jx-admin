@@ -1,5 +1,5 @@
-import Main from '@/components/main'
-import parentView from '@/components/parent-view'
+import Main from "@/components/main";
+import parentView from "@/components/parent-view";
 
 /**
  * iview-admin中meta除了原生参数外可配置的参数:
@@ -13,649 +13,349 @@ import parentView from '@/components/parent-view'
  */
 
 export default [{
-  path: '/login',
-  name: 'login',
+  path: "/login",
+  name: "login",
   meta: {
-    title: 'Login - 登录',
+    title: "Login - 登录",
     hideInMenu: true
   },
-  component: () =>
-      import('@/view/login/login.vue')
+  component: () => import("@/view/login/login.vue")
 },
 {
-  path: '/',
-  name: '_home',
-  redirect: '/home',
+  path: "/",
+  name: "_home",
+  redirect: "/home",
   component: Main,
   meta: {
     hideInMenu: true,
     notCache: true
   },
   children: [{
-    path: '/home',
-    name: 'home',
+    path: "/home",
+    name: "home",
     meta: {
       hideInMenu: true,
-      title: '首页',
+      title: "首页",
       notCache: true,
-      icon: 'md-home'
+      icon: "md-home"
     },
-    component: () =>
-        import('@/view/single-page/home')
+    component: () => import("@/view/single-page/home")
   }]
 },
 {
-  path: '/city_county_assessment',
-  name: 'city_county_assessment',
+  path: "/city_county_assessment",
+  name: "city_county_assessment",
   meta: {
-    icon: 'md-menu',
-    title: '市对县绩效考核指标'
+    icon: "md-menu",
+    title: "市对县绩效考核指标"
   },
   component: Main,
   children: [{
-    path: '/city_index_management',
-    name: 'city_index_management',
+    path: "/city_index_management",
+    name: "city_index_management",
     meta: {
-      icon: 'md-trending-up',
-      title: '市对县指标管理',
-      access: ['admin']
+      icon: "md-trending-up",
+      title: "市对县指标管理",
+      access: ["admin"]
     },
     component: () =>
-          import('@/view/city-county-assessment/city-index-management/city-index-management.vue')
+          import("@/view/city-county-assessment/city-index-management/city-index-management.vue")
   },
   {
-    path: '/city_index_data',
-    name: 'city_index_data',
+    path: "/city_index_data",
+    name: "city_index_data",
     meta: {
-      icon: 'md-stats',
-      title: '市对县的指标考核数据'
+      icon: "md-stats",
+      title: "市对县的指标考核数据"
     },
     component: () =>
-          import('@/view/city-county-assessment/city-index-data/city-index-data.vue')
+          import("@/view/city-county-assessment/city-index-data/city-index-data.vue")
   },
   {
-    path: '/city_index_audit',
-    name: 'city_index_audit',
+    path: "/city_index_audit",
+    name: "city_index_audit",
     meta: {
-      icon: 'md-checkbox-outline',
-      title: '指标审核审批'
+      icon: "md-checkbox-outline",
+      title: "指标审核审批",
+      access: ["admin", "responsible"]
     },
     component: () =>
-          import('@/view/city-county-assessment/city-index-audit/city-index-audit.vue')
+          import("@/view/city-county-assessment/city-index-audit/city-index-audit.vue")
   }
   ]
 },
 {
-  path: '/county_town_assessment',
-  name: 'county_town_assessment',
+  path: "/county_town_assessment",
+  name: "county_town_assessment",
   meta: {
-    icon: 'md-menu',
-    title: '市对县绩效考核指标'
+    icon: "md-menu",
+    title: "市对县绩效考核指标"
   },
   component: Main,
   children: [{
-    path: '/county_index_management',
-    name: 'county_index_management',
+    path: "/county_index_management",
+    name: "county_index_management",
     meta: {
-      icon: 'md-trending-up',
-      title: '市对县指标管理',
-      access: ['admin']
+      icon: "md-trending-up",
+      title: "市对县指标管理",
+      access: ["admin"]
     },
     component: () =>
-          import('@/view/county-town-assessment/county-index-management/county-index-management.vue')
+          import("@/view/county-town-assessment/county-index-management/county-index-management.vue")
   },
   {
-    path: '/county_index_data',
-    name: 'county_index_data',
+    path: "/county_index_data",
+    name: "county_index_data",
     meta: {
-      icon: 'md-stats',
-      title: '市对县的指标考核数据'
+      icon: "md-stats",
+      title: "市对县的指标考核数据"
     },
     component: () =>
-          import('@/view/county-town-assessment/county-index-data/county-index-data.vue')
+          import("@/view/county-town-assessment/county-index-data/county-index-data.vue")
   },
   {
-    path: '/county_index_audit',
-    name: 'county_index_audit',
+    path: "/county_index_audit",
+    name: "county_index_audit",
     meta: {
-      icon: 'md-checkbox-outline',
-      title: '指标审核审批'
+      icon: "md-checkbox-outline",
+      title: "指标审核审批",
+      access: ["admin", "responsible"]
     },
     component: () =>
-          import('@/view/county-town-assessment/county-index-audit/county-index-audit.vue')
+          import("@/view/county-town-assessment/county-index-audit/county-index-audit.vue")
   }
   ]
 },
 {
-  path: '/six_game_assessment',
-  name: 'six_game_assessment',
+  path: "/six_game_assessment",
+  name: "six_game_assessment",
   meta: {
-    icon: 'md-menu',
-    title: '六抓六赛绩效指标考核'
+    icon: "md-menu",
+    title: "六抓六赛绩效指标考核"
   },
   component: Main,
   children: [{
-    path: '/six_game_management',
-    name: 'six_game_management',
+    path: "/six_game_management",
+    name: "six_game_management",
     meta: {
-      icon: 'md-trending-up',
-      title: '市对县指标管理',
-      access: ['admin']
+      icon: "md-trending-up",
+      title: "市对县指标管理",
+      access: ["admin"]
     },
     component: () =>
-          import('@/view/six-game-assessment/six-game-management/six-game-management.vue')
+          import("@/view/six-game-assessment/six-game-management/six-game-management.vue")
   },
   {
-    path: '/six_game_data',
-    name: 'six_game_data',
+    path: "/six_game_data",
+    name: "six_game_data",
     meta: {
-      icon: 'md-stats',
-      title: '市对县的指标考核数据'
+      icon: "md-stats",
+      title: "市对县的指标考核数据"
     },
     component: () =>
-          import('@/view/six-game-assessment/six-game-data/six-game-data.vue')
+          import("@/view/six-game-assessment/six-game-data/six-game-data.vue")
   },
   {
-    path: '/six_game_audit',
-    name: 'six_game_audit',
+    path: "/six_game_audit",
+    name: "six_game_audit",
     meta: {
-      icon: 'md-checkbox-outline',
-      title: '指标审核审批'
+      icon: "md-checkbox-outline",
+      title: "指标审核审批",
+      access: ["admin", "responsible"]
     },
     component: () =>
-          import('@/view/six-game-assessment/six-game-audit/six-game-audit.vue')
+          import("@/view/six-game-assessment/six-game-audit/six-game-audit.vue")
   }
   ]
 },
-  // {
-  //   path: '/target_management',
-  //   name: 'target_management',
-  //   meta: {
-  //     hide: true
-  //   },
-  //   component: Main,
-  //   children: [{
-  //     path: 'target_management_page',
-  //     name: 'target_management_page',
-  //     meta: {
-  //       icon: 'md-trending-up',
-  //       title: '指标管理'
-  //     },
-  //     component: () =>
-  //         import('@/view/target-management/target-management.vue')
-  //   }]
-  // },
-  // {
-  //   path: '/city_assess',
-  //   name: 'city_assess',
-  //   meta: {
-  //     hide: true
-  //   },
-  //   component: Main,
-  //   children: [{
-  //     path: '/city_assess_page',
-  //     name: 'city_assess_page',
-  //     meta: {
-  //       icon: 'md-clipboard',
-  //       title: '市对县指标考核数据'
-  //     },
-  //     component: () =>
-  //         import('@/view/city-assess/city-assess.vue')
-  //   }]
-  // },
-  // {
-  //   path: '/county_assess',
-  //   name: 'county_assess',
-  //   meta: {
-  //     hide: true
-  //   },
-  //   component: Main,
-  //   children: [{
-  //     path: '/county_assess_page',
-  //     name: 'county_assess_page',
-  //     meta: {
-  //       icon: 'md-clipboard',
-  //       title: '县对乡镇指标考核数据'
-  //     },
-  //     component: () =>
-  //         import('@/view/county-assess/county-assess.vue')
-  //   }]
-  // },
 {
-  path: '/incentive',
-  name: 'incentive',
+  path: "/incentive",
+  name: "incentive",
   meta: {
     hide: true,
-    icon: 'md-flame'
+    icon: "md-flame"
   },
   component: Main,
   children: [{
-    path: '/incentive_page',
-    name: 'incentive_page',
+    path: "/incentive_page",
+    name: "incentive_page",
     meta: {
-      icon: 'md-flame',
-      title: '正向激励'
+      icon: "md-flame",
+      title: "正向激励"
     },
-    component: () =>
-          import('@/view/incentive/incentive-page/incentive.vue')
+    component: () => import("@/view/incentive/incentive-page/incentive.vue")
   },
   {
-    path: '/incentive_audit',
-    name: 'incentive_audit',
+    path: "/incentive_audit",
+    name: "incentive_audit",
     meta: {
-      icon: 'md-checkbox-outline',
-      title: '正向激励审批'
+      icon: "md-checkbox-outline",
+      title: "正向激励审批"
     },
     component: () =>
-          import('@/view/incentive/incentive-audit/incentive-audit.vue')
+          import("@/view/incentive/incentive-audit/incentive-audit.vue")
+  },
+  {
+    path: "/incentive_details/:id",
+    name: "incentive_details",
+    meta: {
+      icon: "md-checkbox-outline",
+      title: "正向激励审批",
+      hideInMenu: true
+    },
+    component: () =>
+          import("@/view/incentive/incentive-details/incentive-details.vue")
   }
   ]
 },
 {
-  path: '/dynamic_news',
-  name: 'dynamic_news',
+  path: "/dynamic_news",
+  name: "dynamic_news",
   meta: {
+    icon: "logo-twitter",
     hide: true
   },
   component: Main,
   children: [{
-    path: '/dynamic_news_page',
-    name: 'dynamic_news_page',
+    path: "/dynamic_news_page",
+    name: "dynamic_news_page",
     meta: {
-      icon: 'logo-twitter',
-      title: '动态新闻'
+      icon: "logo-twitter",
+      title: "动态新闻"
     },
-    component: () =>
-        import('@/view/dynamic-news/dynamic-news.vue')
+    component: () => import("@/view/dynamic-news/dynamic-news-page/dynamic-news-page.vue")
+  }, {
+    path: "/dynamic_news_edi",
+    name: "dynamic_news_edi",
+    meta: {
+      icon: "ios-create-outline",
+      title: "动态编辑"
+    },
+    component: () => import("@/view/dynamic-news/dynamic-news-edi/dynamic-news-edi.vue")
   }]
 },
 {
-  path: '/investigate',
-  name: 'investigate',
+  path: "/investigate",
+  name: "investigate",
   meta: {
-    icon: 'ios-search',
-    title: '察访工作'
+    icon: "ios-search",
+    title: "察访工作",
+    access: ["hide"]
   },
   component: Main,
   children: [{
-    path: 'investigate_outbox',
-    name: 'investigate_outbox',
+    path: "investigate_outbox",
+    name: "investigate_outbox",
     meta: {
-      icon: 'md-funnel',
-      title: '已发送文件'
+      icon: "md-funnel",
+      title: "已发送文件"
     },
     component: () =>
-          import('@/view/investigate/investigate-outbox/investigate-outbox.vue')
+          import("@/view/investigate/investigate-outbox/investigate-outbox.vue")
   },
   {
-    path: 'investigate_ide',
-    name: 'investigate_ide',
+    path: "investigate_ide",
+    name: "investigate_ide",
     meta: {
-      icon: 'ios-create-outline',
-      title: '编辑文件'
+      icon: "ios-create-outline",
+      title: "编辑文件"
     },
     component: () =>
-          import('@/view/investigate/investigate-ide/investigate-ide.vue')
+          import("@/view/investigate/investigate-ide/investigate-ide.vue")
   },
   {
-    path: 'investigate_inbox',
-    name: 'investigate_inbox',
+    path: "investigate_inbox",
+    name: "investigate_inbox",
     meta: {
-      icon: 'ios-mail-outline',
-      title: '已收到文件'
+      icon: "ios-mail-outline",
+      title: "已收到文件"
     },
     component: () =>
-          import('@/view/investigate/investigate-inbox/investigate-inbox.vue')
+          import("@/view/investigate/investigate-inbox/investigate-inbox.vue")
   }
   ]
 },
 {
-  path: '/work_supervision',
-  name: 'work_supervision',
-  meta: {
-    hide: true
-  },
-  component: Main,
-  children: [{
-    path: 'work_supervision_page',
-    name: 'work_supervision_page',
-    meta: {
-      icon: 'md-eye',
-      title: '专项工作督查'
-    },
-    component: () =>
-        import('@/view/work-supervision/work-supervision.vue')
-  }]
-},
-{
-  path: '/no_entry_unit',
-  name: 'no_entry_unit',
-  meta: {
-    icon: 'ios-search',
-    title: '未录入单位'
-  },
-  component: Main,
-  children: [{
-    path: 'no_entry_unit_county',
-    name: 'no_entry_unit_county',
-    meta: {
-      icon: 'md-funnel',
-      title: '乡镇指标未录入'
-    },
-    component: () =>
-          import('@/view/no-entry-unit/no-entry-unit-county/no-entry-unit-county.vue')
-  },
-  {
-    path: 'no_entry_unit_game',
-    name: 'no_entry_unit_game',
-    meta: {
-      icon: 'ios-create-outline',
-      title: '六抓六赛未录入'
-    },
-    component: () =>
-          import('@/view/no-entry-unit/no-entry-unit-game/no-entry-unit-game.vue')
-  },
-  {
-    path: 'no_entry_unit_all',
-    name: 'no_entry_unit_all',
-    meta: {
-      icon: 'ios-mail-outline',
-      title: '所以有未录入'
-    },
-    component: () =>
-          import('@/view/no-entry-unit/no-entry-unit-all/no-entry-unit-all.vue')
-  }
-  ]
-},
-{
-  path: '/components',
-  name: 'components',
-  meta: {
-    icon: 'logo-buffer',
-    title: '组件'
-  },
-  component: Main,
-  children: [{
-    path: 'count_to_page',
-    name: 'count_to_page',
-    meta: {
-      icon: 'md-trending-up',
-      title: '数字渐变'
-    },
-    component: () =>
-          import('@/view/components/count-to/count-to.vue')
-  },
-  {
-    path: 'drag_list_page',
-    name: 'drag_list_page',
-    meta: {
-      icon: 'ios-infinite',
-      title: '拖拽列表'
-    },
-    component: () =>
-          import('@/view/components/drag-list/drag-list.vue')
-  },
-  {
-    path: 'tables_page',
-    name: 'tables_page',
-    meta: {
-      icon: 'md-grid',
-      title: '多功能表格'
-    },
-    component: () =>
-          import('@/view/components/tables/tables.vue')
-  },
-  {
-    path: 'split_pane_page',
-    name: 'split_pane_page',
-    meta: {
-      icon: 'md-pause',
-      title: '分割窗口'
-    },
-    component: () =>
-          import('@/view/components/split-pane/split-pane.vue')
-  },
-  {
-    path: 'markdown_page',
-    name: 'markdown_page',
-    meta: {
-      icon: 'logo-markdown',
-      title: 'Markdown编辑器'
-    },
-    component: () =>
-          import('@/view/components/markdown/markdown.vue')
-  },
-  {
-    path: 'editor_page',
-    name: 'editor_page',
-    meta: {
-      icon: 'ios-create',
-      title: '富文本编辑器'
-    },
-    component: () =>
-          import('@/view/components/editor/editor.vue')
-  },
-  {
-    path: 'icons_page',
-    name: 'icons_page',
-    meta: {
-      icon: '_bear',
-      title: '自定义图标'
-    },
-    component: () =>
-          import('@/view/components/icons/icons.vue')
-  }
-  ]
-},
-{
-  path: '/update',
-  name: 'update',
-  meta: {
-    icon: 'md-cloud-upload',
-    title: '数据上传'
-  },
-  component: Main,
-  children: [{
-    path: 'update_table_page',
-    name: 'update_table_page',
-    meta: {
-      icon: 'ios-document',
-      title: '上传Csv'
-    },
-    component: () =>
-          import('@/view/update/update-table.vue')
-  },
-  {
-    path: 'update_paste_page',
-    name: 'update_paste_page',
-    meta: {
-      icon: 'md-clipboard',
-      title: '粘贴表格数据'
-    },
-    component: () =>
-          import('@/view/update/update-paste.vue')
-  }
-  ]
-},
-{
-  path: '/excel',
-  name: 'excel',
-  meta: {
-    icon: 'ios-stats',
-    title: 'EXCEL导入导出'
-  },
-  component: Main,
-  children: [{
-    path: 'upload-excel',
-    name: 'upload-excel',
-    meta: {
-      icon: 'md-add',
-      title: '导入EXCEL'
-    },
-    component: () =>
-          import('@/view/excel/upload-excel.vue')
-  },
-  {
-    path: 'export-excel',
-    name: 'export-excel',
-    meta: {
-      icon: 'md-download',
-      title: '导出EXCEL'
-    },
-    component: () =>
-          import('@/view/excel/export-excel.vue')
-  }
-  ]
-},
-  // {
-  //   path: '/tools_methods',
-  //   name: 'tools_methods',
-  //   meta: {
-  //     hide: true
-  //   },
-  //   component: Main,
-  //   children: [{
-  //     path: 'tools_methods_page',
-  //     name: 'tools_methods_page',
-  //     meta: {
-  //       icon: 'ios-hammer',
-  //       title: '工具方法',
-  //       beforeCloseName: 'before_close_normal'
-  //     },
-  //     component: () =>
-  //         import('@/view/tools-methods/tools-methods.vue')
-  //   }]
-  // },
-  // {
-  //   path: '/i18n',
-  //   name: 'i18n',
-  //   meta: {
-  //     hide: true
-  //   },
-  //   component: Main,
-  //   children: [{
-  //     path: 'i18n_page',
-  //     name: 'i18n_page',
-  //     meta: {
-  //       icon: 'md-planet',
-  //       title: '国际化'
-  //     },
-  //     component: () =>
-  //         import('@/view/i18n/i18n-page.vue')
-  //   }]
-  // },
-{
-  path: '/error_store',
-  name: 'error_store',
-  meta: {
-    hide: true
-  },
-  component: Main,
-  children: [{
-    path: 'error_store_page',
-    name: 'error_store_page',
-    meta: {
-      icon: 'ios-bug',
-      title: '错误收集'
-    },
-    component: () =>
-        import('@/view/error-store/error-store.vue')
-  }]
-},
-{
-  path: '/error_logger',
-  name: 'error_logger',
+  path: "/work_supervision",
+  name: "work_supervision",
   meta: {
     hide: true,
-    hideInMenu: true
+    access: ["hide"]
   },
   component: Main,
   children: [{
-    path: 'error_logger_page',
-    name: 'error_logger_page',
+    path: "work_supervision_page",
+    name: "work_supervision_page",
     meta: {
-      icon: 'ios-bug',
-      title: '错误收集'
+      icon: "md-eye",
+      title: "专项工作督查"
     },
-    component: () =>
-        import('@/view/single-page/error-logger.vue')
+    component: () => import("@/view/work-supervision/work-supervision.vue")
   }]
 },
-  // {
-  //   path: '/directive',
-  //   name: 'directive',
-  //   meta: {
-  //     hide: true
-  //   },
-  //   component: Main,
-  //   children: [{
-  //     path: 'directive_page',
-  //     name: 'directive_page',
-  //     meta: {
-  //       icon: 'ios-navigate',
-  //       title: '指令'
-  //     },
-  //     component: () =>
-  //         import('@/view/directive/directive.vue')
-  //   }]
-  // },
 {
-  path: '/argu',
-  name: 'argu',
+  path: "/no_entry_unit",
+  name: "no_entry_unit",
   meta: {
-    hideInMenu: true
+    icon: "ios-search",
+    title: "未录入单位",
+    access: ["hide"]
   },
   component: Main,
   children: [{
-    path: 'params/:id',
-    name: 'params',
+    path: "no_entry_unit_county",
+    name: "no_entry_unit_county",
     meta: {
-      icon: 'md-flower',
-      title: route => `动态路由-${route.params.id}`,
-      notCache: true,
-      beforeCloseName: 'before_close_normal'
+      icon: "md-funnel",
+      title: "乡镇指标未录入"
     },
     component: () =>
-          import('@/view/argu-page/params.vue')
+          import("@/view/no-entry-unit/no-entry-unit-county/no-entry-unit-county.vue")
   },
   {
-    path: 'query',
-    name: 'query',
+    path: "no_entry_unit_game",
+    name: "no_entry_unit_game",
     meta: {
-      icon: 'md-flower',
-      title: route => `带参路由-${route.query.id}`,
-      notCache: true
+      icon: "ios-create-outline",
+      title: "六抓六赛未录入"
     },
     component: () =>
-          import('@/view/argu-page/query.vue')
+          import("@/view/no-entry-unit/no-entry-unit-game/no-entry-unit-game.vue")
+  },
+  {
+    path: "no_entry_unit_all",
+    name: "no_entry_unit_all",
+    meta: {
+      icon: "ios-mail-outline",
+      title: "所以有未录入"
+    },
+    component: () =>
+          import("@/view/no-entry-unit/no-entry-unit-all/no-entry-unit-all.vue")
   }
   ]
 },
 {
-  path: '/401',
-  name: 'error_401',
+  path: "/401",
+  name: "error_401",
   meta: {
     hideInMenu: true
   },
-  component: () =>
-      import('@/view/error-page/401.vue')
+  component: () => import("@/view/error-page/401.vue")
 },
 {
-  path: '/500',
-  name: 'error_500',
+  path: "/500",
+  name: "error_500",
   meta: {
     hideInMenu: true
   },
-  component: () =>
-      import('@/view/error-page/500.vue')
+  component: () => import("@/view/error-page/500.vue")
 },
 {
-  path: '*',
-  name: 'error_404',
+  path: "*",
+  name: "error_404",
   meta: {
     hideInMenu: true
   },
-  component: () =>
-      import('@/view/error-page/404.vue')
+  component: () => import("@/view/error-page/404.vue")
 }
-]
+];

@@ -3,56 +3,57 @@
 </template>
 
 <script>
-import echarts from 'echarts';
-import tdTheme from './theme.json';
-import { on, off } from '@/libs/tools';
-echarts.registerTheme('tdTheme', tdTheme);
+import echarts from "echarts";
+import tdTheme from "./theme.json";
+import { on, off } from "@/libs/tools";
+echarts.registerTheme("tdTheme", tdTheme);
 export default {
-  name: 'ChartPie',
+  name: "ChartPie",
   props: {
     value: Array,
     text: String,
     subtext: String
   },
-  data () {
+  data() {
     return {
       dom: null
     };
   },
   methods: {
-    resize () {
+    resize() {
       this.dom.resize();
     }
   },
-  mounted () {
+  mounted() {
     this.$nextTick(() => {
       let legend = this.value.map(_ => _.name);
       let option = {
         title: {
           text: this.text,
           subtext: this.subtext,
-          x: 'center'
+          x: "center"
         },
         tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b} : {c} ({d}%)'
+          trigger: "item",
+          formatter: "{a} <br/>{b} : {c} ({d}%)"
         },
         legend: {
-          orient: 'vertical',
-          left: 'left',
+          orient: "vertical",
+          left: "left",
           data: legend
         },
         series: [
           {
-            name: '加分类别',
-            type: 'pie',
-            radius: '70%',
-            center: ['50%', '55%'],
+            name: "加分类别",
+            type: "pie",
+            radius: "70%",
+            center: ["50%", "55%"],
             label: {
               normal: {
-                formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
-                backgroundColor: '#eee',
-                borderColor: '#aaa',
+                formatter:
+                  "{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c} 项  {per|{d}%} ",
+                backgroundColor: "#eee",
+                borderColor: "#aaa",
                 borderWidth: 1,
                 borderRadius: 4,
                 // shadowBlur:3,
@@ -62,9 +63,9 @@ export default {
                 // padding: [0, 7],
                 rich: {
                   a: {
-                    color: '#999',
+                    color: "#999",
                     lineHeight: 22,
-                    align: 'center'
+                    align: "center"
                   },
                   // abg: {
                   //     backgroundColor: '#333',
@@ -74,8 +75,8 @@ export default {
                   //     borderRadius: [4, 4, 0, 0]
                   // },
                   hr: {
-                    borderColor: '#aaa',
-                    width: '100%',
+                    borderColor: "#aaa",
+                    width: "100%",
                     borderWidth: 0.5,
                     height: 0
                   },
@@ -84,8 +85,8 @@ export default {
                     lineHeight: 33
                   },
                   per: {
-                    color: '#eee',
-                    backgroundColor: '#334455',
+                    color: "#eee",
+                    backgroundColor: "#334455",
                     padding: [2, 4],
                     borderRadius: 2
                   }
@@ -94,8 +95,8 @@ export default {
               emphasis: {
                 show: true,
                 textStyle: {
-                  fontSize: '20',
-                  fontWeight: 'bold'
+                  fontSize: "20",
+                  fontWeight: "bold"
                 }
               }
             },
@@ -103,13 +104,13 @@ export default {
           }
         ]
       };
-      this.dom = echarts.init(this.$refs.dom, 'tdTheme');
+      this.dom = echarts.init(this.$refs.dom, "tdTheme");
       this.dom.setOption(option);
-      on(window, 'resize', this.resize);
+      on(window, "resize", this.resize);
     });
   },
-  beforeDestroy () {
-    off(window, 'resize', this.resize);
+  beforeDestroy() {
+    off(window, "resize", this.resize);
   }
 };
 </script>

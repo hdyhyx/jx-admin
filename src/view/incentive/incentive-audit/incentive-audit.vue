@@ -2,434 +2,349 @@
   <div>
     <Row>
       <Card>
-        <div style="margin-top: 6px">
-              <Form ref="searchData" :model="searchData" :rules="searchReg" :label-width="100">
-                <Row>
-                  <i-col :xs="12" :md="12" :lg="6" >
-                    <FormItem label="选择审核状态" prop="audit">
-                        <Select v-model="searchData.audit" placeholder="请选择审核状态" style="width:185px">
-                            <Option value="全部">全部</Option>
-                            <Option value="已审核">已审核</Option>
-                            <Option value="未审核">未审核</Option>
-                            <Option value="退回">退回</Option>
-                            <Option value="作废">作废</Option>
-                        </Select>
-                    </FormItem>
-                  </i-col>
-                  <i-col :xs="12" :md="12" :lg="6" >
-                    <FormItem label="表彰类型" prop="citeType">
-                        <Select v-model="searchData.citeType" placeholder="请选择表彰类型" style="width:185px">
-                            <Option value="1类">1类</Option>
-                            <Option value="2类">2类</Option>
-                            <Option value="3类">3类</Option>
-                            <Option value="4类">4类</Option>
-                            <Option value="4类">5类</Option>
-                        </Select>
-                    </FormItem>
-                  </i-col>
-                  <i-col :xs="12" :md="12" :lg="6" >
-                    <FormItem label="表彰单位">
-                        <Input search placeholder="请输入表彰单位" v-model="searchData.citeUnit" style="width: auto">
-                            <Icon type="ios-search" slot="suffix" />
-                        </Input>
-                    </FormItem>
-                  </i-col>
-                </Row>
-                <Row>
-                  <i-col :xs="12" :md="12" :lg="6" >
-                    <FormItem label="被表彰单位">
-                        <Input search placeholder="请输入被表彰单位" v-model="searchData.byCiteUnit" style="width: auto">
-                            <Icon type="ios-search" slot="suffix" />
-                        </Input>
-                    </FormItem>
-                  </i-col>
-                  <i-col :xs="12" :md="12" :lg="6" >
-                    <FormItem label="事项名称">
-                        <Input search placeholder="请输入事项名称" v-model="searchData.mattersName" style="width: auto">
-                            <Icon type="ios-search" slot="suffix" />
-                        </Input>
-                    </FormItem>
-                  </i-col>
-                </Row>
-                    <FormItem>
-                      <Button type="primary" @click="seachSubmit('searchData')">提交搜索</Button>
-                      <Button @click="seachReset('searchData')" style="margin-left: 8px">重置</Button>
-                  </FormItem>
-              </Form>
-        </div>
-        <!-- <div style="margin-top: 10px">
-            <span>增加指标：</span>
-            <Button   @click="addTarget($event)" >乡镇指标</Button>
-        </div> -->
+        <Form ref="search" :model="searchData" :rules="searchReg" :label-width="80">
+          <Row>
+            <i-col :xs="24" :md="12" :lg="6">
+              <FormItem label="搜索事项" prop="name">
+                <Input
+                  v-model="searchData.incentive"
+                  suffix="ios-search"
+                  placeholder="请输入事项名称"
+                  style="width: auto"
+                >
+                  <Icon type="ios-search" slot="suffix"/>
+                </Input>
+              </FormItem>
+            </i-col>
+            <i-col :xs="24" :md="12" :lg="6">
+              <FormItem label="加分类别" prop="name">
+                <Select v-model="searchData.pointsType" style="width:200px" clearable>
+                  <Option value="1">第 1 类</Option>
+                  <Option value="2">第 2 类</Option>
+                  <Option value="3">第 3 类</Option>
+                  <Option value="4">第 4 类</Option>
+                  <Option value="5">第 5 类</Option>
+                </Select>
+              </FormItem>
+            </i-col>
+            <i-col :xs="24" :md="12" :lg="6">
+              <FormItem label="表彰机关" prop="name">
+                <Input
+                  v-model="searchData.recognitionUnit"
+                  placeholder="请输入表彰机关"
+                  style="width: auto"
+                ></Input>
+              </FormItem>
+            </i-col>
+            <i-col :xs="24" :md="12" :lg="6">
+              <FormItem label="被表彰机关" prop="name">
+                <Input
+                  v-model="searchData.commendedUnit"
+                  placeholder="请输入被表彰机关"
+                  style="width: auto"
+                ></Input>
+              </FormItem>
+            </i-col>
+          </Row>
+          <Row>
+            <i-col :xs="24" :md="12" :lg="6">
+              <FormItem label="审核状态" prop="name">
+                <Select v-model="searchData.audit" style="width:200px" clearable>
+                  <Option value="0">全部</Option>
+                  <Option value="2">未审核</Option>
+                  <Option value="3">回退</Option>
+                </Select>
+              </FormItem>
+            </i-col>
+            <i-col :xs="24" :md="12" :lg="6">
+              <FormItem label="年份">
+                <DatePicker
+                  type="year"
+                  format="yyyy"
+                  @on-change="searchSelectYear"
+                  placeholder="按年份搜索"
+                  style="width:185px"
+                  v-model="searchData.dateTime"
+                ></DatePicker>
+              </FormItem>
+            </i-col>
+          </Row>
+          <FormItem>
+            <Button
+              type="primary"
+              style="marigin:0 20px"
+              :loading="searchLoading"
+              @click="searchSubmit(10,1)"
+            >提交搜索</Button>
+            <Button @click="submitReset">重置搜索</Button>
+          </FormItem>
+        </Form>
       </Card>
     </Row>
-    <!-- 指标内容 -->
     <Row style="margin-top:10px">
       <Card>
-         <Table border :columns="columns7"  :data="data6"></Table>
-      <div style="margin-top:15px;margin-left:35%">
-          <Page :total="100" show-elevator />
-      </div>
+        <Table border :columns="incentiveHead" :loading="tabelLoading" :data="incentiveData"></Table>
+        <div style="margin-top:15px;margin-left:35%">
+          <Page
+            @on-change="pageNumberChange"
+            :page-size="pageSize"
+            :total="pageTotal"
+            @on-page-size-change="pageSizeChange"
+            show-elevator
+            show-sizer
+          />
+        </div>
       </Card>
     </Row>
-     <!-- 查看模态框 -->
-    <Modal v-model="lookContent">
-      <p slot="header" style="color:#2db7f5;text-align:center">
-          <Icon type="ios-information-circle" size="20"></Icon>
-          <span>查看事项</span>
-      </p>
-      <div style="font-size:15px">
-        <div style="margin-bottom:10px">
-          事项名称：<span style="color:#000">{{lookRowContent.name}}</span>
-         </div>
-        <div style="margin-bottom:10px">
-         表彰机关：<span style="color:#000">{{lookRowContent.recognition}}</span>
-       </div>
-       <div style="margin-bottom:10px">
-         被表彰机关：<span style="color:#000">{{lookRowContent.honored}}</span>
-       </div>
-       <div style="margin-bottom:10px">
-        证明材料名称：<span style="color:#000">{{lookRowContent.material}}</span>
-       </div>
-       <div style="margin-bottom:10px">
-        证明材料附件：
-        <div style="text-align:center;border-bottom:1px solid #C0C0C0;padding-bottom:10px">
-         <img :src="lookRowContent.imageUrl" width="350px" height="220px">
-        </div>
-        <div style="margin-bottom:5px;margin-top:10px">
-        加分类别：
-        <span>
-          <Button type="info" shape="circle" style="margin-left:20px">第 5 类</Button>
-        </span>
-        </div>
-        <div style="margin-top:10px">加分分值：<strong>0.3</strong></div>
-       </div>
-      </div>
-      <div slot="footer">
-          <Button type="success" size="large" @click="passAudit">审核通过</Button>
-          <Button type="warning" size="large" @click="backAudit">退回</Button>
-          <Button type="error" size="large" @click="invalidAudit">作废</Button>
-          <Button  size="large" @click="lookContent=false">取消</Button>
-      </div>
-    </Modal>
-
   </div>
 </template>
 <script>
+import { incentiveAjax } from "@/api/city";
 export default {
-  data () {
+  data() {
     return {
-      addIndex: false, // 显示增加模态框
-      loading: false, // 增加模态框确定loading
-      lookContent: false,
-      lookRowContent: '',
+      pageTotal: 10, // 总页数
+      pageSize: 10, // 页数
+      pageNumber: 1, // 页码
+      searchLoading: false, // 搜索Loading
+      tabelLoading: true, // 表格Loading
       searchData: {
-        audit: '',
-        citeType: '',
-        citeUnit: '',
-        byCiteUnit: '',
-        mattersName: ''
+        incentive: "", // 事项名称
+        pointsType: "", // 加分类别
+        recognitionUnit: "", // 表彰机关
+        commendedUnit: "", // 被表彰机关
+        audit: "", // 审核状态,
+        dateTime: "" // 年份
       },
-      columns7: [
+      // 表单
+      searchReg: {},
+      incentiveHead: [
         {
-          type: 'index',
+          type: "index",
           width: 60,
-          align: 'center'
+          align: "center"
         },
         {
-          title: '事项名称',
-          key: 'name',
-          render: (h, params) => {
-            return h('div', [
-              h('Icon', {
-                props: {
-                  type: 'person'
-                }
-              }),
-              h('strong', params.row.name)
-            ]);
-          }
+          title: "事项名称",
+          key: "incentive"
         },
         {
-          title: '正名材料',
-          key: 'material',
+          title: "表彰机关",
+          key: "recognitionUnit"
+        },
+        {
+          title: "被表彰单位",
+          key: "commendedUnit"
+        },
+        {
+          title: "加分类别",
+          key: "pointsType",
+          maxWidth: 90
+        },
+        {
+          title: "审批状态",
+          key: "audit",
+          width: 100,
+          align: "center",
           render: (h, params) => {
+            var color = "";
+            var text = "";
+            var isDisabled = false;
+            switch (params.row.audit) {
+              case "0":
+                color = "default";
+                text = "未审核";
+                break;
+              case "1":
+                color = "success";
+                text = "已审核";
+                isDisabled = true;
+                break;
+              case "2":
+                color = "error";
+                text = "回退";
+                break;
+              default:
+                break;
+            }
             return h(
-              'div',
+              "Button",
               {
-                style: {
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  width: '100%'
+                props: {
+                  type: color,
+                  disabled: isDisabled
                 }
               },
-              params.row.material
+              text
             );
           }
         },
         {
-          title: '表彰机关',
-          key: 'recognition',
+          title: "正名材料",
+          key: "fileName"
+        },
+        {
+          title: "操作",
+          key: "action",
+          width: 100,
+          align: "center",
           render: (h, params) => {
-            return h(
-              'div',
-              {
-                style: {
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  width: '100%'
-                }
-              },
-              params.row.recognition
-            );
-          }
-        },
-        {
-          title: '被表彰单位',
-          key: 'honored'
-        },
-        {
-          title: '审核状态',
-          key: 'auditState',
-          align: 'center'
-        },
-        {
-          title: '加分类别',
-          key: 'plusCategory',
-          width: 90
-        },
-        {
-          title: '操作',
-          key: 'action',
-          width: 120,
-          align: 'center',
-          render: (h, params) => {
-            return h('div', [
-              // <Icon type="md-trash" /><Icon type="md-eye" />
-              h('Icon', {
-                props: {
-                  type: 'md-eye',
-                  size: '24'
-                },
-                style: {
-                  marginRight: '5px'
-                },
-                on: {
-                  click: () => {
-                    this.lookRow(params.row);
-                  }
-                }
-              }),
-              // h(
-              //   'Icon',
-              //   {
-              //     props: {
-              //       type: 'md-create',
-              //       size: '24'
-              //     },
-              //     style: {
-              //       marginRight: '5px'
-              //     },
-              //     on: {
-              //       click: () => {
-              //         this.isShowMatters(params.row);
-              //       }
-              //     }
-              //   },
-              //   '编辑'
-              // ),
+            return h("div", [
               h(
-                'Icon',
+                "Button",
                 {
                   props: {
-                    type: 'md-trash',
-                    size: 24
+                    type: "primary"
+                  },
+                  style: {
+                    marginRight: "5px"
                   },
                   on: {
                     click: () => {
-                      this.remove(params.index);
+                      this.$router.push({
+                        name: "incentive_details",
+                        params: {
+                          incentiveItem: params.row,
+                          audit: true
+                        }
+                      });
                     }
                   }
                 },
-                '删除'
+                "查看"
               )
             ]);
           }
         }
       ],
-      data6: [
-        {
-          name: '生态文明',
-          recognition: '福州人民政府福',
-          honored: '永泰县',
-          plusCategory: '3',
-          auditState: '未审核',
-          material: '牌匾、环保部2017年48号公告',
-          imageUrl:
-            'https://o5wwk8baw.qnssl.com/bc7521e033abdd1e92222d733590f104/avatar'
-        },
-        {
-          name: '生态文明',
-          recognition: '福州人民政府',
-          honored: '永泰县',
-          plusCategory: '3',
-          auditState: '已审核',
-          material: '牌匾、环保部2017年48号公告',
-          imageUrl: 'https://....'
-        },
-        {
-          name: '生态文明',
-          recognition: '福州人民政府',
-          honored: '永泰县',
-          plusCategory: '3',
-          auditState: '已审核',
-          material: '牌匾、环保部2017年48号公告',
-          imageUrl: 'https://....'
-        },
-        {
-          name: '生态文明',
-          recognition: '福州人民政府',
-          honored: '永泰县',
-          auditState: '已审核',
-          material: '牌匾、环保部2017年48号公告',
-          imageUrl: 'https://....'
-        },
-        {
-          name: '生态文明',
-          recognition: '福州人民政府',
-          honored: '永泰县',
-          plusCategory: '3',
-          auditState: '作废',
-          material: '牌匾、环保部2017年48号公告',
-          imageUrl: 'https://....'
-        },
-        {
-          name: '生态文明',
-          recognition: '福州人民政府',
-          honored: '永泰县',
-          plusCategory: '3',
-          auditState: '退回',
-          material: '牌匾、环保部2017年48号公告',
-          imageUrl: 'https://....'
-        },
-        {
-          name: '生态文明',
-          recognition: '福州人民政府',
-          honored: '永泰县',
-          plusCategory: '3',
-          auditState: '退回',
-          material: '牌匾、环保部2017年48号公告',
-          imageUrl: 'https://....'
-        },
-        {
-          name: '生态文明',
-          recognition: '福州人民政府',
-          honored: '永泰县',
-          plusCategory: '3',
-          auditState: '已审核',
-          material: '牌匾、环保部2017年48号公告',
-          imageUrl: 'https://....'
-        },
-        {
-          name: '生态文明',
-          recognition: '福州人民政府',
-          honored: '永泰县',
-          plusCategory: '3',
-          auditState: '已审核',
-          material: '牌匾、环保部2017年48号公告',
-          imageUrl: 'https://....'
-        },
-        {
-          name: '生态文明',
-          recognition: '福州人民政府',
-          honored: '永泰县',
-          plusCategory: '3',
-          auditState: '已审核',
-          material: '牌匾、环保部2017年48号公告',
-          imageUrl: 'https://....'
-        }
-      ],
-      searchReg: {
-        audit: [
-          {
-            required: true,
-            message: '请选择审核状态',
-            trigger: 'change'
-          }
-        ]
-      }
+      incentiveData: []
     };
   },
   methods: {
-    backAudit () {},
-    passAudit () {},
-    invalidAudit () {},
-    lookRow (e) {
-      console.log(e);
-      this.lookRowContent = e;
-      this.lookContent = true;
+    submitReset() {
+      this.submitLoading = false;
+      this.searchData = {
+        incentive: "", // 事项名称
+        pointsType: "", // 加分类别
+        recognitionUnit: "", // 表彰机关
+        commendedUnit: "", // 被表彰机关
+        audit: "", // 审核状态,
+        dateTime: "" // 年份
+      };
     },
-    remove (index) {
-      this.data6.splice(index, 1);
+    // 搜索
+    searchSubmit(pageSize, pageNumber) {
+      this._getIncentive(this.searchData, pageSize, pageNumber);
     },
-    seachSubmit (name) {
-      this.$refs[name].validate(valid => {
-        if (valid) {
-          console.log(this.searchData);
-          this.$Message.success('成功');
-        } else {
-          this.$Message.error('带*不可为空');
-        }
+    // form表单选择年份
+    formSelectYear(year) {
+      this.mattersForm.dateTime = year;
+    },
+    // 关闭抽屉
+    closeDrawer() {
+      this.isShowMatters = false;
+      this.submitLoading = false;
+    },
+    // 页码
+    pageNumberChange(pageNumber) {
+      this.pageNumber = pageNumber;
+      this._getIncentive(this.searchData, this.pageSize, this.pageNumber);
+    },
+    // 页数
+    pageSizeChange(pageSize) {
+      this.pageSize = pageSize;
+      this._getIncentive(this.searchData, this.pageSize, this.pageNumber);
+    },
+    // 添加事项
+    appendMatter() {
+      this.isShowMatters = true;
+    },
+    // 搜索框年份选择
+    searchSelectYear(year) {
+      this.searchData.dateTime = year;
+    },
+
+    // 搜索
+    _getIncentive(formData, pageSize, pageNumber) {
+      this.tabelLoading = true;
+      formData = Object.assign(formData, {
+        pageSize,
+        pageNumber
       });
-    },
-    seachReset (name) {
-      this.$refs[name].resetFields();
-    },
-    closeAudit () {
-      this.addIndex = false;
+      const url = "/incentive/audit";
+      const keyOne = "incentiveFilter";
+      const keyTwo = "";
+      incentiveAjax({ formData, url, keyOne, keyTwo })
+        .then(result => {
+          this.tabelLoading = false;
+          this.incentiveData = [];
+          if (result.data.code === "200") {
+            result.data.results.list.forEach(item => {
+              this.incentiveData.push(item.incentive);
+            });
+            this.pageTotal = parseInt(result.data.results.total) * 10;
+            this.$Message.success("查询成功");
+          } else {
+            this.$Message.error("查询失败");
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   },
-  watch: {
-    formValidate: {
-      handler (newVal) {
-        if (newVal.Level === '一级指标') {
-          this.isFormFlase = false;
-          this.isFormTrue = true;
-        } else if (newVal.Level === '二级指标') {
-          this.isFormFlase = true;
-          this.isFormTrue = false;
-        }
-      },
-      deep: true
-    },
-    searchData: {
-      handler (newVal) {},
-      deep: true
-    }
+  created() {
+    // 获取tabel数据
+    this._getIncentive(this.searchData, this.pageSize, this.pageNumber);
+    // 饼图数据
   }
 };
 </script>
 <style>
-.villages-towns {
-  margin: 0px 0 30px 0px;
-}
-.villages-towns ul {
-  list-style-type: none;
-}
-.villages-towns .item {
+.demo-upload-list {
   display: inline-block;
-}
-.villages-towns .item .ivu-input {
-  font-size: 14px;
-}
-.villages-towns .item .item-title {
-  width: 71px;
-  height: 35px;
-  line-height: 35px;
+  width: 60px;
+  height: 60px;
   text-align: center;
-  background: #03a9f4;
-  color: #ffffff;
+  line-height: 60px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+  position: relative;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  margin-right: 4px;
+}
+.demo-upload-list img {
+  width: 100%;
+  height: 100%;
+}
+.demo-upload-list-cover {
+  display: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+.demo-upload-list:hover .demo-upload-list-cover {
+  display: block;
+}
+.demo-upload-list-cover i {
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 0 2px;
+}
+.demo-drawer-footer {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid #e8e8e8;
+  padding: 10px 16px;
+  text-align: right;
+  background: #fff;
 }
 </style>

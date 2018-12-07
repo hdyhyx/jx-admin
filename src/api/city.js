@@ -2,7 +2,10 @@ import axios from '@/libs/api.request'
 import {
   format
 } from 'path';
-
+import {
+  getToken
+} from "@/libs/util";
+const HOST = '/api'
 /**
  * @param {*} token
  * @param {*} formData  数据
@@ -10,11 +13,10 @@ import {
  * @returns
  * 用于市对乡镇指标管理
  */
-function citylData(token, formData, KEY_1) {
-  console.log(formData);
+function citylData(formData, KEY_1) {
   let data = {}
   data['tokenEntity'] = {
-    value: token
+    value: getToken()
   }
   if (formData['list'] === undefined) {
     data[KEY_1] = {
@@ -28,6 +30,7 @@ function citylData(token, formData, KEY_1) {
       direction: formData.direction, // 方向
       weight: formData.weight, // 权重
       dateTime: formData.year, // 指标年份
+      mainUnit: formData.mainUnit === undefined ? '' : formData.mainUnit, // 主要牵头单位
       monthTime: formData.monthTime === undefined ? '' : formData.monthTime, // 月份
       audit: formData.audit === undefined ? '' : formData.audit, // 审核状态
       score: formData.score === undefined ? '' : formData.score, // 分数
@@ -54,11 +57,11 @@ function citylData(token, formData, KEY_1) {
  * @returns 按照后台的规则返回Data
  * 用于县对乡镇指标管理
  */
-function countyData(token, formData, KEY_1, KEY_2) {
+function countyData(formData, KEY_1, KEY_2) {
   console.log(formData);
   let data = {}
   data['tokenEntity'] = {
-    value: token
+    value: getToken()
   }
   if (formData['list'] === undefined) {
     data[KEY_1] = {
@@ -72,6 +75,7 @@ function countyData(token, formData, KEY_1, KEY_2) {
       weight: formData.weight, // 招权重
       pageSize: formData.pageSize, // 显示页数
       pageNumber: formData.pageNumber, // 页码
+      mainUnit: formData.mainUnit === undefined ? '' : formData.mainUnit, // 主要牵头单位
       audit: formData.audit === undefined ? '' : formData.audit, // 审核状态
       monthTime: formData.monthTime === undefined ? '' : formData.monthTime, // 月份
       dateTime: formData.dateTime, // 指标年份
@@ -172,33 +176,119 @@ function countyData(token, formData, KEY_1, KEY_2) {
   console.log(data);
   return data
 }
+/**
+ * @param {*} token
+ * @param {*} formData form表单数据
+ * @param {*} keyOne  后台需要相应的对象
+ * @param {*} keyTwo  后台需要相应的对象
+ * @returns
+ */
+function incentiveData(formData, keyOne, keyTwo) {
+  console.log(formData)
+  let data = {}
+  data['tokenEntity'] = {
+    value: getToken()
+  }
+  data[keyOne] = {
+    id: formData.id,
+    incentive: formData.incentive === undefined ? '' : formData.incentive,
+    pointsType: formData.pointsType === undefined ? '' : formData.pointsType, // 加分类别
+    recognitionUnit: formData.recognitionUnit === undefined ? '' : formData.recognitionUnit, // 表彰机关
+    commendedUnit: formData.commendedUnit === undefined ? '' : formData.commendedUnit, // 被表彰机关
+    audit: formData.audit === undefined ? '' : formData.audit, // 审核状态,
+    dateTime: formData.dateTime === undefined ? '' : formData.dateTime, // 年份
+    point: formData.point === undefined ? '' : formData.point, // 分值
+    fileName: formData.fileName === undefined ? '' : formData.fileName, // 证明材料名称
+    fileId: formData.fileId === undefined ? '' : formData.fileId, // 材料附件Id
+    pageSize: formData.pageSize, // 显示页数
+    pageNumber: formData.pageNumber, // 页码
+    reason: formData.reason // 回退原因
+  }
+  return data
+}
+
+function newsData(formData, keyOne) {
+  let data = {}
+  data['tokenEntity'] = {
+    value: getToken()
+  }
+  data[keyOne] = {
+    id: formData.id,
+    title: formData.title,
+    content: formData.content,
+    dateTime: formData.dateTime,
+    editTime: formData.editTime,
+    monthTime: formData.monthTime,
+    url: formData.url
+  }
+  return data
+}
 // 市对县指标考核
 export const cityAjax = ({
-  token,
   formData,
   url,
   key
 }) => {
   let data = ''
-  data = citylData(token, formData, key);
+  data = citylData(formData, key);
   return axios.request({
-    url: url,
+    url: HOST + url,
     data,
     method: 'post'
   })
 }
-// 修改
+// 县对各乡镇、六抓六赛
 export const countyAjax = ({
-  token,
   formData,
   url,
   keyOne,
   keyTwo
 }) => {
   let data = ''
-  data = countyData(token, formData, keyOne, keyTwo)
+  data = countyData(formData, keyOne, keyTwo)
   return axios.request({
-    url: url,
+    url: HOST + url,
+    data,
+    method: 'post'
+  })
+}
+// 正向激励
+export const incentiveAjax = ({
+  formData,
+  url,
+  keyOne,
+  keyTwo
+}) => {
+  let data = ''
+  data = incentiveData(formData, keyOne, keyTwo)
+  return axios.request({
+    url: HOST + url,
+    data,
+    method: 'post'
+  })
+}
+// 新闻动态
+export const newsAjax = ({
+  formData,
+  url,
+  keyOne
+}) => {
+  let data = ''
+  data = newsData(formData, keyOne)
+  return axios.request({
+    url: HOST + url,
+    data,
+    method: 'post'
+  })
+}
+// 删除
+export const deleteAjax = ({
+  formData,
+  url
+}) => {
+  let data = formData
+  return axios.request({
+    url: HOST + url,
     data,
     method: 'post'
   })

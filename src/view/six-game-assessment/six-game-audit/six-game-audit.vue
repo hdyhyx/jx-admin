@@ -1,184 +1,288 @@
 <template>
   <div>
-        <Row>
+    <Row>
       <Card>
         <!-- 搜索 -->
-          <Form ref="searchData" :model="searchData"  :label-width="100">
-            <Row>
-              <i-col :xs="24" :md="12" :lg="6" >
-                <FormItem label="选择显示">
-                      <Cascader :data="selectScore"  v-model="searchData.showDefault"  change-on-select @on-change="selectScoreType"></Cascader>
-                </FormItem>
-              </i-col>
-              <i-col :xs="24" :md="12" :lg="6" >
-                <FormItem label="指标搜索" prop="superiorIndexId">
-                      <Cascader :data="selectIndex" change-on-select @on-change="selectIndexType"></Cascader>
-                </FormItem>
-              </i-col>
-              <i-col :xs="24" :md="12" :lg="6" >
-                <FormItem label="牵头单位">
-                    <Input search placeholder="请输入搜索内容" v-model="searchData.leadUnit" style="width: auto">
-                        <Icon type="ios-search" slot="suffix" />
-                    </Input>
-                </FormItem>
-              </i-col>
-              <i-col :xs="24" :md="12" :lg="6" >
-                <FormItem label="责任单位">
-                    <Input search placeholder="请输入搜索内容" v-model="searchData.responsibilityUnit" style="width: auto">
-                        <Icon type="ios-search" slot="suffix" />
-                    </Input>
-                </FormItem>
-              </i-col>
-            </Row>
-            <Row>
-              <i-col :xs="24" :md="12" :lg="6" >
-                <FormItem label="审核状态">
-                    <Select v-model="searchData.audit" placeholder="请选择审核状态" style="width: 150px">
-                        <Option value="5">全部</Option>
-                        <Option value="0">未审核</Option>
-                        <Option value="1">责任人已审核</Option>
-                        <Option value="3">退回</Option>
-                    </Select>
-                </FormItem>
-              </i-col>
-            <i-col :xs="24" :md="12" :lg="6" >
-                <FormItem label="选择年份">
-                  <DatePicker type="year" format="yyyy" @on-change="handlerFormat" placeholder="请选择指标年份" style="width:185px"></DatePicker>
-                </FormItem>
-              </i-col>
-              <i-col :xs="24" :md="12" :lg="6" >
-                <FormItem label="选择月份">
-                    <Select clearable  v-model="searchData.monthTime" placeholder="请选择月份" style="width: 150px">
-                        <Option value="01">1月</Option>
-                        <Option value="02">2月</Option>
-                        <Option value="03">3月</Option>
-                        <Option value="04">4月</Option>
-                        <Option value="05">5月</Option>
-                        <Option value="06">6月</Option>
-                        <Option value="07">7月</Option>
-                        <Option value="08">8月</Option>
-                        <Option value="09">9月</Option>
-                        <Option value="10">10月</Option>
-                        <Option value="11">11月</Option>
-                        <Option value="12">12月</Option>
-                    </Select>
-                </FormItem>
-              </i-col>
-            </Row>
-                <FormItem>
-                 <!-- 10是pageSize,1当前页 -->
-                  <Button :loading="searchLoading" type="primary" @click="seachSubmit(1,10)">提交搜索</Button>
-                  <Button @click="seachReset('searchData')" style="margin-left: 8px">重置</Button>
+        <Form ref="searchData" :model="searchData" :label-width="100">
+          <Row>
+            <i-col :xs="24" :md="12" :lg="6">
+              <FormItem label="选择显示">
+                <Cascader
+                  :data="selectScore"
+                  v-model="searchData.showDefault"
+                  change-on-select
+                  @on-change="selectScoreType"
+                ></Cascader>
               </FormItem>
-          </Form>
-        </Card>
+            </i-col>
+            <i-col :xs="24" :md="12" :lg="6">
+              <FormItem label="指标搜索" prop="superiorIndexId">
+                <Cascader :data="selectIndex" change-on-select @on-change="selectIndexType"></Cascader>
+              </FormItem>
+            </i-col>
+            <i-col :xs="24" :md="12" :lg="6">
+              <FormItem label="牵头单位">
+                <Input
+                  search
+                  placeholder="请输入搜索内容"
+                  v-model="searchData.leadUnit"
+                  style="width: auto"
+                >
+                  <Icon type="ios-search" slot="suffix"/>
+                </Input>
+              </FormItem>
+            </i-col>
+            <i-col :xs="24" :md="12" :lg="6">
+              <FormItem label="责任单位">
+                <Input
+                  search
+                  placeholder="请输入搜索内容"
+                  v-model="searchData.responsibilityUnit"
+                  style="width: auto"
+                >
+                  <Icon type="ios-search" slot="suffix"/>
+                </Input>
+              </FormItem>
+            </i-col>
+          </Row>
+          <Row>
+            <i-col :xs="24" :md="12" :lg="6">
+              <FormItem label="审核状态">
+                <Select v-model="searchData.audit" placeholder="请选择审核状态" style="width: 150px">
+                  <Option value="5">全部</Option>
+                  <Option value="0">未审核</Option>
+                  <Option value="1">责任人已审核</Option>
+                  <Option value="3">退回</Option>
+                </Select>
+              </FormItem>
+            </i-col>
+            <i-col :xs="24" :md="12" :lg="6">
+              <FormItem label="选择年份">
+                <DatePicker
+                  type="year"
+                  format="yyyy"
+                  @on-change="handlerFormat"
+                  placeholder="请选择指标年份"
+                  style="width:185px"
+                ></DatePicker>
+              </FormItem>
+            </i-col>
+            <i-col :xs="24" :md="12" :lg="6">
+              <FormItem label="选择月份">
+                <Select
+                  clearable
+                  v-model="searchData.monthTime"
+                  placeholder="请选择月份"
+                  style="width: 150px"
+                >
+                  <Option value="01">1月</Option>
+                  <Option value="02">2月</Option>
+                  <Option value="03">3月</Option>
+                  <Option value="04">4月</Option>
+                  <Option value="05">5月</Option>
+                  <Option value="06">6月</Option>
+                  <Option value="07">7月</Option>
+                  <Option value="08">8月</Option>
+                  <Option value="09">9月</Option>
+                  <Option value="10">10月</Option>
+                  <Option value="11">11月</Option>
+                  <Option value="12">12月</Option>
+                </Select>
+              </FormItem>
+            </i-col>
+          </Row>
+          <FormItem>
+            <!-- 10是pageSize,1当前页 -->
+            <Button :loading="searchLoading" type="primary" @click="seachSubmit(1,10)">提交搜索</Button>
+            <Button @click="seachReset('searchData')" style="margin-left: 8px">重置</Button>
+          </FormItem>
+        </Form>
+      </Card>
     </Row>
     <Row>
       <Card>
-         <Button  :disabled='isAllAuditBnt' @click="submitAllAudit" style="margin-bottom:10px">全选通过审核</Button>
-        <Table  @on-select-all-cancel="tabelSelectCancel"  @on-select-all="tabelSelectAll" v-if="isTabelAllShow" border stripe :loading="isTabelAllLoading"  :columns="tabelShowAll" :data="IndexAll"></Table>
-         <Table  @on-select-all-cancel="tabelSelectCancel"  @on-select-all="tabelSelectAll" v-if=" isTabelInedxShow" border stripe :loading="isTabelInedxLoading" :columns="tabelShowIndex" :data="IndexAll"></Table>
+        <Button :disabled="isAllAuditBnt" @click="submitAllAudit" style="margin-bottom:10px">全选通过审核</Button>
+        <Table
+          @on-select-all-cancel="tabelSelectCancel"
+          @on-select-all="tabelSelectAll"
+          v-if="isTabelAllShow"
+          border
+          stripe
+          :loading="isTabelAllLoading"
+          :columns="tabelShowAll"
+          :data="IndexAll"
+        ></Table>
+        <Table
+          @on-select-all-cancel="tabelSelectCancel"
+          @on-select-all="tabelSelectAll"
+          v-if=" isTabelInedxShow"
+          border
+          stripe
+          :loading="isTabelInedxLoading"
+          :columns="tabelShowIndex"
+          :data="IndexAll"
+        ></Table>
         <div style="margin-top:20px;margin-left:40%">
-            <Page @on-change="pageNumberChange" :current="pageCurrent" :page-size="pageSize"  :total="pageTotal" @on-page-size-change="pageSizeChange" show-elevator show-sizer />
+          <Page
+            @on-change="pageNumberChange"
+            :current="pageCurrent"
+            :page-size="pageSize"
+            :total="pageTotal"
+            @on-page-size-change="pageSizeChange"
+            show-elevator
+            show-sizer
+          />
         </div>
       </Card>
     </Row>
-    <Drawer title="各乡镇数据" :mask-closable="false"  :styles="styles" width="100%"  v-model="isDrawerShow">
-          <Form ref="formData"  :model="formData" :rules="countyReg">
-            <Row :gutter="32">
-                <Col span="10">
-                    <FormItem label="一级指标" label-position="top">
-                        <Input disabled v-model="formData.superiorIndexId" placeholder="please enter user name" />
+    <Drawer
+      title="各乡镇数据"
+      :mask-closable="false"
+      :styles="styles"
+      width="100%"
+      v-model="isDrawerShow"
+    >
+      <Form ref="formData" :model="formData" :rules="countyReg">
+        <Row :gutter="32">
+          <Col span="10">
+            <FormItem label="一级指标" label-position="top">
+              <Input
+                disabled
+                v-model="formData.superiorIndexId"
+                placeholder="please enter user name"
+              />
+            </FormItem>
+          </Col>
+          <Col span="10">
+            <FormItem label="二级指标" label-position="top">
+              <Input disabled v-model="formData.indexName" placeholder="please enter url"></Input>
+            </FormItem>
+          </Col>
+        </Row>
+        <Row :gutter="32">
+          <Col span="7">
+            <FormItem label="牵头单位" label-position="top">
+              <Input disabled v-model="formData.leadUnit" placeholder="please enter url"></Input>
+            </FormItem>
+          </Col>
+          <Col span="7">
+            <FormItem label="责任单位" label-position="top">
+              <Input disabled v-model="formData.responsibilityUnit" placeholder="please enter url"></Input>
+            </FormItem>
+          </Col>,
+          <Col span="6">
+            <FormItem label="权数" label-position="top">
+              <Input disabled v-model="formData.weight" placeholder="please enter url"></Input>
+            </FormItem>
+          </Col>
+        </Row>
+        <Row :gutter="24">
+          <Col span="3" v-for="(item,index) in countyList" :key="index">
+            <Card style="width:100%">
+              <div class="title" style="text-align: center;margin-bottom:10px;">{{index}}</div>
+              <div class="content">
+                <Row>
+                  <Col span="12">
+                    <FormItem>
+                      <Button type="primary" style="width:100%">权数</Button>
+                      <InputNumber
+                        style="width:100%"
+                        :max="100"
+                        :min="0"
+                        disabled
+                        v-model="countyList[index].weight"
+                      ></InputNumber>
                     </FormItem>
-                </Col>
-                <Col span="10">
-                    <FormItem label="二级指标" label-position="top">
-                        <Input disabled v-model="formData.indexName" placeholder="please enter url"></Input>
+                  </Col>
+                  <Col span="12">
+                    <FormItem>
+                      <Button type="success" style="width:100%">得分</Button>
+                      <InputNumber
+                        style="width:100%"
+                        disabled
+                        :max="100"
+                        :min="0"
+                        v-model="countyList[index].finalScore"
+                      ></InputNumber>
                     </FormItem>
-                </Col>
-            </Row>
-            <Row :gutter="32">
-                <Col span="7">
-                    <FormItem label="牵头单位" label-position="top">
-                         <Input disabled v-model="formData.leadUnit" placeholder="please enter url"></Input>
+                  </Col>
+                </Row>
+                <Row style="height:72px">
+                  <Col span="12">
+                    <FormItem prop="score">
+                      <Button type="error" style="width:100%">得分率</Button>
+                      <InputNumber
+                        style="width:100%"
+                        :max="100"
+                        :min="0"
+                        v-model="countyList[index].score"
+                      ></InputNumber>
                     </FormItem>
-                </Col>
-                <Col span="7">
-                    <FormItem label="责任单位" label-position="top">
-                          <Input disabled v-model="formData.responsibilityUnit" placeholder="please enter url"></Input>
+                  </Col>
+                  <Col span="12">
+                    <FormItem>
+                      <Button type="warning" style="width:100%">排名</Button>
+                      <InputNumber
+                        style="width:100%"
+                        :max="100"
+                        :min="0"
+                        v-model="countyList[index].rank"
+                      ></InputNumber>
                     </FormItem>
-                </Col>,
-                <Col span="6">
-                    <FormItem label="权数" label-position="top">
-                        <Input disabled v-model="formData.weight" placeholder="please enter url"></Input>
-                    </FormItem>
-                </Col>
-            </Row>
-            <Row :gutter="24" >
-                 <Col span="3"  v-for="(item,index) in countyList" :key="index">
-                    <Card style="width:100%">
-                      <div class="title" style="text-align: center;margin-bottom:10px;">
-                        {{index}}
-                      </div>
-                        <div class="content">
-                            <Row >
-                              <Col span="12">
-                                <FormItem>
-                                  <Button type="primary" style="width:100%">权数</Button>
-                                  <InputNumber style="width:100%" :max="100" :min="0"  disabled  v-model="countyList[index].weight"></InputNumber >
-                                </FormItem>
-                              </Col>
-                              <Col span="12">
-                                <FormItem>
-                                  <Button type="success" style="width:100%">得分</Button>
-                                  <InputNumber style="width:100%" disabled  :max="100" :min="0"  v-model="countyList[index].finalScore"></InputNumber>
-                                </FormItem>
-                              </Col>
-                            </Row>
-                            <Row style="height:72px">
-                              <Col span="12">
-                                <FormItem prop="score">
-                                  <Button  type="error" style="width:100%">得分率</Button>
-                                  <InputNumber style="width:100%" :max="100" :min="0"  v-model="countyList[index].score"></InputNumber>
-                                </FormItem>
-                              </Col>
-                              <Col span="12">
-                                <FormItem>
-                                      <Button type="warning" style="width:100%">排名</Button>
-                                  <InputNumber style="width:100%" :max="100" :min="0"  v-model="countyList[index].rank"></InputNumber>
-                                </FormItem>
-                              </Col>
-                            </Row>
-                        </div>
-                    </Card>
-                </Col>
-                 <Spin size="large" fix v-if="spinShow"></Spin>
-            </Row>
-            <Row style="margin-top:20px">
-              <i-col :xs="24" :md="12" :lg="4" >
-                <FormItem  label="填入时间"  prop="monthTime"  :label-width="100">
-                  <DatePicker disabled type="month" format="yyyy-MM" v-model="selectTime" @on-change="selectMonth" placeholder="请选择月份跟年份" style="width: 200px"></DatePicker>
-                </FormItem>
-              </i-col>
-              <i-col  :lg="11">
-              <FormItem label="回退原因" :label-width="80" prop="reason">
-                  <Input v-model="formData.reason" type="textarea"  :autosize="{minRows: 2,maxRows: 5}" placeholder="如果回退输入原因，其他操作无需输入"></Input>
-              </FormItem>
-              </i-col>
-            </Row>
-        </Form>
-        <div class="demo-drawer-footer" style="margin-left:50px">
-            <Button :loading="isSubmitLoading" style="width:200px;margin-right:20px" type="primary" @click="submitAuditIndex">审核通过</Button>
-            <Button :loading="isReasonLoading" style="width:200px;margin-right:20px" type="error" @click="submitReasonIndex">回退</Button>
-            <Button   style="width:100px;" @click="closeDrawerShow">取消</Button>
-        </div>
+                  </Col>
+                </Row>
+              </div>
+            </Card>
+          </Col>
+          <Spin size="large" fix v-if="spinShow"></Spin>
+        </Row>
+        <Row style="margin-top:20px">
+          <i-col :xs="24" :md="12" :lg="4">
+            <FormItem label="填入时间" prop="monthTime" :label-width="100">
+              <DatePicker
+                disabled
+                type="month"
+                format="yyyy-MM"
+                v-model="selectTime"
+                @on-change="selectMonth"
+                placeholder="请选择月份跟年份"
+                style="width: 200px"
+              ></DatePicker>
+            </FormItem>
+          </i-col>
+          <i-col :lg="11">
+            <FormItem label="回退原因" :label-width="80" prop="reason">
+              <Input
+                v-model="formData.reason"
+                type="textarea"
+                :autosize="{minRows: 2,maxRows: 5}"
+                placeholder="如果回退输入原因，其他操作无需输入"
+              ></Input>
+            </FormItem>
+          </i-col>
+        </Row>
+      </Form>
+      <div class="demo-drawer-footer" style="margin-left:50px">
+        <Button
+          :loading="isSubmitLoading"
+          style="width:200px;margin-right:20px"
+          type="primary"
+          @click="submitAuditIndex"
+        >审核通过</Button>
+        <Button
+          :loading="isReasonLoading"
+          style="width:200px;margin-right:20px"
+          type="error"
+          @click="submitReasonIndex"
+        >回退</Button>
+        <Button style="width:100px;" @click="closeDrawerShow">取消</Button>
+      </div>
     </Drawer>
   </div>
 </template>
 <script>
-import { getToken } from "@/libs/util";
 import { countyAjax } from "@/api/city";
-const token = getToken();
+import { hasOneOf } from "@/libs/tools";
 export default {
   data() {
     return {
@@ -491,13 +595,20 @@ export default {
           align: "center",
           fixed: "right",
           render: (h, params) => {
+            var isDisabled = false;
+            if (params.row.audit === "3") {
+              isDisabled = true;
+            } else if (params.row.audit === "1" && this.accessRespons) {
+              isDisabled = true;
+            }
             return h("div", [
               h(
                 "Button",
                 {
                   props: {
                     type: "primary",
-                    size: "small"
+                    size: "small",
+                    disabled: isDisabled
                   },
                   style: {
                     marginRight: "5px"
@@ -703,13 +814,20 @@ export default {
           align: "center",
           fixed: "right",
           render: (h, params) => {
+            var isDisabled = false;
+            if (params.row.audit === "3") {
+              isDisabled = true;
+            } else if (params.row.audit === "1" && this.accessRespons) {
+              isDisabled = true;
+            }
             return h("div", [
               h(
                 "Button",
                 {
                   props: {
                     type: "primary",
-                    size: "small"
+                    size: "small",
+                    disabled: isDisabled
                   },
                   style: {
                     marginRight: "5px"
@@ -734,7 +852,7 @@ export default {
       this.$refs["formData"].validate(valid => {
         if (valid) {
           this.isReasonLoading = true;
-          const url = "/api/sixScore/noPass";
+          const url = "/sixScore/noPass";
           const data = Object.assign(
             {},
             {
@@ -762,7 +880,7 @@ export default {
         );
         dataArr["list"].push(data);
       });
-      const url = "/api/sixScore/pass";
+      const url = "/sixScore/pass";
       this.submitAudit(url, dataArr);
     },
     // 单选审核通过
@@ -779,7 +897,7 @@ export default {
         );
         dataArr["list"].push(data);
       });
-      const url = "/api/sixScore/pass";
+      const url = "/sixScore/pass";
       this.submitAudit(url, dataArr);
     },
     // 表格取消全选
@@ -813,7 +931,7 @@ export default {
     },
     // 提交审核
     submitAudit(url, indexArr) {
-      this._addIndexCounty(token, indexArr, url).then(result => {
+      this._addIndexCounty(indexArr, url).then(result => {
         if (result.code === "200") {
           this.ModalLoading = false;
           this.indexModal = false;
@@ -852,7 +970,6 @@ export default {
         }
       );
       this._getCountyList(
-        token,
         formData,
         this.pageNumber, // 码数
         this.pageSize // 页数
@@ -904,7 +1021,7 @@ export default {
         this.searchData.showType = "showAll";
         this.searchData.scoreType = "0";
       }
-      this._getCountyList(token, this.searchData, pageNumber, pageSize)
+      this._getCountyList(this.searchData, pageNumber, pageSize)
         .then(result => {
           if (result.code === "200") {
             this.searchLoading = false;
@@ -956,15 +1073,15 @@ export default {
       this.searchLoading = false;
     },
     // 查询数据
-    _getCountyList(token, form, pageNumber, pageSize) {
-      const url = "/api/sixScore/queryForAudit";
+    _getCountyList(form, pageNumber, pageSize) {
+      const url = "/sixScore/queryForAudit";
       const keyOne = "sixIndicatorsFilter";
       let formData = Object.assign(form, {
         pageNumber: pageNumber,
         pageSize: pageSize
       });
       return new Promise((resolve, reject) => {
-        countyAjax({ token, formData, url, keyOne }).then(res => {
+        countyAjax({ formData, url, keyOne }).then(res => {
           if (res.data !== undefined) {
             resolve(res.data);
           } else {
@@ -974,10 +1091,10 @@ export default {
       });
     },
     // 添加数据
-    _addIndexCounty(token, formData, url) {
+    _addIndexCounty(formData, url) {
       const keyOne = "sixIndicatorsFilter";
       return new Promise((resolve, reject) => {
-        countyAjax({ token, formData, url, keyOne }).then(res => {
+        countyAjax({ formData, url, keyOne }).then(res => {
           if (res.data !== undefined) {
             resolve(res.data);
           } else {
@@ -998,7 +1115,6 @@ export default {
   },
   created() {
     this._getCountyList(
-      token,
       this.searchData,
       this.pageNumber, // 码数
       this.pageSize // 页数
@@ -1032,6 +1148,24 @@ export default {
       this.IndexAll = result.results.list;
       this.isTabelAllLoading = false;
     });
+  },
+  computed: {
+    access() {
+      return this.$store.state.user.access;
+    },
+    // 管理员
+    accessAdmin() {
+      return hasOneOf(["admin"], this.access);
+    },
+    // 责任人
+    accessRespons() {
+      return hasOneOf(["responsible"], this.access);
+    },
+    // 经办人
+    accessAgent() {
+      return hasOneOf(["agent"], this.access);
+    }
+    //
   }
 };
 </script>

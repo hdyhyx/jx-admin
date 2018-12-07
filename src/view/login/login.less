@@ -1,29 +1,56 @@
-.login{
-    width: 100%;
-    height: 100%;
-    background-image: url('../../assets/images/login-bg.jpg');
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    &-con{
-        position: absolute;
-        right: 160px;
-        top: 50%;
-        transform: translateY(-60%);
-        width: 300px;
-        &-header{
-            font-size: 16px;
-            font-weight: 300;
-            text-align: center;
-            padding: 30px 0;
-        }
-        .form-con{
-            padding: 10px 0 0;
-        }
-        .login-tip{
-            font-size: 10px;
-            text-align: center;
-            color: #c3c3c3;
-        }
+.login {
+  width: 100%;
+  height: 100%;
+  background-image: url("../../assets/images/login-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  min-width: 1200px;
+  &-con {
+    position: absolute;
+    left: 10%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 400px;
+    &-header {
+      font-size: 16px;
+      font-weight: 300;
+      text-align: center;
+      padding: 30px 0;
     }
+    .form-con {
+      padding: 10px 0 0;
+    }
+    .ivu-card {
+      background: rgba(255, 255, 255, 0.4);
+      height: 340px;
+    }
+    .login-tip {
+      font-size: 10px;
+      text-align: center;
+      color: #c3c3c3;
+    }
+  }
+  .title-wapper {
+    position: absolute;
+    right: 10%;
+    top: 50%;
+    transform: translateY(-197%);
+    .title {
+      font-size: 50px;
+      color: #ffff;
+    }
+    .top-border {
+      width: 450px;
+      margin-left: -50px;
+      height: 6px;
+      background: #ffff;
+    }
+    .bottom-border {
+      width: 450px;
+      margin-left: 80px;
+      height: 6px;
+      background: #ffff;
+    }
+  }
 }

@@ -125,7 +125,7 @@
               <Input v-model="formCityList.indexName" placeholder="请输入指标名称" style="width:500px"></Input>
           </FormItem>
           <FormItem label="指标等级" prop="indexType">
-              <Select v-model="formCityList.indexType" placeholder="请选择指标等级" style="width:500px">
+              <Select v-model="formCityList.indexType" placeholder="请选择指标等级" style="width:500px" :disabled="isIndexType">
                   <Option value="一级指标">一级指标</Option>
                   <Option value="二级指标">二级指标</Option>
                   <Option value="三级指标">三级指标</Option>
@@ -135,6 +135,9 @@
               <Select v-model="formCityList.superiorIndexId"  placeholder="请选择上级指标" style="width:500px">
                   <Option v-for="item in superiorIndexSelect" :value="item" :key="item">{{ item }}</Option>
               </Select>
+          </FormItem>
+          <FormItem label="主要牵头单位" prop="mainUnit" v-if="isFormFlase">
+              <Input v-model="formCityList.mainUnit" placeholder="请输入牵头单位" style="width:500px"></Input>
           </FormItem>
           <FormItem label="牵头单位" prop="leadUnit" v-if="isFormFlase">
               <Input v-model="formCityList.leadUnit" placeholder="请输入牵头单位" style="width:500px"></Input>
@@ -155,7 +158,7 @@
               <Input v-model="formCityList.weight" placeholder="请输入权数值" style="width:500px"></Input>
           </FormItem>
           <FormItem label="指标年份"  prop="year">
-             <DatePicker  type="year" format="yyyy" v-model="formSelectTime" @on-change="IndexFormat" placeholder="请选择指标年份" style="width:185px"></DatePicker>
+             <DatePicker  type="year" format="yyyy" v-model="formCityList.year" @on-change="IndexFormat" placeholder="请选择指标年份" style="width:185px"></DatePicker>
           </FormItem>
         </Form>
         <div slot="footer">
@@ -170,11 +173,19 @@
 </template>
 <script>
 import excel from "@/libs/excel";
-import { getToken } from "@/libs/util";
 import { cityAjax } from "@/api/city";
-const token = getToken();
+const regNumber = new RegExp("^[0-9]*$");
 export default {
   data() {
+    const validateWeight = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请填写分数"));
+      } else if (!regNumber.test(value)) {
+        callback(new Error("请输入数字"));
+      } else {
+        callback();
+      }
+    };
     return {
       addIndex: false, // 显示增加模态框
       isIndexOne: true, // 是否指标等级一
@@ -194,8 +205,8 @@ export default {
       indexTwo: [], // 二级指标数据
       storeSuperiorIndexId: "", // 处理当指标Id与select选择指标的Value不一致
       superiorIndexSelect: [], // form选择指标
+      isIndexType: false,
       excelUpdate: "",
-      formSelectTime: "",
       searchData: {
         // 搜索数据
         indexType: "一级指标",
@@ -208,13 +219,12 @@ export default {
         // 一级指标 表格表头
         {
           type: "index",
-          width: 60,
+          maxWidth: 60,
           align: "center"
         },
         {
           title: "指标等级",
-          key: "indexType",
-          width: 300
+          key: "indexType"
         },
         {
           title: "指标名称",
@@ -227,7 +237,7 @@ export default {
         {
           title: "Action",
           key: "action",
-          width: 300,
+          maxwidth: 300,
           align: "center",
           render: (h, params) => {
             return h("div", [
@@ -244,16 +254,18 @@ export default {
                   on: {
                     click: () => {
                       // 显示模态框
-                      this.addIndex = true;
-                      console.log(this.formCityList);
                       if (params.row.id !== "") {
-                        this.formCityList = params.row;
-                        this.formCityList.monthTime = params.row.dateTime;
-                        this.formSelectTime = params.row.dateTime;
+                        var row = params.row
+                        this.formCityList = Object.assign(row, {
+                          year: params.row.dateTime
+                        })
+                        this.formCityList = JSON.parse(JSON.stringify(this.formCityList));
                       } else {
                         this.$Message.error("刷新页面后尝试此操作");
                         return;
                       }
+                      this.isIndexType = true; // 更新改修指标，禁止修改指标等级
+                      this.addIndex = true;
                       this.isFormFlase = false;
                       this.isFormTrue = true;
                       this.targetName = "编辑指标";
@@ -286,7 +298,7 @@ export default {
         {
           title: "指标等级",
           key: "indexType",
-          width: 100
+          maxWidth: 100
         },
         {
           title: "指标名称",
@@ -315,13 +327,13 @@ export default {
         {
           title: "方向",
           key: "direction",
-          width: 80,
+          maxWidth: 60,
           align: "center"
         },
         {
           title: "操作",
           key: "action",
-          width: 150,
+          maxWidth: 150,
           align: "center",
           render: (h, params) => {
             return h("div", [
@@ -337,18 +349,20 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.formSelectTime = "";
+                      if (params.row.id !== "") {
+                        this.formCityList = Object.assign(params.row, {
+                          year: params.row.dateTime
+                        })
+                      } else {
+                        this.$Message.error("刷新页面后尝试此操作");
+                        return;
+                      }
+                      this.formCityList = JSON.parse(JSON.stringify(this.formCityList));
+                      this.isIndexType = true; // 更新改修指标，禁止修改指标等级
                       this.addIndex = true;
                       this.isFormfalse = true;
                       this.isFormTrue = false;
                       this.targetName = "编辑指标";
-                      if (params.row.id !== "") {
-                        this.formCityList = params.row;
-                        this.formCityList.monthTime = params.row.dateTime;
-                        this.formSelectTime = params.row.dateTime;
-                      } else {
-                        this.$Message.error("刷新页面后尝试此操作");
-                      }
                     }
                   }
                 },
@@ -392,7 +406,21 @@ export default {
         weight: [
           {
             required: true,
-            message: "请输入权数值",
+            validator: validateWeight,
+            trigger: 'blur'
+          }
+        ],
+        mainUnit: [
+          {
+            required: true,
+            message: "请输入主要牵头单位",
+            trigger: "blur"
+          }
+        ],
+        year: [
+          {
+            required: true,
+            message: "请选择年份",
             trigger: "blur"
           }
         ]
@@ -419,7 +447,8 @@ export default {
         standardValue: "", // 标准值
         direction: "", // 方向
         weight: "", // 权数
-        year: ""
+        year: "", // 年份
+        mainUnit: ''// 主要牵头单位 用来填写分数和审核分数
       },
       // 上传表格
       uploadLoading: false,
@@ -441,8 +470,7 @@ export default {
     },
     // FORM表单年份
     IndexFormat(year) {
-      this.formCityList.monthTime = year;
-      this.formSelectTime = year;
+      this.formCityList.year = year;
     },
     // 搜索框年份
     handlerFormat(year) {
@@ -451,6 +479,7 @@ export default {
     // 关闭模态框增加或者编辑
     closeAddIndex() {
       this.addIndex = false;
+      this.isIndexType = false;
     },
     // 添加指标 编辑指标
     BtnSubmit(e) {
@@ -459,7 +488,7 @@ export default {
         if (valid) {
           this.submitloading = true;
           if (this.targetName === "永泰县指标增加") {
-            this._addIndexCity(token, this.formCityList)
+            this._addIndexCity(this.formCityList)
               .then(res => {
                 if (res.code === "200") {
                   this.$Message.success("成功");
@@ -471,7 +500,6 @@ export default {
                       pageSize: this.pageSize
                     };
                     this._getCityList(
-                      token,
                       indexType,
                       this.pageSize,
                       this.page
@@ -488,7 +516,6 @@ export default {
                       indexType: this.formCityList.indexType
                     };
                     this._getCityList(
-                      token,
                       indexType,
                       this.pageSize,
                       this.page
@@ -507,18 +534,16 @@ export default {
                 console.log(err);
               });
           } else if (this.targetName === "编辑指标") {
-            this._updateIndexCity(token, this.formCityList).then(res => {
+            this._updateIndexCity(this.formCityList).then(res => {
               if (res.code === "200") {
                 this.submitloading = false;
                 this.addIndex = false;
-                this.formSelectTime = this.formCityList.monthTime;
                 this.$Message.success("修改成功");
                 if (this.formCityList.indexType === "一级指标") {
                   let indexType = {
                     indexType: this.formCityList.indexType
                   };
                   this._getCityList(
-                    token,
                     indexType,
                     this.pageSize,
                     this.pageNumber
@@ -531,7 +556,6 @@ export default {
                     indexType: this.formCityList.indexType
                   };
                   this._getCityList(
-                    token,
                     indexType,
                     this.pageSize,
                     this.pageNumber
@@ -558,7 +582,7 @@ export default {
         title: "删除指标",
         content: "<p>删除后将无法恢复</p>",
         onOk: () => {
-          this._removeIndexCity(token, { id: params.row.id }).then(res => {
+          this._removeIndexCity({ id: params.row.id }).then(res => {
             if (res.code === "200") {
               this.$Message.success("删除成功");
               this.seachSubmit("searchData", "remove");
@@ -580,7 +604,6 @@ export default {
       this.isFormFlase = false;
       this.isFormTrue = true;
       this.addIndex = true;
-      this.formSelectTime = "";
     },
     // 搜索查询
     seachSubmit(name, isRemove) {
@@ -599,7 +622,6 @@ export default {
           }
           const formData = Object.assign(this.formCityList, this.searchData);
           this._getCityList(
-            token,
             formData,
             this.pageSize,
             this.pageNumber
@@ -653,7 +675,8 @@ export default {
           standardValue: "",
           direction: "",
           weight: "",
-          year: ""
+          year: "",
+          mainUnit: ''
         };
       }
     },
@@ -661,7 +684,6 @@ export default {
     pageNumberChange(number) {
       this.pageNumber = number;
       this._getCityList(
-        token,
         this.searchData,
         this.pageSize,
         this.pageNumber
@@ -690,7 +712,6 @@ export default {
     pageSizeChange(pageSize) {
       this.pageSize = pageSize;
       this._getCityList(
-        token,
         this.searchData,
         this.pageSize,
         this.pageNumber
@@ -709,16 +730,16 @@ export default {
       });
     },
     // 获取数据
-    _getCityList(token, form, pageSize, pageNumber) {
-      const url = "/api/countryIndicators/query";
+    _getCityList(form, pageSize, pageNumber) {
+      const url = "/countryIndicators/query";
       const key = "countryIndicatorsFilter";
       let formData = Object.assign(form, {
         pageSize: pageSize,
         pageNumber: pageNumber
       });
       return new Promise((resolve, reject) => {
-        cityAjax({ token, formData, url, key }).then(res => {
-          if (res.data.code === "200") {
+        cityAjax({ formData, url, key }).then(res => {
+          if (res.data !== undefined) {
             resolve(res.data);
           } else {
             reject();
@@ -727,12 +748,12 @@ export default {
       });
     },
     // 添加指标
-    _addIndexCity(token, formData) {
-      const url = "/api/countryIndicators/insert";
+    _addIndexCity(formData) {
+      const url = "/countryIndicators/insert";
       const key = "countryIndicatorsEntity";
       return new Promise((resolve, reject) => {
-        cityAjax({ token, formData, url, key }).then(res => {
-          if (res.data.code === "200") {
+        cityAjax({ formData, url, key }).then(res => {
+          if (res.data !== undefined) {
             resolve(res.data);
           } else {
             reject();
@@ -741,12 +762,12 @@ export default {
       });
     },
     // 修改指标
-    _updateIndexCity(token, formData) {
-      const url = "/api/countryIndicators/update";
+    _updateIndexCity(formData) {
+      const url = "/countryIndicators/update";
       const key = "countryIndicatorsEntity";
       return new Promise((resolve, reject) => {
-        cityAjax({ token, formData, url, key }).then(res => {
-          if (res.data.code === "200") {
+        cityAjax({ formData, url, key }).then(res => {
+          if (res.data !== undefined) {
             resolve(res.data);
           } else {
             reject();
@@ -755,12 +776,12 @@ export default {
       });
     },
     // 删除
-    _removeIndexCity(token, formData) {
-      const url = "/api/countryIndicators/delete";
+    _removeIndexCity(formData) {
+      const url = "/countryIndicators/delete";
       const key = "countryIndicatorsEntity";
       return new Promise((resolve, reject) => {
-        cityAjax({ token, formData, url, key }).then(res => {
-          if (res.data.code === "200") {
+        cityAjax({ formData, url, key }).then(res => {
+          if (res.data !== undefined) {
             resolve(res.data);
           } else {
             reject();
@@ -825,7 +846,7 @@ export default {
         var { header, results } = excel.read(data, "array");
         console.log(header);
 
-        header = header.slice(0, 9); // 截取有效数据
+        header = header.slice(0, 10); // 截取有效数据
         var tableTitle = header.map((item, i) => {
           return { title: results[0][item], key: item };
         });
@@ -886,6 +907,11 @@ export default {
           } else if (tableTitle[i].key === "associated") {
             if (tableTitle[i].title !== "关联指标") {
               regExcel("关联指标");
+              return;
+            }
+          } else if (tableTitle[i].key === "mainUnit") {
+            if (tableTitle[i].title !== "主要牵头单位") {
+              regExcel("主要牵头单位");
               return;
             }
           } else {
@@ -974,6 +1000,10 @@ export default {
                 this.tableData[i].associated === undefined
                   ? ""
                   : this.tableData[i].associated.trim(),
+              mainUnit:
+                this.tableData[i].mainUnit === undefined
+                  ? ""
+                  : this.tableData[i].mainUnit.trim(),
               dateTime: this.excelTime
             }
           );
@@ -1012,19 +1042,22 @@ export default {
               this.tableData[i].indexTypeOne === undefined
                 ? ""
                 : this.tableData[i].indexTypeOne.trim(),
+            mainUnit:
+              this.tableData[i].mainUnit === undefined
+                ? ""
+                : this.tableData[i].mainUnit.trim(),
             dateTime: this.excelTime
           }
         );
         // 根据后端要求 用户EXCEL上传的数据放在LIST里面
         formIndexTwo["list"].push(indexDataTwo);
       }
-      console.log(associated);
-      this._addIndexCity(token, fromIndexOne).then(res => {
+      this._addIndexCity(fromIndexOne).then(res => {
         if (res.code === "200") {
           this.UploadLoadingBtn = false;
-          this._addIndexCity(token, formIndexTwo).then(res => {
+          this._addIndexCity(formIndexTwo).then(res => {
             if (res.code === "200") {
-              this._addIndexCity(token, associated).then(res => {
+              this._addIndexCity(associated).then(res => {
                 this.$Message.info("添加成功");
               });
             } else {
@@ -1061,7 +1094,6 @@ export default {
   created() {
     // 打开页面
     this._getCityList(
-      token,
       this.formCityList,
       this.pageSize,
       this.pageNumber

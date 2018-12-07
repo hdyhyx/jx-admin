@@ -16,54 +16,54 @@
 </template>
 
 <script>
-import SplitPane from '_c/split-pane'
-import Icons from '_c/icons'
+import SplitPane from "_c/split-pane";
+import Icons from "_c/icons";
 export default {
-  name: 'split_pane_page',
+  name: "split_pane_page",
   components: {
     SplitPane,
     Icons
   },
-  data () {
+  data() {
     return {
       offset: 0.6,
-      offsetVertical: '250px'
-    }
+      offsetVertical: "250px"
+    };
   },
   methods: {
-    handleMoving (e) {
-      console.log(e.atMin, e.atMax)
+    handleMoving(e) {
+      console.log(e.atMin, e.atMax);
     }
   }
-}
+};
 </script>
 
 <style lang="less">
-.center-middle{
+.center-middle {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
 }
-.split-pane-page-wrapper{
+.split-pane-page-wrapper {
   height: 600px;
-  .pane{
+  .pane {
     width: 100%;
     height: 100%;
-    &.left-pane{
+    &.left-pane {
       background: sandybrown;
     }
-    &.right-pane{
+    &.right-pane {
       background: palevioletred;
     }
-    &.top-pane{
+    &.top-pane {
       background: sandybrown;
     }
-    &.bottom-pane{
+    &.bottom-pane {
       background: palevioletred;
     }
   }
-  .custom-trigger{
+  .custom-trigger {
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -71,7 +71,7 @@ export default {
     position: absolute;
     .center-middle;
     box-shadow: 0 0 6px 0 rgba(28, 36, 56, 0.4);
-    i.trigger-icon{
+    i.trigger-icon {
       .center-middle;
     }
   }

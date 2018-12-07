@@ -11,7 +11,7 @@ const resolve = dir => {
 // 如果您的应用程序部署在子路径中，则需要在这指定子路径
 // 例如：https://www.foobar.com/my-app/
 // 需要将它改为'/my-app/'
-const BASE_URL = process.env.NODE_ENV === 'production' ? '/iview-admin/' : '/';
+const BASE_URL = process.env.NODE_ENV === 'production' ? '' : '/';
 
 module.exports = {
   // Project deployment base

@@ -56,5 +56,8 @@ export default {
   no_entry_unit_game: '六抓六赛指标填写时间',
   no_entry_unit_all: '指标未录入预警',
   city_index_audit: '指标审核审批',
-  six_game_page: ''
+  six_game_page: '',
+  incentive_details: '正向激励详情',
+  dynamic_news_edi: '新闻编辑',
+  dynamic_news: '新闻动态'
 }

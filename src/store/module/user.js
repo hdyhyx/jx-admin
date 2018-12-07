@@ -15,9 +15,17 @@ export default {
     avatorImgPath: '',
     token: getToken(),
     access: '',
-    hasGetInfo: false
+    hasGetInfo: false,
+    department: '',
+    role: ''
   },
   mutations: {
+    setRole(state, role) {
+      state.role = role
+    },
+    setDepartment(state, department) {
+      state.department = department
+    },
     setAvator(state, avatorPath) {
       state.avatorImgPath = avatorPath
     },
@@ -52,16 +60,15 @@ export default {
           userName,
           password
         }).then(res => {
-          console.log(res);
           if (!res) {
             // resolve(res.data);
             return
           }
           const data = res.data
-          console.log(data);
-
-          commit('setToken', data.message)
-          resolve()
+          if (data.code === "200") {
+            commit('setToken', data.message)
+          }
+          resolve(data)
         }).catch(err => {
           reject(err)
         })
@@ -101,6 +108,8 @@ export default {
             commit('setUserId', data.user_id)
             commit('setAccess', data.access)
             commit('setHasGetInfo', true)
+            commit('setDepartment', data.department)
+            commit('setRole', data.role)
             resolve(data)
           }).catch(err => {
             reject(err)

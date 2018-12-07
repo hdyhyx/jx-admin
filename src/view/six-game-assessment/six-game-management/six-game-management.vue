@@ -3,97 +3,155 @@
     <Row>
       <Card>
         <div style="margin-top: 6px">
-              <Form ref="searchData" :model="searchData" :rules="searchReg" :label-width="80">
-                <Row>
-                  <i-col :xs="24" :md="12" :lg="6" >
-                    <FormItem label="指标等级" prop="indexType">
-                        <Select v-model="searchData.indexType" placeholder="请选择指标等级" style="width:185px">
-                            <Option value="一级指标">一级指标</Option>
-                            <Option value="二级指标">二级指标</Option>
-                            <Option value="三级指标">三级指标</Option>
-                        </Select>
-                    </FormItem>
-                  </i-col>
-                  <i-col :xs="24" :md="12" :lg="6" >
-                    <FormItem label="指标名称">
-                        <Input search placeholder="请输入指标名称" v-model="searchData.indexName" style="width: auto">
-                            <Icon type="ios-search" slot="suffix" />
-                        </Input>
-                    </FormItem>
-                  </i-col>
-                  <i-col :xs="24" :md="12" :lg="6" v-show="searchData.indexType==='二级指标'">
-                    <FormItem label="责任单位">
-                        <Input search placeholder="请输入搜索内容" v-model="searchData.responsibilityUnit" style="width: auto">
-                            <Icon type="ios-search" slot="suffix" />
-                        </Input>
-                    </FormItem>
-                  </i-col>
-                  <i-col :xs="24" :md="12" :lg="6"  v-show="searchData.indexType==='二级指标'" >
-                    <FormItem label="牵头单位">
-                        <Input search placeholder="请输入牵头单位" v-model="searchData.leadUnit" style="width: auto">
-                            <Icon type="ios-search" slot="suffix" />
-                        </Input>
-                    </FormItem>
-                  </i-col>
-                </Row>
-                <Row>
-                   <i-col :xs="24" :md="12" :lg="6">
-                    <FormItem label="指标年份">
-                        <Col span="12">
-                            <DatePicker type="year" v-model="searchData.dateTime" format="yyyy" @on-change="handlerFormat" placeholder="请选择指标年份" style="width:185px"></DatePicker>
-                        </Col>
-                    </FormItem>
-                  </i-col>
-                </Row>
-                  <FormItem>
-                    <Button type="primary" @click="seachSubmit(1,10)">提交搜索</Button>
-                    <Button @click="seachReset('searchData')" style="margin-left: 8px">重置</Button>
+          <Form ref="searchData" :model="searchData" :rules="searchReg" :label-width="80">
+            <Row>
+              <i-col :xs="24" :md="12" :lg="6">
+                <FormItem label="指标等级" prop="indexType">
+                  <Select v-model="searchData.indexType" placeholder="请选择指标等级" style="width:185px">
+                    <Option value="一级指标">一级指标</Option>
+                    <Option value="二级指标">二级指标</Option>
+                    <Option value="三级指标">三级指标</Option>
+                  </Select>
                 </FormItem>
-              </Form>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="6">
+                <FormItem label="指标名称">
+                  <Input
+                    search
+                    placeholder="请输入指标名称"
+                    v-model="searchData.indexName"
+                    style="width: auto"
+                  >
+                    <Icon type="ios-search" slot="suffix"/>
+                  </Input>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="6" v-show="searchData.indexType==='二级指标'">
+                <FormItem label="责任单位">
+                  <Input
+                    search
+                    placeholder="请输入搜索内容"
+                    v-model="searchData.responsibilityUnit"
+                    style="width: auto"
+                  >
+                    <Icon type="ios-search" slot="suffix"/>
+                  </Input>
+                </FormItem>
+              </i-col>
+              <i-col :xs="24" :md="12" :lg="6" v-show="searchData.indexType==='二级指标'">
+                <FormItem label="牵头单位">
+                  <Input
+                    search
+                    placeholder="请输入牵头单位"
+                    v-model="searchData.leadUnit"
+                    style="width: auto"
+                  >
+                    <Icon type="ios-search" slot="suffix"/>
+                  </Input>
+                </FormItem>
+              </i-col>
+            </Row>
+            <Row>
+              <i-col :xs="24" :md="12" :lg="6">
+                <FormItem label="指标年份">
+                  <Col span="12">
+                    <DatePicker
+                      type="year"
+                      v-model="searchData.dateTime"
+                      format="yyyy"
+                      @on-change="handlerFormat"
+                      placeholder="请选择指标年份"
+                      style="width:185px"
+                    ></DatePicker>
+                  </Col>
+                </FormItem>
+              </i-col>
+            </Row>
+            <FormItem>
+              <Button type="primary" @click="seachSubmit(1,10)">提交搜索</Button>
+              <Button @click="seachReset('searchData')" style="margin-left: 8px">重置</Button>
+            </FormItem>
+          </Form>
         </div>
         <div style="margin-top: 10px">
-            <span>增加指标：</span>
-            <Button   @click="addTarget($event)" >乡镇指标</Button>
+          <span>增加指标：</span>
+          <Button @click="addTarget($event)">乡镇指标</Button>
         </div>
       </Card>
     </Row>
     <!-- 指标内容 -->
     <Row style="margin-top:20px">
-        <Card>
-          <div>
-            <Table :loading="TableOneLoading" border :columns="colIndexOne" :data="indexOne" v-if="isIndexOne"></Table>
-            <Table :loading="TableTwoLoading" border :columns="colIndexTwo" :data="indexTwo" v-if="isIndexTwo"></Table>
-            <!-- <Table :loading="lealThreeLoading" border :columns="columns7" :data="data6"></Table> -->
-          </div>
-          <div style="margin-top:20px;margin-left:40%">
-              <Page @on-change="pageNumberChange" :current="pageCurrent" :page-size="pageSize"  :total="pageTotal" @on-page-size-change="pageSizeChange" show-elevator show-sizer />
-          </div>
-        </Card>
+      <Card>
+        <div>
+          <Table
+            :loading="TableOneLoading"
+            border
+            :columns="colIndexOne"
+            :data="indexOne"
+            v-if="isIndexOne"
+          ></Table>
+          <Table
+            :loading="TableTwoLoading"
+            border
+            :columns="colIndexTwo"
+            :data="indexTwo"
+            v-if="isIndexTwo"
+          ></Table>
+          <!-- <Table :loading="lealThreeLoading" border :columns="columns7" :data="data6"></Table> -->
+        </div>
+        <div style="margin-top:20px;margin-left:40%">
+          <Page
+            @on-change="pageNumberChange"
+            :current="pageCurrent"
+            :page-size="pageSize"
+            :total="pageTotal"
+            @on-page-size-change="pageSizeChange"
+            show-elevator
+            show-sizer
+          />
+        </div>
+      </Card>
     </Row>
-  <!-- Excel导入 -->
+    <!-- Excel导入 -->
     <div>
       <Card title="导入EXCEL">
         <Row>
-           <i-col :xs="24" :md="8" :lg="3">
-            <Upload action="" :before-upload="handleBeforeUpload" accept=".xls, .xlsx">
-              <Button icon="ios-cloud-upload-outline" :loading="uploadLoading" @click="handleUploadFile">上传文件</Button>
-            </Upload>
-           </i-col>
           <i-col :xs="24" :md="8" :lg="3">
-            <DatePicker  type="year" format="yyyy" v-model="formCountyList.dateTime" @on-change="updateTime" placeholder="请选择指标年份" style="width: auto"></DatePicker>
+            <Upload action :before-upload="handleBeforeUpload" accept=".xls, .xlsx">
+              <Button
+                icon="ios-cloud-upload-outline"
+                :loading="uploadLoading"
+                @click="handleUploadFile"
+              >上传文件</Button>
+            </Upload>
+          </i-col>
+          <i-col :xs="24" :md="8" :lg="3">
+            <DatePicker
+              type="year"
+              format="yyyy"
+              v-model="formCountyList.dateTime"
+              @on-change="updateTime"
+              placeholder="请选择指标年份"
+              style="width: auto"
+            ></DatePicker>
           </i-col>
           <i-col :xs="24" :md="8" :lg="3">
             <Button type="primary" :loading="UploadLoadingBtn" @click="updateExcel">
-                <span v-if="!UploadLoadingBtn">确认添加</span>
-                <span v-else>Loading...</span>
+              <span v-if="!UploadLoadingBtn">确认添加</span>
+              <span v-else>Loading...</span>
             </Button>
-           </i-col>
+          </i-col>
         </Row>
         <Row>
           <div class="ivu-upload-list-file" v-if="file !== null">
             <Icon type="ios-stats"></Icon>
-              {{ file.name }}
-            <Icon v-show="showRemoveFile" type="ios-close" class="ivu-upload-list-remove" @click.native="handleRemove()"></Icon>
+            {{ file.name }}
+            <Icon
+              v-show="showRemoveFile"
+              type="ios-close"
+              class="ivu-upload-list-remove"
+              @click.native="handleRemove()"
+            ></Icon>
           </div>
         </Row>
         <Row>
@@ -112,42 +170,65 @@
       </Row>
     </div>
     <!-- 模态框  增加指标-->
-    <Modal
-        v-model="addIndex"
-        :title="targetName"
-        width='700px'
-         @on-cancel="closeAddIndex"
-       >
-        <Form ref="formCountyList" :model="formCountyList" :rules="ruleValidate" :label-width="80">
-          <FormItem label="名称指标" prop="indexName">
-              <Input v-model="formCountyList.indexName" placeholder="请输入指标名称" style="width:500px"></Input>
-          </FormItem>
-          <FormItem label="指标等级" prop="indexType">
-              <Select v-model="formCountyList.indexType" placeholder="请选择指标等级" style="width:500px">
-                  <Option value="一级指标">一级指标</Option>
-                  <Option value="二级指标">二级指标</Option>
-                  <Option value="三级指标">三级指标</Option>
-              </Select>
-          </FormItem>
-          <FormItem label="上级指标" prop="superior" v-if="isFormFlase">
-              <Select v-model="formCountyList.superiorIndexId" placeholder="请选择上级指标" style="width:500px">
-                <Option v-for="item in superiorIndexSelect" :value="item" :key="item.id">{{ item}}</Option>
-              </Select>
-          </FormItem>
-          <FormItem label="牵头单位" prop="leadUnit" v-if="isFormFlase">
-              <Input v-model="formCountyList.leadUnit" placeholder="请输入牵头单位" style="width:500px"></Input>
-          </FormItem>
-          <FormItem label="责任单位" prop="responsibilityUnit" v-if="isFormFlase">
-              <Input v-model="formCountyList.responsibilityUnit" placeholder="请输入责任单位" style="width:500px"></Input>
-          </FormItem>
-          <FormItem label="权数值" prop="weight">
-              <Input v-model="formCountyList.weight" placeholder="请输入权数值" style="width:500px"></Input>
-          </FormItem>
-          <FormItem label="乡镇权数" style="width:100%" v-if="isFormFlase">
+    <Modal v-model="addIndex" :title="targetName" width="700px" @on-cancel="closeAddIndex">
+      <Form ref="formCountyList" :model="formCountyList" :rules="ruleValidate" :label-width="80">
+        <FormItem label="名称指标" prop="indexName">
+          <Input v-model="formCountyList.indexName" placeholder="请输入指标名称" style="width:500px"></Input>
+        </FormItem>
+        <FormItem label="指标等级" prop="indexType">
+          <Select
+            v-model="formCountyList.indexType"
+            :disabled="isIndexType"
+            placeholder="请选择指标等级"
+            style="width:500px"
+          >
+            <Option value="一级指标">一级指标</Option>
+            <Option value="二级指标">二级指标</Option>
+            <Option value="三级指标">三级指标</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="上级指标" prop="superior" v-if="isFormFlase">
+          <Select
+            v-model="formCountyList.superiorIndexId"
+            placeholder="请选择上级指标"
+            style="width:500px"
+          >
+            <Option v-for="item in superiorIndexSelect" :value="item" :key="item.id">{{ item}}</Option>
+          </Select>
+        </FormItem>
+        <Row>
+          <i-col :xs="24" :md="8" :lg="12">
+            <FormItem label="主要牵头单位" prop="mainUnit" v-if="isFormFlase">
+              <Input v-model="formCountyList.mainUnit" placeholder="请输入牵头单位" style="width:auto"></Input>
+            </FormItem>
+          </i-col>
+          <i-col :xs="24" :md="8" :lg="12">
+            <FormItem label="牵头单位" v-if="isFormFlase">
+              <Input v-model="formCountyList.leadUnit" placeholder="请输入牵头单位" style="width:auto"></Input>
+            </FormItem>
+          </i-col>
+        </Row>
+        <Row>
+          <i-col :xs="24" :md="8" :lg="12">
+            <FormItem label="责任单位" v-if="isFormFlase">
+              <Input
+                v-model="formCountyList.responsibilityUnit"
+                placeholder="请输入责任单位"
+                style="width:auto"
+              ></Input>
+            </FormItem>
+          </i-col>
+          <i-col :xs="24" :md="8" :lg="12">
+            <FormItem label="权数值" prop="weight">
+              <Input v-model="formCountyList.weight" placeholder="请输入权数值" style="width:auto"></Input>
+            </FormItem>
+          </i-col>
+        </Row>
+        <FormItem label="乡镇权数" style="width:100%" v-if="isFormFlase">
           <div class="villages-towns">
             <ul>
               <li class="item">
-                <div class="item-title" >塘前</div>
+                <div class="item-title">塘前</div>
                 <InputNumber :max="100" :min="0" style="width:71px" v-model="formCountyList['塘前乡']"></InputNumber>
               </li>
               <li class="item">
@@ -159,7 +240,7 @@
                 <InputNumber :max="100" :min="0" style="width:71px" v-model="formCountyList['樟城镇']"></InputNumber>
               </li>
               <li class="item">
-                <div class="item-title" >城锋</div>
+                <div class="item-title">城锋</div>
                 <InputNumber :max="100" :min="0" style="width:71px" v-model="formCountyList['城峰镇']"></InputNumber>
               </li>
               <li class="item">
@@ -170,14 +251,14 @@
                 <div class="item-title">福泉</div>
                 <InputNumber :max="100" :min="0" style="width:71px" v-model="formCountyList['福泉镇']"></InputNumber>
               </li>
-                            <li class="item">
-                <div class="item-title" >岭路</div>
+              <li class="item">
+                <div class="item-title">岭路</div>
                 <InputNumber :max="100" :min="0" style="width:71px" v-model="formCountyList['岭路乡']"></InputNumber>
               </li>
             </ul>
             <ul>
               <li class="item">
-                <div class="item-title" >盖洋</div>
+                <div class="item-title">盖洋</div>
                 <InputNumber :max="100" :min="0" style="width:71px" v-model="formCountyList['盖洋乡']"></InputNumber>
               </li>
               <li class="item">
@@ -189,8 +270,8 @@
                 <InputNumber :max="100" :min="0" style="width:71px" v-model="formCountyList['东洋乡']"></InputNumber>
               </li>
               <li class="item">
-                <div class="item-title" >霞拔</div>
-                <InputNumber  :max="100" :min="0" style="width:71px" v-model="formCountyList['霞拔乡']"></InputNumber>
+                <div class="item-title">霞拔</div>
+                <InputNumber :max="100" :min="0" style="width:71px" v-model="formCountyList['霞拔乡']"></InputNumber>
               </li>
               <li class="item">
                 <div class="item-title">同安</div>
@@ -201,13 +282,13 @@
                 <InputNumber :max="100" :min="0" style="width:71px" v-model="formCountyList['大洋乡']"></InputNumber>
               </li>
               <li class="item">
-                <div class="item-title" >盘谷</div>
+                <div class="item-title">盘谷</div>
                 <InputNumber :max="100" :min="0" style="width:71px" v-model="formCountyList['盘谷乡']"></InputNumber>
               </li>
             </ul>
             <ul>
               <li class="item">
-                <div class="item-title" >伏口</div>
+                <div class="item-title">伏口</div>
                 <InputNumber :max="100" :min="0" style="width:71px" v-model="formCountyList['洑口乡']"></InputNumber>
               </li>
               <li class="item">
@@ -219,47 +300,67 @@
                 <InputNumber :max="100" :min="1" style="width:71px" v-model="formCountyList['白云乡']"></InputNumber>
               </li>
               <li class="item">
-                <div class="item-title" >丹云</div>
-                <InputNumber :max="100" :min="1" style="width:71px" v-model="formCountyList['丹云乡']"></InputNumber >
+                <div class="item-title">丹云</div>
+                <InputNumber :max="100" :min="1" style="width:71px" v-model="formCountyList['丹云乡']"></InputNumber>
               </li>
               <li class="item">
                 <div class="item-title">赤锡</div>
-                <InputNumber :max="100" :min="1" style="width:71px" v-model="formCountyList['赤锡乡']"></InputNumber >
+                <InputNumber :max="100" :min="1" style="width:71px" v-model="formCountyList['赤锡乡']"></InputNumber>
               </li>
               <li class="item">
                 <div class="item-title">梧桐</div>
-                <InputNumber  :max="100" :min="1" style="width:71px" v-model="formCountyList['梧桐镇']"></InputNumber >
+                <InputNumber :max="100" :min="1" style="width:71px" v-model="formCountyList['梧桐镇']"></InputNumber>
               </li>
               <li class="item">
-                <div class="item-title" >嵩口</div>
-                  <InputNumber :max="100" :min="1" style="width:71px" v-model="formCountyList['嵩口镇']"></InputNumber >
+                <div class="item-title">嵩口</div>
+                <InputNumber :max="100" :min="1" style="width:71px" v-model="formCountyList['嵩口镇']"></InputNumber>
               </li>
             </ul>
           </div>
-          </FormItem>
-          <FormItem label="指标年份">
-              <Col span="12">
-                  <DatePicker type="year" v-model="formCountyList.dateTime" format="yyyy" @on-change="formSelelctTime" placeholder="请选择指标年份" style="width:185px"></DatePicker>
-              </Col>
-          </FormItem>
-        </Form>
-        <div slot="footer">
-            <Button type="success" :loading="submitloading" style="width:120px" @click="BtnSubmit('formCountyList')">
-              <span v-if="!submitloading">提交</span>
-              <span v-else>提交中...</span>
-            </Button>
-            <Button @click="closeAddIndex">取消</Button>
-        </div>
+        </FormItem>
+        <FormItem label="指标年份" prop="dateTime">
+          <Col span="12">
+            <DatePicker
+              type="year"
+              v-model="formCountyList.dateTime"
+              format="yyyy"
+              @on-change="formSelelctTime"
+              placeholder="请选择指标年份"
+              style="width:185px"
+            ></DatePicker>
+          </Col>
+        </FormItem>
+      </Form>
+      <div slot="footer">
+        <Button
+          type="success"
+          :loading="submitloading"
+          style="width:120px"
+          @click="BtnSubmit('formCountyList')"
+        >
+          <span v-if="!submitloading">提交</span>
+          <span v-else>提交中...</span>
+        </Button>
+        <Button @click="closeAddIndex">取消</Button>
+      </div>
     </Modal>
   </div>
 </template>
 <script>
 import excel from "@/libs/excel";
-import { getToken } from "@/libs/util";
 import { countyAjax } from "@/api/city";
-const token = getToken();
+const regNumber = new RegExp("^[0-9]*$");
 export default {
   data() {
+    const validateWeight = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请填写分数"));
+      } else if (!regNumber.test(value)) {
+        callback(new Error("请输入数字"));
+      } else {
+        callback();
+      }
+    };
     return {
       addIndex: false, // 显示增加模态框
       isIndexOne: true, // 显示指标等级一
@@ -275,6 +376,7 @@ export default {
       pageSize: 10, // 显示条数
       pageNumber: 1, // 页码
       superiorIndexSelect: [], // 储存一级，form上级指标根据现有的一级指标
+      isIndexType: false, // 更新指标 禁止更新指标等级
       pageCurrent: 1,
       searchData: {
         indexType: "一级指标",
@@ -332,18 +434,23 @@ export default {
                   },
                   on: {
                     click: () => {
+                      if (params.row.id !== "") {
+                        var row = params.row;
+                        this.formCountyList = Object.assign(row, {
+                          year: params.row.dateTime
+                        });
+                        this.formCountyList = JSON.parse(
+                          JSON.stringify(this.formCountyList)
+                        );
+                      } else {
+                        this.$Message.error("刷新页面后尝试此操作");
+                        return;
+                      }
                       this.addIndex = true;
                       this.isFormfalse = true;
                       this.isFormTrue = false;
                       this.targetName = "编辑指标";
-                      let row = params.row;
-                      if (params.row.id !== "") {
-                        this.formCountyList = row;
-                        console.log(row);
-                        console.log(this.formCountyList);
-                      } else {
-                        this.$Message.error("刷新页面后尝试此操作");
-                      }
+                      this.isIndexType = true; // 更新指标 禁止更新指标等级
                     }
                   }
                 },
@@ -525,12 +632,24 @@ export default {
                   },
                   on: {
                     click: () => {
+                      if (params.row.id !== "") {
+                        var row = params.row;
+                        this.formCountyList = Object.assign(row, {
+                          year: params.row.dateTime
+                        });
+                        this.formCountyList = JSON.parse(
+                          JSON.stringify(this.formCountyList)
+                        );
+                      } else {
+                        this.$Message.error("刷新页面后尝试此操作");
+                        return;
+                      }
+
                       this.addIndex = true;
-                      this.formCountyList = params.row;
-                      console.log(this.formCountyList);
                       this.isFormFlase = true;
                       this.isFormTrue = false;
                       this.targetName = "编辑指标";
+                      this.isIndexType = true; // 更新指标 禁止更新指标等级
                     }
                   }
                 },
@@ -575,7 +694,21 @@ export default {
         weight: [
           {
             required: true,
-            message: "请输入权数值",
+            validator: validateWeight,
+            trigger: "blur"
+          }
+        ],
+        mainUnit: [
+          {
+            required: true,
+            message: "请输入主要牵头单位",
+            trigger: "blur"
+          }
+        ],
+        dateTime: [
+          {
+            required: true,
+            message: "请选择年份",
             trigger: "blur"
           }
         ]
@@ -598,6 +731,7 @@ export default {
         weight: "",
         score: "",
         dateTime: "",
+        mainUnit: "",
         塘前乡: 0, // 塘前
         葛岭镇: 0, // 葛岭
         樟城镇: 0, // 樟城
@@ -626,6 +760,7 @@ export default {
     // 关闭指标添加模态框
     closeAddIndex() {
       this.addIndex = false;
+      this.resetForm();
     },
     // from 添加指标选择时间
     formSelelctTime(year) {
@@ -646,7 +781,7 @@ export default {
           this.submitloading = true;
           // 根据 targetName 判断是修改还是编辑
           if (this.targetName === "指标增加") {
-            this._addIndexCounty(token, this.formCountyList)
+            this._addIndexCounty(this.formCountyList)
               .then(res => {
                 if (res.code === "200") {
                   this.$Message.success("成功");
@@ -657,11 +792,11 @@ export default {
                       indexType: this.formCountyList.indexType
                     };
                     this._getCountyList(
-                      token,
                       indexType,
                       this.pageNumber,
                       this.pageSize
                     ).then(res => {
+                      // 上级指标
                       this.superiorIndexSelect = [];
                       res.results.firstIndex.forEach(item => {
                         this.superiorIndexSelect.push(item.indexName);
@@ -674,7 +809,6 @@ export default {
                       indexType: this.formCountyList.indexType
                     };
                     this._getCountyList(
-                      token,
                       indexType,
                       this.pageNumber,
                       this.pageSize
@@ -687,17 +821,23 @@ export default {
                     });
                   }
                   this.addIndex = false;
+                } else {
+                  this.$Message.error(res.message);
+                  this.submitloading = false;
                 }
               })
               .catch(err => {
                 console.log(err);
               });
           } else if (this.targetName === "编辑指标") {
-            this._updateIndexCounty(token, this.formCountyList).then(res => {
+            this._updateIndexCounty(this.formCountyList).then(res => {
               if (res.code === "200") {
                 this.submitloading = false;
                 this.addIndex = false;
                 this.$Message.success("修改成功");
+              } else {
+                this.$Message.error(res.message);
+                this.submitloading = false;
               }
             });
           }
@@ -712,7 +852,7 @@ export default {
         title: "删除指标",
         content: "<p>删除后将无法恢复</p>",
         onOk: () => {
-          this._removeIndexCounty(token, {
+          this._removeIndexCounty({
             id: params.row.id
           }).then(res => {
             if (res.code === "200") {
@@ -736,6 +876,7 @@ export default {
       this.targetName = "指标增加";
       this.addIndex = true;
       this.resetForm();
+      this.isIndexType = false; // 更新指标 禁止更新指标等级
     },
     // 提交搜索
     seachSubmit(pageNumber, pageSize) {
@@ -747,34 +888,31 @@ export default {
           this.TableTwoLoading = true;
           // 清除formCityList表单
           this.resetForm();
-          this._getCountyList(
-            token,
-            this.searchData,
-            pageNumber,
-            pageSize
-          ).then(res => {
-            if (res.code === "200") {
-              // 按照IndexType类别 填入不同Tabel里
-              if (this.searchData.indexType === "一级指标") {
-                this.$Message.success("查询成功");
-                this.indexOne = res.results.list;
-                this.pageTotal = parseInt(res.results.pageTotal) * 10;
-                this.TableOneLoading = false;
-                this.isIndexOne = true;
-                this.isIndexTwo = false;
-                this.submitloading = false; // 如果重置提交按钮的Loading
-              } else if (this.searchData.indexType === "二级指标") {
-                this.isIndexOne = false;
-                this.TableTwoLoading = false;
-                this.isIndexTwo = true;
-                this.$Message.success("查询成功");
-                this.indexTwo = res.results.list;
-                this.pageTotal = parseInt(res.results.pageTotal) * 10;
+          this._getCountyList(this.searchData, pageNumber, pageSize).then(
+            res => {
+              if (res.code === "200") {
+                // 按照IndexType类别 填入不同Tabel里
+                if (this.searchData.indexType === "一级指标") {
+                  this.$Message.success("查询成功");
+                  this.indexOne = res.results.list;
+                  this.pageTotal = parseInt(res.results.pageTotal) * 10;
+                  this.TableOneLoading = false;
+                  this.isIndexOne = true;
+                  this.isIndexTwo = false;
+                  this.submitloading = false; // 如果重置提交按钮的Loading
+                } else if (this.searchData.indexType === "二级指标") {
+                  this.isIndexOne = false;
+                  this.TableTwoLoading = false;
+                  this.isIndexTwo = true;
+                  this.$Message.success("查询成功");
+                  this.indexTwo = res.results.list;
+                  this.pageTotal = parseInt(res.results.pageTotal) * 10;
+                }
+              } else {
+                this.$Message.error("查询失败");
               }
-            } else {
-              this.$Message.error("查询失败");
             }
-          });
+          );
         } else {
           this.$Message.error("带*不可为空");
         }
@@ -800,6 +938,7 @@ export default {
         weight: "",
         score: "",
         dateTime: "",
+        mainUnit: "",
         塘前乡: 0, // 塘前
         葛岭镇: 0, // 葛岭
         樟城镇: 0, // 樟城
@@ -834,15 +973,15 @@ export default {
       this.seachSubmit(this.pageNumber, this.pageSize);
     },
     // 查询数据
-    _getCountyList(token, form, pageNumber, pageSize) {
-      const url = "/api/sixIndicators/query";
+    _getCountyList(form, pageNumber, pageSize) {
+      const url = "/sixIndicators/query";
       const keyOne = "sixIndicatorsFilter";
       let formData = Object.assign(form, {
         pageSize: pageSize,
         pageNumber: pageNumber
       });
       return new Promise((resolve, reject) => {
-        countyAjax({ token, formData, url, keyOne }).then(res => {
+        countyAjax({ formData, url, keyOne }).then(res => {
           if (res.data.code === "200") {
             resolve(res.data);
           } else {
@@ -852,12 +991,12 @@ export default {
       });
     },
     // 添加数据
-    _addIndexCounty(token, formData) {
-      const url = "/api/sixIndicators/insert";
+    _addIndexCounty(formData) {
+      const url = "/sixIndicators/insert";
       const keyOne = "sixIndicatorsEntity";
       const keyTwo = "townList";
       return new Promise((resolve, reject) => {
-        countyAjax({ token, formData, url, keyOne, keyTwo }).then(res => {
+        countyAjax({ formData, url, keyOne, keyTwo }).then(res => {
           if (res.data !== undefined) {
             resolve(res.data);
           } else {
@@ -867,12 +1006,12 @@ export default {
       });
     },
     // 更新修改
-    _updateIndexCounty(token, formData) {
-      const url = "/api/sixIndicators/update";
+    _updateIndexCounty(formData) {
+      const url = "/sixIndicators/update";
       const keyOne = "sixIndicatorsEntity";
       const keyTwo = "townList";
       return new Promise((resolve, reject) => {
-        countyAjax({ token, formData, url, keyOne, keyTwo }).then(res => {
+        countyAjax({ formData, url, keyOne, keyTwo }).then(res => {
           if (res.data !== undefined) {
             resolve(res.data);
           } else {
@@ -882,12 +1021,12 @@ export default {
       });
     },
     // 删除
-    _removeIndexCounty(token, formData) {
-      const url = "/api/townIndicators/delete";
+    _removeIndexCounty(formData) {
+      const url = "/sixIndicators/delete";
       const keyOne = "sixIndicatorsEntity";
       const keyTwo = "townList";
       return new Promise((resolve, reject) => {
-        countyAjax({ token, formData, url, keyOne, keyTwo }).then(res => {
+        countyAjax({ formData, url, keyOne, keyTwo }).then(res => {
           if (res.data !== undefined) {
             resolve(res.data);
           } else {
@@ -951,7 +1090,7 @@ export default {
         this.$Message.info("文件读取成功");
         const data = e.target.result;
         var { header, results } = excel.read(data, "array");
-        header = header.slice(0, 26);
+        header = header.slice(0, 27);
         var tableTitle = header.map((item, i) => {
           return { title: results[0][item], key: item };
         });
@@ -1107,6 +1246,10 @@ export default {
               this.tableData[i].indexTypeOne === undefined
                 ? ""
                 : this.tableData[i].indexTypeOne.trim(),
+            mainUnit:
+              this.tableData[i].mainUnit === undefined
+                ? ""
+                : this.tableData[i].mainUnit.trim(),
             dateTime: this.excelTime
           }
         );
@@ -1199,9 +1342,9 @@ export default {
         // 根据后端要求 用户EXCEL上传的数据放在LIST里面
         formIndexTwo["list"].push(countyAllIndex);
       }
-      this._addIndexCounty(token, fromIndexOne).then(res => {
+      this._addIndexCounty(fromIndexOne).then(res => {
         if (res.code === "200") {
-          this._addIndexCounty(token, formIndexTwo).then(res => {
+          this._addIndexCounty(formIndexTwo).then(res => {
             this.UploadLoadingBtn = false;
             if (res.code === "200") {
               this.$Message.info("文件读取成功");
@@ -1231,7 +1374,6 @@ export default {
   },
   created() {
     this._getCountyList(
-      token,
       this.formCountyList,
       this.pageNumber, // 码数
       this.pageSize // 页数
