@@ -214,12 +214,37 @@ function newsData(formData, keyOne) {
   }
   data[keyOne] = {
     id: formData.id,
-    title: formData.title,
-    content: formData.content,
-    dateTime: formData.dateTime,
-    editTime: formData.editTime,
-    monthTime: formData.monthTime,
-    url: formData.url
+    title: formData.title, // 新闻标题
+    content: formData.content, // 新闻内容
+    dateTime: formData.dateTime, // 年份
+    editTime: formData.editTime, // 发布日期
+    monthTime: formData.monthTime, // 月份
+    url: formData.url, // 上传文件id
+    pageSize: formData.pageSize, // 显示页数
+    pageNumber: formData.pageNumber // 页码
+  }
+  return data
+}
+
+function workData(formData, keyOne) {
+  console.log(formData)
+  let data = {}
+  data['tokenEntity'] = {
+    value: getToken()
+  }
+  data[keyOne] = {
+    id: formData.id,
+    indexName: formData.indexName, // 指标名称
+    cityResponUnit: formData.cityResponUnit, // 责任单位
+    cooperateUnit: formData.cooperateUnit, // 配合单位
+    leadUnit: formData.leadUnit, // 牵头单位
+    audit: formData.audit, // 审核状态
+    dateTime: formData.dateTime, // 年月
+    reason: formData.reason, // 回退原因
+    maxPoint: formData.maxPoint, // 扣分值上限
+    point: formData.point, // 扣分值
+    pageSize: formData.pageSize, // 显示页数
+    pageNumber: formData.pageNumber // 页码
   }
   return data
 }
@@ -275,6 +300,20 @@ export const newsAjax = ({
 }) => {
   let data = ''
   data = newsData(formData, keyOne)
+  return axios.request({
+    url: HOST + url,
+    data,
+    method: 'post'
+  })
+}
+// 工作督查
+export const workAjax = ({
+  formData,
+  url,
+  keyOne
+}) => {
+  let data = ''
+  data = workData(formData, keyOne)
   return axios.request({
     url: HOST + url,
     data,

@@ -7,7 +7,7 @@
             <i-col :xs="24" :md="8" :lg="6">
               <FormItem label="搜索标题" prop="name">
                 <Input
-                  v-model="searchData.incentive"
+                  v-model="searchData.title"
                   suffix="ios-search"
                   placeholder="请输入新闻标题"
                   style="width: auto"
@@ -30,11 +30,25 @@
             </i-col>
             <i-col :xs="24" :md="8" :lg="6">
               <FormItem label="新闻月份" prop="name">
-                <Input
-                  v-model="searchData.commendedUnit"
-                  placeholder="请输入被表彰机关"
-                  style="width: auto"
-                ></Input>
+                <Select
+                  v-model="searchData.monthTime"
+                  clearable
+                  placeholder="请选择月份"
+                  style="width: 200px"
+                >
+                  <Option value="01">1月</Option>
+                  <Option value="02">2月</Option>
+                  <Option value="03">3月</Option>
+                  <Option value="04">4月</Option>
+                  <Option value="05">5月</Option>
+                  <Option value="06">6月</Option>
+                  <Option value="07">7月</Option>
+                  <Option value="08">8月</Option>
+                  <Option value="09">9月</Option>
+                  <Option value="10">10月</Option>
+                  <Option value="11">11月</Option>
+                  <Option value="12">12月</Option>
+                </Select>
               </FormItem>
             </i-col>
           </Row>
@@ -72,7 +86,7 @@
     </Row>
     <!-- 左边抽屉 -->
     <Drawer
-      title="动态编辑"
+      :title="drawerTitle"
       width="1000"
       :mask-closable="false"
       v-model="isShowEditor"
@@ -121,12 +135,14 @@
               </FormItem>
             </i-col>
           </Row>
+
           <Row :gutter="32">
             <Col span="12">
               <FormItem label="发布日期" style="margin:20px 0">
                 <DatePicker
+                  v-if="newsData"
                   type="date"
-                  v-model="newsData.editTime"
+                  :value="newsData.editTime"
                   @on-change="selectNewsDate"
                   placeholder="选择发布日期"
                   style="width: 200px"
@@ -152,6 +168,16 @@
 import { getTest } from "@/api/user";
 import Editor from "_c/editor";
 import { newsAjax, deleteAjax } from "@/api/city";
+// 添加URL
+const insertUrl = "/News/insert";
+// 更新URL
+const updateUrl = "/News/update";
+// 删除URL
+const deleteUrl = "/News/delete";
+// 查询URL
+const queryUrl = "/News/query";
+// 置顶新闻URL
+const hotUrl = "/News/setTop";
 export default {
   data() {
     return {
@@ -162,12 +188,13 @@ export default {
       tabelLoading: false, // 表格loading
       loadingStatus: false, // 文件删除loading
       updateLoading: false, // 文件上传Loaidng
-      fileId: [], // 上传文件Id
+      drawerTitle: "",
+      fileId: "", // 上传文件Id
       pageTotal: 10, // 总页数
       pageSize: 10, // 显示页数
       pageNumber: 1, // 页码
       searchData: {
-        newsTitle: "", // 事项名称
+        title: "", // 事项名称
         dateTime: "", // 年份
         monthTime: "" // 月份
       },
@@ -202,35 +229,184 @@ export default {
         },
         {
           title: "新闻标题",
-          key: "newsTitle"
+          key: "title",
+          ellipsis: true,
+          minWidth: 400
         },
-        {
-          title: "新闻内容",
-          key: "newsContent"
-        },
+
         {
           title: "发布日期",
-          key: "newsDate"
+          key: "editTime"
         },
         {
           title: "操作",
           key: "audit",
-          width: 100,
+          width: 220,
           align: "center",
-          render: (h, params) => {}
+          render: (h, params) => {
+            return h("div", [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary"
+                  },
+                  style: {
+                    marginRight: "5px"
+                  },
+                  on: {
+                    click: () => {
+                      this.drawerTitle = "编辑新闻";
+                      this.newsData = params.row;
+                      // 执行深拷贝
+                      this.newsData = JSON.parse(JSON.stringify(this.newsData));
+                      // 富文本编辑内容
+                      this.$refs.editor.setHtml(this.newsData.content);
+                      // file文件
+                      if (this.newsData.url !== "") {
+                        this.file = Object.assign(
+                          {},
+                          {
+                            name: this.newsData.num
+                          }
+                        );
+                      }
+                      // 文件Id
+                      this.fileId = this.newsData.url;
+                      this.isShowEditor = true;
+                    }
+                  }
+                },
+                "编辑"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "error"
+                  },
+                  style: {
+                    marginRight: "5px"
+                  },
+                  on: {
+                    click: () => {
+                      this.newsRemove(params.row);
+                    }
+                  }
+                },
+                "删除"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "success"
+                  },
+                  on: {
+                    click: () => {
+                      this.hotNews(params.row);
+                    }
+                  }
+                },
+                "置顶"
+              )
+            ]);
+          }
         }
       ],
       newsContent: []
     };
   },
   methods: {
+    // 新闻置顶
+    hotNews(params) {
+      this.$Modal.confirm({
+        title: "置顶新闻",
+        content: "<p>新闻置顶只能有一条，其他置顶新闻将被忽略</p>",
+        loading: true,
+        onOk: () => {
+          this._newsAjax(hotUrl, params, "", "").then(result => {
+            if (result.code === "200") {
+              this.$Message.success("设置成功");
+              this.$Modal.remove();
+              this._getNewsData(
+                this.searchData,
+                queryUrl,
+                this.pageSize,
+                this.pageNumber
+              );
+            } else {
+              this.$Message.error("设置失败！请刷新页面重试");
+            }
+          });
+        }
+      });
+    },
+    // 富文本 内容
     newsHandleChange(html, text) {
       this.newsData.content = html;
     },
-    searchSubmit() {},
-    submitReset() {},
-    pageNumberChange() {},
-    pageSizeChange() {},
+    searchSubmit() {
+      this.searchLoading = true;
+      this._getNewsData(
+        this.searchData,
+        queryUrl,
+        this.pageSize,
+        this.pageNumber
+      );
+    },
+    submitReset() {
+      this.searchData = {
+        title: "", // 事项名称
+        dateTime: "", // 年份
+        monthTime: "" // 月份
+      };
+      this.searchLoading = false;
+    },
+    // 页码
+    pageNumberChange(pageNumber) {
+      this.pageNumber = pageNumber;
+      this._getNewsData(
+        this.searchData,
+        queryUrl,
+        this.pageSize,
+        this.pageNumber
+      );
+    },
+    // 页数
+    pageSizeChange(pageSize) {
+      this.pageSize = pageSize;
+      this._getNewsData(
+        this.searchData,
+        queryUrl,
+        this.pageSize,
+        this.pageNumber
+      );
+    },
+    // 删除新闻
+    newsRemove(params) {
+      this.$Modal.confirm({
+        title: "删除新闻",
+        content: "<p>删除后将无法恢复</p>",
+        loading: true,
+        onOk: () => {
+          this._newsAjax(deleteUrl, params, "", "").then(result => {
+            if (result.code === "200") {
+              this.$Message.success("删除成功");
+              this.$Modal.remove();
+              this._getNewsData(
+                this.searchData,
+                queryUrl,
+                this.pageSize,
+                this.pageNumber
+              );
+            } else {
+              this.$Message.error("删除失败！请刷新页面重试");
+            }
+          });
+        }
+      });
+    },
     // 提交新闻编辑
     newsSubmit() {
       if (this.newsData.editTime === "") {
@@ -238,25 +414,64 @@ export default {
       }
       this.$refs["news"].validate(valid => {
         if (valid) {
-          // 获取上传文件Id
-          if (this.file !== null) {
-            this.newsData.url = this.fileId[0];
-          }
-          const url = "/News/insert";
-          this.submitLoading = true;
-          this._newsAjax(url, this.newsData, "", "").then(result => {
-            this.submitLoading = false;
-            if (result.code === "200") {
-              this.$Message.success("编辑成功");
-              // 如果上传成功 清空上传文件
-              this.file = null;
-              if (this.file === null) {
-                this.isShowEditor = false;
-              }
-            } else {
-              this.$Message.error("编辑失败！请重新尝试");
+          // 进行添加操作
+          if (this.drawerTitle === "添加新闻") {
+            // 获取上传文件Id
+            if (this.file !== null) {
+              this.newsData.url = this.fileId;
             }
-          });
+            this.submitLoading = true;
+            this._newsAjax(insertUrl, this.newsData, "", "").then(result => {
+              this.submitLoading = false;
+              if (result.code === "200") {
+                this.$Message.success("编辑成功");
+                // 编辑完成、重新请求数据
+                this._getNewsData(
+                  this.searchData,
+                  queryUrl,
+                  this.pageSize,
+                  this.pageNumber
+                );
+                // 如果上传成功 清空上传文件
+                this.file = null;
+                if (this.file === null) {
+                  this.isShowEditor = false;
+                }
+              } else {
+                this.$Message.error("编辑失败！请重新尝试");
+              }
+            });
+            // 进行编辑操作
+          } else {
+            this.submitLoading = true;
+
+            // 获取上传文件Id
+            if (this.file !== null) {
+              this.newsData.url = this.fileId;
+            } else {
+              this.newsData.url = "";
+            }
+            this._newsAjax(updateUrl, this.newsData, "", "").then(result => {
+              this.submitLoading = false;
+              if (result.code === "200") {
+                this.$Message.success("编辑成功");
+                // 编辑完成、重新请求数据
+                this._getNewsData(
+                  this.searchData,
+                  queryUrl,
+                  this.pageSize,
+                  this.pageNumber
+                );
+                // 如果上传成功 清空上传文件
+                this.file = null;
+                if (this.file === null) {
+                  this.isShowEditor = false;
+                }
+              } else {
+                this.$Message.error("编辑失败！请重新尝试");
+              }
+            });
+          }
         } else {
           this.$Message.error("请填写完整");
         }
@@ -271,10 +486,15 @@ export default {
     },
     // 关闭编辑新闻
     closeDrawer() {
-      if (this.file !== null) {
-        this._emptyFile(this.fileId);
+      // 如果file不为NULL 获取fileId 进行删除
+      if (this.drawerTitle === "添加新闻") {
+        if (this.file !== null) {
+          this._emptyFile(this.fileId);
+        }
       }
+      this.file = null;
       this.isShowEditor = false;
+      this.submitLoading = false;
       // 清空富文本内容
       this.$refs.editor.setHtml("");
       this.$refs["news"].resetFields();
@@ -289,7 +509,12 @@ export default {
     },
     // 删除文件
     deleteFile() {
-      this._emptyFile(this.fileId);
+      if (this.drawerTitle === "添加新闻") {
+        this._emptyFile(this.fileId);
+      } else {
+        // 编辑新闻 点击删除， 不进行删除操作，删除操作放在提交
+        this.file = null;
+      }
     },
     // 验证文件类型
     handleFormatError(file) {
@@ -312,7 +537,7 @@ export default {
       this.updateLoading = false;
       if (res.code === "200") {
         this.file = file;
-        this.fileId = [this.file.response.results.fileId];
+        this.fileId = this.file.response.results.fileId;
         this.$Message.success("上传成功");
       } else {
         this.$Message.error("上传失败");
@@ -325,12 +550,16 @@ export default {
     // 打开新闻编辑
     showEdiDrawer() {
       this.isShowEditor = true;
+      this.drawerTitle = "添加新闻";
+      this.$refs.editor.setHtml("");
     },
     // 搜索年份
     searchSelectYear() {},
     // 删除上传文件
     _emptyFile(formData) {
       this.loadingStatus = true;
+      // 已数组的格式传给后台
+      formData = [formData];
       const url = "/upload/delete";
       deleteAjax({ formData, url })
         .then(result => {
@@ -365,10 +594,43 @@ export default {
             console.log(err);
           });
       });
+    },
+    // 获取新闻
+    _getNewsData(formData, url, pageSize, pageNumber) {
+      this.tabelLoading = true;
+      formData = Object.assign(formData, {
+        pageSize,
+        pageNumber
+      });
+      const keyOne = "newsFilter";
+      newsAjax({ formData, url, keyOne })
+        .then(result => {
+          this.tabelLoading = false;
+          this.incentiveData = [];
+          if (result.data.code === "200") {
+            this.searchLoading = false;
+            this.newsContent = result.data.results.list;
+            this.pageTotal = parseInt(result.data.results.pageTotal) * 10;
+            this.$Message.success("查询成功");
+          } else {
+            this.$Message.error("查询失败");
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   },
   components: {
     Editor
+  },
+  created() {
+    this._getNewsData(
+      this.searchData,
+      queryUrl,
+      this.pageSize,
+      this.pageNumber
+    );
   }
 };
 </script>

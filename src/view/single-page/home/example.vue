@@ -23,7 +23,7 @@ export default {
     },
     data: {
       type: [Array, Object],
-      default: () => {}
+      default: () => []
     }
   },
   created() {

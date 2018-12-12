@@ -182,7 +182,7 @@
           </i-col>
         </Row>
         <div style="margin-top:60px">
-          <example :title="'总分'" style="height: 510px;"/>
+          <example :title="'总分'" :data="lineData" :yName="'项'" style="height: 510px;"/>
         </div>
         <Spin size="large" fix v-if="true"></Spin>
       </Card>
@@ -308,6 +308,10 @@ export default {
       xzInex: 0,
       isShowLineBar: false,
       lineBarData: {},
+      lineData: {
+        lineName: [], // x轴
+        lineData: [] // 数据
+      }, // 折线图数据
       inforCardData: [
         {
           count: 0,

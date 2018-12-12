@@ -3,264 +3,207 @@
     <!-- 新闻内容 -->
     <Row>
       <Card>
-        <p slot="title" style="font-size:20px">动态</p>
-        <div class="btn-ide" @click="isEditor = true">
-          <Button type="info">编辑新闻</Button>
-        </div>
-        <div v-for="(item,index) in newsList" :key="index">
-          <Icon type="md-megaphone" :size="20"/>
-          <span style="margin-left:10px">{{item.newsTime}}</span>
-          <div class="news-list">
-            <ul>
-              <li class="news-item" v-for="(grounp,index) in item.news" :key="index">
-                <p class="news-item-text" @click="isNews(grounp)">{{grounp.title}}</p>
-                <span class="news-item-time">{{grounp.time}}</span>
-              </li>
-            </ul>
+        <Row>
+          <div @click="openNews(hotNews)" v-if="hotNews !== null">
+            <Alert show-icon>
+              {{hotNews.title}}
+              <Icon type="md-flame" slot="icon"></Icon>
+              <template slot="desc">发布日期：{{hotNews.editTime}}</template>
+            </Alert>
           </div>
-          <Divider/>
-        </div>
-        <Page :total="100" show-elevator style="margin-left:35%"/>
+          <div v-if="hotNews === null">
+            <Alert show-icon>暂无数据
+              <Icon type="md-flame" slot="icon"></Icon>
+            </Alert>
+          </div>
+        </Row>
+        <Row>
+          <i-col :xs="24" :md="24" :lg="18">
+            <div v-for="(year,index) in newsData" :key="index">
+              <h2 style="color:#2d8cf0">{{year.dateTime}}</h2>
+              <div v-for="(list,j) in year.list" :key="j">
+                <Card :bordered="false" :dis-hover="true">
+                  <p slot="title">
+                    <Icon type="ios-film-outline"></Icon>
+                    {{list.monthTime}}月
+                  </p>
+                  <div v-for="(item,i) in list.list" :key="i">
+                    <p class="item-high" @click="openNews(item)">
+                      {{item.title}}
+                      <Icon type="ios-loop-strong"></Icon>
+                      <span class="news-date-time">{{item.editTime}}</span>
+                    </p>
+                  </div>
+                </Card>
+              </div>
+            </div>
+            <Spin size="large" fix v-if="newsListLoading"></Spin>
+          </i-col>
+        </Row>
+        <Page
+          :total="pageTotal"
+          show-sizer
+          :page-size="pageSize"
+          :page-number="pageNumber"
+          :page-size-opts="pageSizeArr"
+          @on-page-size-change="pageSizeChange"
+          @on-change="pageNumberChange"
+          style="margin-left:35%"
+        />
       </Card>
     </Row>
-    <!-- 左边抽屉 -->
-    <Drawer title="动态编辑" width="1000" :mask-closable="false" v-model="isEditor" :styles="styles">
-      <div>
-        <Form :model="newsData" style="margin:20px 0;">
-          <Row :gutter="32">
-            <Col span="12">
-              <FormItem label="新闻标题">
-                <Input v-model="newsData.name" style="width:400px" placeholder="Enter something..."></Input>
-              </FormItem>
-            </Col>
-          </Row>
-          <Row>
-            <editor ref="editor" :value="content" @on-change="handleChange"/>
-          </Row>
-          <Row :gutter="32">
-            <Col span="12">
-              <FormItem label="发布日期" style="margin:20px 0">
-                <DatePicker
-                  type="date"
-                  @on-change="onChangeDate"
-                  placeholder="Select date"
-                  style="width: 200px"
-                ></DatePicker>
-              </FormItem>
-            </Col>
-          </Row>
-          <Row>
-            <Button type="primary" @click="changeContent" style="margin-top:20px">完成编辑</Button>
-            <Button
-              type="error"
-              @click="isEditor = false"
-              style="margin-top:20px;margin-left:20px"
-            >关闭</Button>
-          </Row>
-        </Form>
+    <!-- 新闻模态框 -->
+    <Drawer
+      v-if="newsItem !==null"
+      width="55%"
+      :closable="false"
+      :styles="styles"
+      v-model="showNews"
+    >
+      <h2 style="text-align: center;">{{newsItem.title}}</h2>
+      <p style="font-size:14px;padding-left:10px;">发布日期：{{newsItem.editTime}}</p>
+      <Divider style="margin:15px 0"/>
+      <div class="news-content" v-html="newsItem.content"></div>
+      <Divider/>
+      <div class="demo-drawer-footer">
+        <Button :size="buttonSize" v-if="newsItem.num !==null" type="text">附件：{{newsItem.num}}</Button>
+        <Button
+          :size="buttonSize"
+          type="primary"
+          icon="ios-download-outline"
+          v-if="newsItem.fileUrl !==null"
+          style="margin:0 50px 0 10px"
+        >
+          <a style="color:#fff" :href="host+newsItem.fileUrl">下载附件</a>
+        </Button>
+
+        <Button
+          :size="buttonSize"
+          style="float:right;margin-right:10px"
+          @click="showNews = false"
+        >关闭新闻</Button>
       </div>
     </Drawer>
-    <!-- 新闻模态框 -->
   </div>
 </template>
 
 <script>
-import { getTest } from "@/api/user";
-import Editor from "_c/editor";
+import { HOST } from "@/libs/util";
+import { newsAjax } from "@/api/city";
+// 查询URL
+const queryUrl = "/News/watchNews";
 export default {
-  name: "editor_page",
-  components: {
-    Editor
-  },
   data() {
     return {
-      content: "",
-      ideHtml: "",
-      i: 1,
-      isEditor: false,
+      host: "", // 文件IP地址
+      buttonSize: "large", // 按钮样式
+      pageSize: 3, // 显示几个月份的
+      pageTotal: null, // 总页数
+      pageNumber: 1, // 页码
+      showNews: false, // 查看新闻
+      hotNews: null, // 置顶新闻
+      newsListLoading: false, // 新闻Loading
+      newsData: null, // 新闻列表
+      newsItem: null, // 新闻
+      pageSizeArr: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], // 显示的条数
+      pStyle: {
+        fontSize: "16px",
+        color: "rgba(0,0,0,0.85)",
+        lineHeight: "24px",
+        display: "block",
+        marginBottom: "16px"
+      },
       styles: {
         height: "calc(100% - 55px)",
         overflow: "auto",
         paddingBottom: "53px",
         position: "static"
-      },
-      newsData: {
-        name: "",
-        date: ""
-      },
-      newsList: [
-        {
-          newsTime: "十月",
-          news: [
-            {
-              title: "外交部就习近平主席主持",
-              time: "2018/10/24"
-            },
-            {
-              title: "外交部就习近平主席主持",
-              time: "2018/10/24"
-            },
-            {
-              title: "外交部就习近平主席主持",
-              time: "2018/10/24"
-            },
-            {
-              title: "外交部就习近平主席主持",
-              time: "2018/10/24"
-            }
-          ]
-        },
-        {
-          newsTime: "九月",
-          news: [
-            {
-              title: "外交部就习近平主席主持",
-              time: "2018/9/24"
-            },
-            {
-              title: "外交部就习近平主席主持",
-              time: "2018/9/24"
-            },
-            {
-              title: "外交部就习近平主席主持",
-              time: "2018/9/24"
-            },
-            {
-              title: "外交部就习近平主席主持",
-              time: "2018/9/24"
-            }
-          ]
-        },
-        {
-          newsTime: "八月",
-          news: [
-            {
-              title: "外交部就习近平主席主持",
-              time: "2018/8/24"
-            },
-            {
-              title: "外交部就习近平主席主持",
-              time: "2018/8/24"
-            },
-            {
-              title: "外交部就习近平主席主持",
-              time: "2018/8/24"
-            },
-            {
-              title: "外交部就习近平主席主持",
-              time: "2018/8/24"
-            }
-          ]
-        }
-      ]
+      }
     };
   },
   methods: {
-    handleChange(html, text) {
-      this.ideHtml = html;
-      console.log(this.ideHtml);
+    openNews(item) {
+      this.showNews = true;
+      this.newsItem = item;
     },
-    changeContent() {
-      console.log(this.newsData.name === "", this.newsData.date === "");
-      console.log(this.newsData.name === "" && this.newsData.date === "");
-      if (this.newsData.name === "" || this.newsData.date === "") {
-        return;
-      }
-      var arrayDate = this.newsData.date.split("-");
-      var intMonth = parseInt(arrayDate[1], 10);
-      var news = Object.assign(
-        {},
-        {
-          newsTime: this.getMonth(intMonth) + "月",
-          news: [
-            {
-              title: this.newsData.name,
-              content: this.ideHtml,
-              time: this.newsData.date
-            }
-          ]
-        }
-      );
-      if (!news.newsTime !== "undefined月") {
-        this.newsList.map((item, index) => {
-          if (item.newsTime === news.newsTime) {
-            this.newsList[index].news.unshift(news.news[0]);
-            this.i++;
-            this.$refs.editor.setHtml("");
-            news = "";
-          } else if (this.i === 1) {
-            this.newsList.push(news);
-            this.i++;
-            this.$refs.editor.setHtml("");
-            news = "";
-          }
-        });
-      }
+    // 页码
+    pageNumberChange(pageNumber) {
+      this.pageNumber = pageNumber;
+      this._getNewsData("", queryUrl, this.pageSize, this.pageNumber);
     },
-    onChangeDate(date) {
-      this.newsData.date = date;
+    // 页数
+    pageSizeChange(pageSize) {
+      this.pageSize = pageSize;
+      this._getNewsData("", queryUrl, this.pageSize, this.pageNumber);
     },
-    getMonth(index) {
-      var month = [
-        "一",
-        "二",
-        "三",
-        "四",
-        "五",
-        "六",
-        "七",
-        "八",
-        "九",
-        "十",
-        "十一",
-        "十二"
-      ];
-      return month[index - 1];
-    },
-    isNews(item) {
-      this.$Modal.info({
-        title:
-          item.title +
-          `<span style="font-size:12px;font-weight:400;margin-left:200px;">发布日期：${
-            item.time
-          }</span>`,
-        width: 800,
-        content: item.content
+    _getNewsData(formData, url, pageSize, pageNumber) {
+      this.newsListLoading = true;
+      formData = Object.assign(formData, {
+        pageSize,
+        pageNumber
       });
+      const keyOne = "newsFilter";
+      newsAjax({ formData, url, keyOne })
+        .then(result => {
+          this.newsListLoading = false;
+          if (result.data.code === "200") {
+            this.searchLoading = false;
+            this.newsData = result.data.results.list;
+            this.hotNews = result.data.results.top;
+            this.pageTotal =
+              parseInt(result.data.results.pageTotal) * this.pageSize;
+            this.$Message.success("查询成功");
+          } else {
+            this.$Message.error("查询失败");
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   },
-  created() {}
+  created() {
+    this.host = HOST;
+    this._getNewsData("", queryUrl, this.pageSize, this.pageNumber);
+  }
 };
 </script>
 
 <style>
-.news-list {
-  margin: 10px 0 0 40px;
+.ivu-card-head {
+  padding: 5px 16px;
 }
-.news-list .news-item {
-  line-height: 30px;
-  cursor: pointer;
-}
-.news-list .news-item .news-item-text {
-  display: inline-block;
+.ivu-card-head p,
+.ivu-card-head-inner {
   font-size: 16px;
 }
-.news-list .news-item:hover {
-  color: #f44336 !important;
+.item-high {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #17233d;
 }
-.news-list .news-item .news-item-time {
-  margin-left: 30px;
+.item-high:hover {
+  color: #5cadff;
 }
-.btn-ide {
+.news-date-time {
+  padding-left: 50px;
+  font-size: 14px;
+  color: #808695;
+}
+.news-content {
+  padding: 0 10px;
+  font-size: 15px;
+}
+.demo-drawer-footer {
+  width: 100%;
   position: absolute;
-  right: 20px;
-  top: 10px;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid #e8e8e8;
+  padding: 10px 16px;
+  background: #fff;
 }
-.ivu-date-picker-cells {
-  z-index: 10002;
-}
-.ivu-modal-confirm-head {
-  text-align: center;
-  border-bottom: 1px solid #999999;
+.ivu-alert-with-desc .ivu-alert-message {
+  font-size: 24px;
 }
 </style>

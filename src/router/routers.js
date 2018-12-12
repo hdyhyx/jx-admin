@@ -190,7 +190,8 @@ export default [{
     name: "incentive_audit",
     meta: {
       icon: "md-checkbox-outline",
-      title: "正向激励审批"
+      title: "正向激励审批",
+      access: ["admin"]
     },
     component: () =>
           import("@/view/incentive/incentive-audit/incentive-audit.vue")
@@ -229,7 +230,8 @@ export default [{
     name: "dynamic_news_edi",
     meta: {
       icon: "ios-create-outline",
-      title: "动态编辑"
+      title: "动态编辑",
+      access: ["admin"]
     },
     component: () => import("@/view/dynamic-news/dynamic-news-edi/dynamic-news-edi.vue")
   }]
@@ -279,19 +281,38 @@ export default [{
   path: "/work_supervision",
   name: "work_supervision",
   meta: {
-    hide: true,
-    access: ["hide"]
+    icon: "ios-search",
+    title: "工作督查"
   },
   component: Main,
   children: [{
-    path: "work_supervision_page",
-    name: "work_supervision_page",
+    path: "/work_management",
+    name: "work_management",
     meta: {
-      icon: "md-eye",
-      title: "专项工作督查"
+      icon: "md-trending-up",
+      title: "督查指标管理"
     },
-    component: () => import("@/view/work-supervision/work-supervision.vue")
-  }]
+    component: () => import("@/view/work-supervision/work-management/work-management.vue")
+  },
+  {
+    path: "/work_data",
+    name: "work_data",
+    meta: {
+      icon: "md-stats",
+      title: "督查数据考核"
+    },
+    component: () => import("@/view/work-supervision/work-data/work-data.vue")
+  },
+  {
+    path: "/work_audit",
+    name: "work_audit",
+    meta: {
+      icon: "md-checkbox-outline",
+      title: "督查审核审批"
+    },
+    component: () => import("@/view/work-supervision/work-audit/work-audit.vue")
+  }
+  ]
 },
 {
   path: "/no_entry_unit",

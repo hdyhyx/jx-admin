@@ -59,5 +59,9 @@ export default {
   six_game_page: '',
   incentive_details: '正向激励详情',
   dynamic_news_edi: '新闻编辑',
-  dynamic_news: '新闻动态'
+  dynamic_news: '新闻动态',
+  work_supervision: '工作督查',
+  work_management: '督查指标管理',
+  work_data: '督查考核数据',
+  work_audit: '督查审核审批'
 }
