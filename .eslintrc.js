@@ -23,7 +23,8 @@ module.exports = {
     'no-unneeded-ternary': 0,
     'quotes': 0,
     'space-before-function-paren': 0,
-    'vue/valid-v-model': 0
+    'vue/valid-v-model': 0,
+    'no-useless-escape': 0
   },
   parserOptions: {
     parser: 'babel-eslint'

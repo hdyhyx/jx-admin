@@ -453,7 +453,7 @@ export default {
             }
           })
           .catch(err => {
-            console.lo(err);
+            console.log(err);
           });
       });
     },
@@ -472,7 +472,6 @@ export default {
             this.searchLoading = false;
             this.workDataContent = result.data.results.list;
             this.pageTotal = parseInt(result.data.results.pageTotal) * 10;
-            console.log(this.pageTotal);
             this.$Message.success("查询成功");
           } else {
             this.$Message.error("查询失败");

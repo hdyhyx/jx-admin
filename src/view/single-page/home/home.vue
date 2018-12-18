@@ -9,7 +9,7 @@
             <h2 class="head-title">
               <count-to :decimals="1" :end="inforCardData[0].count" count-class="count-style"/>
             </h2>
-            <p class="sub-text">县绩效考核总分</p>
+            <p class="sub-text">市对县指标得分</p>
             <div style="margin-top:50px">
               <bg-example style="height:70px;"></bg-example>
             </div>
@@ -39,15 +39,21 @@
           <Row style="margin-top:50px;color:#fff;font-size:14px">
             <i-col :xs="8" :md="8" :lg="8">
               <p>市指标</p>
-              <h2 style="font-size:18px; margin-top:10px;">0项</h2>
+              <p style="font-size:18px; margin-top:10px;">
+                <count-to :end="0" count-class="count-style"/>项
+              </p>
             </i-col>
             <i-col :xs="8" :md="8" :lg="8">
               <p>县指标</p>
-              <h2 style="font-size:18px; margin-top:10px;">0项</h2>
+              <p style="font-size:18px; margin-top:10px;">
+                <count-to :end="0" count-class="count-style"/>项
+              </p>
             </i-col>
             <i-col :xs="8" :md="8" :lg="8">
               <p>六抓六赛</p>
-              <h2 style="font-size:18px; margin-top:10px;">0项</h2>
+              <p style="font-size:18px; margin-top:10px;">
+                <count-to :end="0" count-class="count-style"/>项
+              </p>
             </i-col>
           </Row>
         </infor-card>
@@ -61,15 +67,21 @@
           <Row style="margin-top:50px;color:#fff;font-size:14px">
             <i-col :xs="8" :md="8" :lg="8">
               <p>市指标</p>
-              <h2 style="font-size:18px; margin-top:10px;">0项</h2>
+              <p style="font-size:18px; margin-top:10px;">
+                <count-to :end="0" count-class="count-style"/>项
+              </p>
             </i-col>
             <i-col :xs="8" :md="8" :lg="8">
               <p>县指标</p>
-              <h2 style="font-size:18px; margin-top:10px;">0项</h2>
+              <p style="font-size:18px; margin-top:10px;">
+                <count-to :end="0" count-class="count-style"/>项
+              </p>
             </i-col>
             <i-col :xs="8" :md="8" :lg="8">
               <p>六抓六赛</p>
-              <h2 style="font-size:18px; margin-top:10px;">0项</h2>
+              <p style="font-size:18px; margin-top:10px;">
+                <count-to :end="0" count-class="count-style"/>项
+              </p>
             </i-col>
           </Row>
         </infor-card>
@@ -83,28 +95,17 @@
         </Card>
         <Spin size="large" fix v-if="true"></Spin>
       </i-col>
-      <!-- 市对县专项工作督查 -->
+      <!-- 正向激励 -->
       <i-col :md="24" :lg="12" style="margin-bottom: 20px;">
-        <Card shadow style="height:530px">
-          <Row>
-            <i-col class="title" :md="20" :lg="20">
-              <h2 style="display: inline-block;font-size:18px">市对县专项工作督查</h2>
-            </i-col>
-            <i-col class="title" :md="4" :lg="4">
-              <Button type="success" style="float:right">备注</Button>
-            </i-col>
-          </Row>
-          <div style="margin-top:20px">
-            <Table
-              highlight-row
-              stripe
-              border
-              ref="currentRowTable"
-              :columns="columns3"
-              :data="data1"
-            ></Table>
+        <Card shadow style="height:520px">
+          <div>
+            <h2 style="font-size:18px">正向激励加分</h2>
+            <p style="font-size:18px;color:#999;margin-top:20px">总加分</p>
+            <count-to :end="0" style="margin-left:20px;" count-class="count-style"/>分
           </div>
+          <example :yName="'项'" :data="democracyData" style="height:340px;"/>
         </Card>
+        <Spin size="large" fix v-if="true"></Spin>
       </i-col>
     </Row>
     <!-- 福州市对永泰县绩效考核指标 -->
@@ -234,17 +235,28 @@
               <MyProgress :color="item.color" :widthVal="item.souer"></MyProgress>
             </div>
           </div>
-          <!-- <chart-pie style="height: 300px;" :value="pieData" text="用户访问来源"></chart-pie> -->
         </Card>
       </i-col>
       <i-col :md="24" :lg="12" style="margin-bottom: 20px;">
-        <Card shadow style="height:520px">
-          <div>
-            <h2 style="font-size:18px">县直单位绩效管理民主测评得分情况</h2>
-            <p style="font-size:18px;color:#999;margin-top:30px">总加分</p>
-            <h1 style="margin-bottom:10px;margin-top:5px">2.1625 分</h1>
+        <Card shadow style="height:517px">
+          <Row>
+            <i-col class="title" :md="20" :lg="20">
+              <h2 style="display: inline-block;font-size:18px">市对县专项工作督查</h2>
+            </i-col>
+            <i-col class="title" :md="4" :lg="4">
+              <Button type="success" style="float:right">备注</Button>
+            </i-col>
+          </Row>
+          <div style="margin-top:20px">
+            <Table
+              highlight-row
+              stripe
+              border
+              ref="currentRowTable"
+              :columns="columns3"
+              :data="data1"
+            ></Table>
           </div>
-          <example style="height:340px;"/>
         </Card>
       </i-col>
       <Spin size="large" fix v-if="true"></Spin>
@@ -308,30 +320,89 @@ export default {
       xzInex: 0,
       isShowLineBar: false,
       lineBarData: {},
+      democracyData: {
+        lineName: [
+          "1月",
+          "2月",
+          "3月",
+          "4月",
+          "5月",
+          "6月",
+          "7月",
+          "8月",
+          "9月",
+          "10月",
+          "11月",
+          "12月"
+        ], // x轴
+        lineData: [80, 50, 60, 66, 40, 80, 60, 45, 66, 50, 40, 60] // 数据
+      },
       lineData: {
-        lineName: [], // x轴
-        lineData: [] // 数据
+        lineName: [
+          "葛岭镇",
+          "城峰镇",
+          "嵩口镇",
+          "清凉镇",
+          "梧桐镇",
+          "樟城镇",
+          "长庆镇",
+          "同安镇",
+          "大洋镇",
+          "塘前乡",
+          "富泉乡",
+          "岭路乡",
+          "赤锡乡",
+          "洑口乡",
+          "盖洋乡",
+          "东洋乡",
+          "霞拔乡",
+          "盘谷乡",
+          "红星乡",
+          "白云乡",
+          "丹云乡"
+        ], // x轴
+        lineData: [
+          80,
+          50,
+          60,
+          66,
+          40,
+          80,
+          60,
+          45,
+          66,
+          50,
+          40,
+          60,
+          40,
+          40,
+          50,
+          50,
+          45,
+          20,
+          60,
+          50,
+          45
+        ] // 数据
       }, // 折线图数据
       inforCardData: [
         {
-          count: 0,
+          count: 100,
           color: "#9CCC65"
         },
-        { title: "累计点击", icon: "md-locate", count: 0, color: "#4DD0E1" },
+        { count: 1, color: "#4DD0E1" },
         {
           title: "新增问答",
           icon: "md-help-circle",
-          count: 0,
+          count: 20,
           color: "#FFCA28"
         },
-        { title: "分享统计", icon: "md-share", count: 657, color: "#FF8A65" },
+        { count: 657, color: "#FF8A65" },
         {
-          title: "新增互动",
-          icon: "md-chatbubbles",
           count: 0,
           color: "#FFCA28"
         },
-        { title: "新增页面", icon: "md-map", count: 14, color: "#9A66E4" }
+        { count: 14, color: "#9A66E4" }
       ],
       xzIndexList: [
         "总分",
@@ -353,27 +424,28 @@ export default {
           key: "indexName"
         },
         {
-          title: "工作目标牵头单位",
-          key: "leadUnit"
-        },
-        {
-          title: "扣分上限/实际扣分",
-          key: "score",
+          title: "实际扣分/扣分上限",
           width: 160,
           render: (h, params) => {
+            // 宽度占比
+            var pressWidth = "";
+            // 实际扣分
+            var actualPoint = params.row.point === null ? 0 : params.row.point;
+            if (params.row.point !== null) {
+              pressWidth = (params.row.point / params.row.maxPoint) * 120;
+            } else {
+              pressWidth = 0;
+            }
             return h("div", [
               h("div", {
                 style: {
                   position: "relative",
                   width: "120px",
-                  height: "20px",
+                  height: "30px",
+                  lineHeight: "30px",
                   marginRight: "5px",
-                  background: "#999"
-                },
-                on: {
-                  click: () => {
-                    console.log(params.row.score);
-                  }
+                  background: "#999",
+                  color: "#fff"
                 }
               }),
               h(
@@ -381,15 +453,10 @@ export default {
                 {
                   style: {
                     position: "absolute",
-                    marginTop: "-20px",
-                    width: "50px",
-                    height: "20px",
+                    marginTop: "-30px",
+                    width: pressWidth.toFixed(0) + "px",
+                    height: "30px",
                     background: "#FF6975"
-                  },
-                  on: {
-                    click: () => {
-                      this.remove(params.index);
-                    }
                   }
                 },
                 ""
@@ -399,25 +466,88 @@ export default {
                 {
                   style: {
                     position: "absolute",
-                    marginTop: "-20px",
+                    marginTop: "-23px",
+                    color: "#fff",
                     width: "120px",
+                    height: "20px",
                     fontSize: "16px",
+                    lineHeight: "20px",
                     textAlign: "center",
-                    color: "#fff"
-                  },
-                  on: {
-                    click: () => {
-                      this.remove(params.index);
-                    }
+                    whiteSpace: "pre"
                   }
                 },
-                params.row.score
+                actualPoint + "   /   " + params.row.maxPoint
               )
             ]);
           }
+        },
+        {
+          title: "市考核责任单位",
+          key: "cityResponUnit"
+        },
+        {
+          title: "工作目标牵头单位",
+          key: "leadUnit"
         }
       ],
-      data1: [],
+      data1: [
+        {
+          indexName: "构建现代化公共文化服务区",
+          cityResponUnit: "市文广新局",
+          leadUnit: "县科技文体局",
+          maxPoint: 3,
+          point: 2
+        },
+        {
+          indexName: "新型智慧城市标杆创建工作",
+          cityResponUnit: "智慧福州",
+          leadUnit: "智慧永泰",
+          maxPoint: 10,
+          point: 5
+        },
+        {
+          indexName: "数字城管及12345诉求办理",
+          cityResponUnit: "智慧福州",
+          leadUnit: "智慧永泰",
+          maxPoint: 5,
+          point: 4
+        },
+        {
+          indexName: "消防工作落实情况",
+          cityResponUnit: "市消防支队",
+          leadUnit: "县消防支队",
+          maxPoint: 6,
+          point: 2
+        },
+        {
+          indexName: "审计查出问题整改落实",
+          cityResponUnit: "市审计局",
+          leadUnit: "县审计局",
+          maxPoint: 10,
+          point: 5
+        },
+        {
+          indexName: "支持电网建设工作",
+          cityResponUnit: "市经信委",
+          leadUnit: "县商务局",
+          maxPoint: 10,
+          point: 5
+        },
+        {
+          indexName: "防震减灾工作落实情况",
+          cityResponUnit: "市地震局",
+          leadUnit: "县地震局",
+          maxPoint: 10,
+          point: 10
+        },
+        {
+          indexName: "温泉资源综合开发",
+          cityResponUnit: "市旅游委",
+          leadUnit: "县旅游委",
+          maxPoint: 10,
+          point: 5
+        }
+      ],
       progress: [
         {
           title: "财政局",

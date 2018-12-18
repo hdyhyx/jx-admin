@@ -9,7 +9,6 @@ export const login = ({
     userName,
     userPassword: password
   }
-  console.log(data);
   return axios.request({
     url: Url + '/Login/loginGetToken',
     data,

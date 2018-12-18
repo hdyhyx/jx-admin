@@ -41,7 +41,7 @@ module.exports = {
       // /api/users  http://localhost:3000/api/users
       // 我们真是服务器接口是没有/api的
       '/api': {
-        target: 'http://192.168.8.131:8181/',
+        target: 'http://192.168.8.134:8181/',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''

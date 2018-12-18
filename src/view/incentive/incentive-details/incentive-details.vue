@@ -118,7 +118,6 @@ export default {
       this.incentiveItem = Object.assign(this.incentiveItem, {
         reason: this.reason
       });
-      console.log(this.incentiveItem);
       this.isReasonLoading = true;
       const url = "/incentive/noPass";
       this._incentiveAjax(url, this.incentiveItem);
@@ -133,7 +132,6 @@ export default {
       const keyTwo = "";
       incentiveAjax({ url, formData, keyOne, keyTwo })
         .then(result => {
-          console.log(result);
           if (result.data.code === "200") {
             this.$Message.success("操作成功");
             this.isAuditLoading = false;

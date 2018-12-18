@@ -241,8 +241,7 @@ export default [{
   name: "investigate",
   meta: {
     icon: "ios-search",
-    title: "察访工作",
-    access: ["hide"]
+    title: "察访工作"
   },
   component: Main,
   children: [{
@@ -290,7 +289,8 @@ export default [{
     name: "work_management",
     meta: {
       icon: "md-trending-up",
-      title: "督查指标管理"
+      title: "督查指标管理",
+      access: ["admin"]
     },
     component: () => import("@/view/work-supervision/work-management/work-management.vue")
   },
@@ -308,7 +308,8 @@ export default [{
     name: "work_audit",
     meta: {
       icon: "md-checkbox-outline",
-      title: "督查审核审批"
+      title: "督查审核审批",
+      access: ["admin", "responsible"]
     },
     component: () => import("@/view/work-supervision/work-audit/work-audit.vue")
   }
@@ -352,6 +353,36 @@ export default [{
     },
     component: () =>
           import("@/view/no-entry-unit/no-entry-unit-all/no-entry-unit-all.vue")
+  }
+  ]
+},
+{
+  path: '/user_management',
+  name: 'user_mangement',
+  component: Main,
+  meta: {
+    title: '用户管理',
+    icon: "md-person-add"
+  },
+  children: [{
+    path: "user-account",
+    name: "user_account",
+    meta: {
+      icon: "md-person-add",
+      title: "用户管理"
+    },
+    component: () =>
+          import("@/view//user-management/user-account/user-account.vue")
+  },
+  {
+    path: "user-test",
+    name: "user_test",
+    meta: {
+      icon: "ios-construct",
+      title: "测评对象"
+    },
+    component: () =>
+          import("@/view//user-management/user-test/user-test.vue")
   }
   ]
 },

@@ -35,7 +35,7 @@
             <i-col :xs="24" :md="12" :lg="6">
               <FormItem label="审核状态">
                 <Select clearable v-model="searchData.audit" style="width:200px">
-                  <Option value="5">未填写</Option>
+                  <Option value="4">未填写</Option>
                   <Option value="0">未审核</Option>
                   <Option value="1">责任人审核</Option>
                   <Option value="2">管理员审核</Option>
@@ -73,6 +73,7 @@
         <Table
           border
           highlight-row
+          :loading="tabelLoading"
           ref="currentRowTable"
           :columns="workDataTitle"
           :data="workDataContent"
@@ -89,13 +90,13 @@
         </div>
       </Card>
     </Row>
-    <Row style="margin-top:20px">
+    <Row style="margin-top:20px" v-if="accessAdmin">
       <Card>
         <Upload
           :on-success="handleSuccess"
           :format="['xls','xlsx']"
           :on-format-error="handleFormatError"
-          action="//jsonplaceholder.typicode.com/posts/"
+          action="/workScore/importScore"
         >
           <Button icon="ios-cloud-upload-outline">上传指标</Button>
         </Upload>
@@ -134,7 +135,7 @@
                 :max="workForm.maxPoint"
                 :min="0"
                 :step="0.1"
-                v-model="workForm.point"
+                v-model="workForm.score"
               ></InputNumber>
             </FormItem>
           </Col>
@@ -158,18 +159,18 @@
               <Select
                 clearable
                 :disabled="isDisabledSubmit"
-                v-model="searchData.monthTime"
+                v-model="workForm.monthTime"
                 style="width:80px"
               >
-                <Option value="1">1月</Option>
-                <Option value="2">2月</Option>
-                <Option value="3">3月</Option>
-                <Option value="4">4月</Option>
-                <Option value="5">5月</Option>
-                <Option value="6">6月</Option>
-                <Option value="7">7月</Option>
-                <Option value="8">8月</Option>
-                <Option value="9">9月</Option>
+                <Option value="01">1月</Option>
+                <Option value="02">2月</Option>
+                <Option value="03">3月</Option>
+                <Option value="04">4月</Option>
+                <Option value="05">5月</Option>
+                <Option value="06">6月</Option>
+                <Option value="07">7月</Option>
+                <Option value="08">8月</Option>
+                <Option value="09">9月</Option>
                 <Option value="10">10月</Option>
                 <Option value="11">11月</Option>
                 <Option value="12">12月</Option>
@@ -201,15 +202,18 @@
 import { hasOneOf } from "@/libs/tools";
 import { workAjax } from "@/api/city";
 // 查询URL
-const QUERY_URL = "/workSupervision/query";
+const QUERY_URL = "/workScore/query";
 // 修改URL
-const UPDATE_URL = "/workSupervision/setPoint";
+const UPDATE_URL = "/workScore/update";
+// 添加URL
+const INSERT_URL = "/workScore/insert";
 export default {
   data() {
     return {
       modalTitle: "", // 模态框title
       submitloading: false, // 提交loading
       searchLoading: false, // 搜索loading
+      tabelLoading: false,
       isInsertModal: false, // 模态框
       pageSize: 10,
       pageNumber: 1,
@@ -230,7 +234,7 @@ export default {
         dateTime: "", // 年份
         monthTime: "", // 月份
         audit: "", // 审核状态
-        point: null, // 分数
+        score: null, // 分数
         maxPoint: null, // 分数上线
         reason: "" // 回退原因
       },
@@ -288,9 +292,9 @@ export default {
             // 宽度占比
             var pressWidth = "";
             // 实际扣分
-            var actualPoint = params.row.point === null ? 0 : params.row.point;
-            if (params.row.point !== null) {
-              pressWidth = (params.row.point / params.row.maxPoint) * 120;
+            var actualPoint = params.row.score === null ? 0 : params.row.score;
+            if (params.row.score !== null) {
+              pressWidth = (params.row.score / params.row.maxPoint) * 120;
             } else {
               pressWidth = 0;
             }
@@ -361,7 +365,7 @@ export default {
             var isGhost = false;
             switch (params.row.audit) {
               case null:
-                typeColor = "#333";
+                typeColor = "default";
                 text = "未填写";
                 isGhost = false;
                 break;
@@ -382,7 +386,8 @@ export default {
                 break;
               case "3":
                 typeColor = "error";
-                text = "回退";
+                text = "回退审核";
+                isGhost = true;
                 break;
               default:
                 break;
@@ -446,13 +451,22 @@ export default {
                     click: () => {
                       // 权限管理
                       if (this.accessRespons) {
-                        if (params.row.audit !== "1") {
+                        this.$Notice.warning({
+                          title: "权限不足",
+                          desc: "如果要修改或填写分数，请联系对应单位"
+                        });
+                        return;
+                      } else if (this.accessAgent) {
+                        if (
+                          params.row.audit === "1" ||
+                          params.row.audit === "2"
+                        ) {
                           this.$Notice.warning({
                             title: "权限不足",
                             desc: "如果要修改或填写分数，请联系对应单位"
                           });
+                          return;
                         }
-                        return;
                       }
                       this.isInsertModal = true;
                       // 填写分数 可以提交
@@ -524,7 +538,14 @@ export default {
       this.$refs["work"].validate(valid => {
         if (valid) {
           this.submitloading = true;
-          this._workAjax(UPDATE_URL, this.workForm).then(result => {
+          var url = "";
+          // 根据审核状态 判断 修改还是添加
+          if (this.workForm.audit === null) {
+            url = INSERT_URL;
+          } else {
+            url = UPDATE_URL;
+          }
+          this._workAjax(url, this.workForm).then(result => {
             this.submitloading = false;
             if (result.code === "200") {
               this.isInsertModal = false;
@@ -577,7 +598,17 @@ export default {
     },
     // 文件上传成功
     handleSuccess(res, file) {
-      console.log(res);
+      if (res.code === "200") {
+        this.$Notice.success({
+          title: res.message,
+          desc: res.results
+        });
+      } else {
+        this.$Notice.error({
+          title: res.message,
+          desc: res.results
+        });
+      }
     },
     // 验证上传格式
     handleFormatError(file) {
@@ -588,7 +619,7 @@ export default {
     },
     // 添加编辑AJAX
     _workAjax(url, formData) {
-      const keyOne = "workSupervisionEntity";
+      const keyOne = "workScoreEntity";
       return new Promise((resolve, reject) => {
         workAjax({ url, formData, keyOne })
           .then(result => {
@@ -599,7 +630,7 @@ export default {
             }
           })
           .catch(err => {
-            console.lo(err);
+            console.log(err);
           });
       });
     },
@@ -610,7 +641,7 @@ export default {
         pageSize,
         pageNumber
       });
-      const keyOne = "workSupervisionFilter";
+      const keyOne = "workScoreFilter";
       workAjax({ formData, url, keyOne })
         .then(result => {
           this.tabelLoading = false;

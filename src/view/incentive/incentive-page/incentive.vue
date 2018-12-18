@@ -612,7 +612,6 @@ export default {
           const keyOne = "incentiveEntity";
           this._incentiveAjax(url, this.mattersForm, keyOne).then(result => {
             this.submitLoading = false;
-            console.log(result);
             if (result.code === "200") {
               this.isShowMatters = false;
               this._getIncentive("", this.pageSize, this.pageNumber);
@@ -724,7 +723,6 @@ export default {
     // 上传图片========================
     getImageList() {
       const fileList = this.$refs.upload.fileList;
-      console.log(fileList);
       var idList = [];
       fileList.forEach(item => {
         idList.push(item.id);
@@ -738,7 +736,6 @@ export default {
     },
     handleRemove(file) {
       // 从服务器上删除
-      console.log(file);
       const formData = [file.id];
       const url = "/upload/delete";
       deleteAjax({ formData, url })
@@ -787,7 +784,6 @@ export default {
   },
   created() {
     this.HOST = HOST;
-    console.log(this.HOST);
     // 获取tabel数据
     this._getIncentive(this.searchData, this.pageSize, this.pageNumber);
     // 饼图数据
@@ -821,7 +817,6 @@ export default {
             }
           );
           this.pieData = pie;
-          console.log(this.pie);
           this.isPieLoading = false;
         }
       }

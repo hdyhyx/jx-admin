@@ -227,6 +227,34 @@ function newsData(formData, keyOne) {
 }
 
 function workData(formData, keyOne) {
+  let data = {}
+  data['tokenEntity'] = {
+    value: getToken()
+  }
+  if (formData['list'] === undefined) {
+    data[keyOne] = {
+      indicatorsId: formData.id,
+      id: formData.scoreId,
+      indexName: formData.indexName, // 指标名称
+      cityResponUnit: formData.cityResponUnit, // 责任单位
+      cooperateUnit: formData.cooperateUnit, // 配合单位
+      leadUnit: formData.leadUnit, // 牵头单位
+      audit: formData.audit, // 审核状态
+      dateTime: formData.dateTime, // 年月
+      monthTime: formData.monthTime, // 月份
+      reason: formData.reason, // 回退原因
+      maxPoint: formData.maxPoint, // 扣分值上限
+      score: formData.score, // 扣分值
+      pageSize: formData.pageSize, // 显示页数
+      pageNumber: formData.pageNumber // 页码
+    }
+  } else {
+    data['list'] = formData['list']
+  }
+  return data
+}
+// 账号管理
+function userData(formData, keyOne) {
   console.log(formData)
   let data = {}
   data['tokenEntity'] = {
@@ -234,17 +262,36 @@ function workData(formData, keyOne) {
   }
   data[keyOne] = {
     id: formData.id,
-    indexName: formData.indexName, // 指标名称
-    cityResponUnit: formData.cityResponUnit, // 责任单位
-    cooperateUnit: formData.cooperateUnit, // 配合单位
-    leadUnit: formData.leadUnit, // 牵头单位
-    audit: formData.audit, // 审核状态
-    dateTime: formData.dateTime, // 年月
-    reason: formData.reason, // 回退原因
-    maxPoint: formData.maxPoint, // 扣分值上限
-    point: formData.point, // 扣分值
+    userName: formData.userName,
+    userDepartment: formData.userDepartment,
+    userPermissions: formData.userPermissions,
+    userPhone: formData.userPhone,
+    userPassword: formData.userPassword,
     pageSize: formData.pageSize, // 显示页数
     pageNumber: formData.pageNumber // 页码
+  }
+  return data
+}
+
+function userTestData(formData, keyOne) {
+  console.log(formData)
+  let data = {}
+  data['tokenEntity'] = {
+    value: getToken()
+  }
+  if (formData['list'] === undefined) {
+    data[keyOne] = {
+      id: formData.id,
+      name: formData.name,
+      department: formData.department,
+      phone: formData.phone,
+      gender: formData.gender,
+      age: formData.age,
+      pageSize: formData.pageSize, // 显示页数
+      pageNumber: formData.pageNumber // 页码
+    }
+  } else {
+    data['list'] = formData['list']
   }
   return data
 }
@@ -314,6 +361,35 @@ export const workAjax = ({
 }) => {
   let data = ''
   data = workData(formData, keyOne)
+  return axios.request({
+    url: HOST + url,
+    data,
+    method: 'post'
+  })
+}
+
+// 用户管理
+export const userAjax = ({
+  formData,
+  url,
+  keyOne
+}) => {
+  let data = ''
+  data = userData(formData, keyOne)
+  return axios.request({
+    url: HOST + url,
+    data,
+    method: 'post'
+  })
+}
+// 测评对象
+export const userTestAjax = ({
+  formData,
+  url,
+  keyOne
+}) => {
+  let data = ''
+  data = userTestData(formData, keyOne)
   return axios.request({
     url: HOST + url,
     data,

@@ -63,5 +63,9 @@ export default {
   work_supervision: '工作督查',
   work_management: '督查指标管理',
   work_data: '督查考核数据',
-  work_audit: '督查审核审批'
+  work_audit: '督查审核审批',
+  user_mangement: '用户管理',
+  user: '用户管理',
+  user_account: '账号管理',
+  user_test: '测评对象'
 }
