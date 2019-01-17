@@ -22,26 +22,26 @@
             </i-col>
             <i-col :xs="24" :md="12" :lg="6">
               <FormItem label="牵头单位">
-                <Input
-                  search
-                  placeholder="请输入搜索内容"
+                <Select
+                  clearable
+                  placeholder="请输入牵头单位"
                   v-model="searchData.leadUnit"
-                  style="width: auto"
+                  style="width: 150px"
                 >
-                  <Icon type="ios-search" slot="suffix"/>
-                </Input>
+                  <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+                </Select>
               </FormItem>
             </i-col>
             <i-col :xs="24" :md="12" :lg="6">
               <FormItem label="责任单位">
-                <Input
-                  search
-                  placeholder="请输入搜索内容"
+                <Select
+                  clearable
+                  placeholder="请输入责任单位"
                   v-model="searchData.responsibilityUnit"
-                  style="width: auto"
+                  style="width: 150px"
                 >
-                  <Icon type="ios-search" slot="suffix"/>
-                </Input>
+                  <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+                </Select>
               </FormItem>
             </i-col>
           </Row>
@@ -1143,6 +1143,9 @@ export default {
     });
   },
   computed: {
+    getDepartmentList() {
+      return this.$store.state.user.departmentList;
+    },
     access() {
       return this.$store.state.user.access;
     },

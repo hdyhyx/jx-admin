@@ -114,6 +114,9 @@ export default {
     },
     hasReadErrorPage() {
       return this.$store.state.app.hasReadErrorPage;
+    },
+    emailWarning() {
+      return this.$store.state.user.emailWarning;
     }
   },
   methods: {
@@ -183,6 +186,13 @@ export default {
     if (!this.tagNavList.find(item => item.name === this.$route.name)) {
       this.$router.push({
         name: this.$config.homeName
+      });
+    }
+    if (this.emailWarning) {
+      this.$Notice.warning({
+        title: "邮件未读",
+        desc: "绩效管理察访核验工作中已收到邮件尚未读取",
+        duration: 0
       });
     }
   }

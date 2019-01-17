@@ -18,11 +18,14 @@
             </i-col>
             <i-col :xs="24" :md="12" :lg="6">
               <FormItem label="用户单位" prop="name">
-                <Input
-                  v-model="searchData.userDepartment"
+                <Select
+                  clearable
                   placeholder="请输入用户单位"
-                  style="width: auto"
-                ></Input>
+                  v-model="searchData.userDepartment"
+                  style="width: 150px"
+                >
+                  <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+                </Select>
               </FormItem>
             </i-col>
             <i-col :xs="24" :md="12" :lg="6">
@@ -106,7 +109,7 @@
         <FormItem label="用户权限" prop="userPermissions">
           <Select :disabled="roleSelect" v-model="userForm.userPermissions" style="width:200px">
             <Option v-if="this.accessAdmin" value="admin">管理员</Option>
-            <Option v-if="roleSelect" value="responsible">责任人</Option>
+            <Option v-if="isResponsible" value="responsible">责任人</Option>
             <Option value="agent">经办人</Option>
           </Select>
         </FormItem>
@@ -121,7 +124,6 @@
 <script>
 import { hasOneOf } from "@/libs/tools";
 import { userAjax } from "@/api/city";
-import { mapMutations, mapActions, mapGetters } from "vuex";
 // 删除URL
 const DELETE_URL = "/user/delete";
 // 修改URL
@@ -140,10 +142,10 @@ export default {
     const phoneReg = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入联系电话"));
+      } else if (!PHONE_REG.test(this.userForm.userPhone)) {
+        callback(new Error("请输入正确的手机号码"));
       } else {
-        if (!PHONE_REG.test(this.userForm.userPhone)) {
-          callback(new Error("请输入正确的手机号码"));
-        }
+        callback();
       }
     };
     return {
@@ -153,15 +155,16 @@ export default {
       userModalLoading: false, // 提交loading
       tabelLoading: false, // 表格loading
       userModalTitle: "", // 模态框title
+      isResponsible: "",
       pageSize: 10,
       pageNumber: 1,
       pageTotal: 10,
       userForm: {
-        userName: "",
-        userDepartment: "",
-        userPermissions: "",
-        userPhone: "",
-        userPassword: ""
+        userName: "", // 用户名
+        userDepartment: "", // 用户单位
+        userPermissions: "", // 用户权限
+        userPhone: "", // 手机号
+        userPassword: "" // 密码
       },
       searchData: {
         userName: "",
@@ -298,6 +301,7 @@ export default {
                       if (!this.accessAdmin) {
                         this.roleSelect = true;
                       }
+                      this.isResponsible = true;
                     }
                   }
                 },
@@ -370,11 +374,16 @@ export default {
     showUserModal() {
       this.userModalTitle = "添加用户";
       this.isUserModal = true;
-      // 添加用户，责任人只能添加经办人
       this.roleSelect = false;
       // 登录角色不是admin,只能添加自己部门的啊
       if (!this.accessAdmin) {
         this.userForm.userDepartment = this.getDepartment;
+      }
+      // 添加用户，责任人只能添加经办人
+      if (this.accessAdmin) {
+        this.isResponsible = true;
+      } else {
+        this.isResponsible = false;
       }
     },
     // 提交
@@ -422,7 +431,15 @@ export default {
     },
     cancelUserModal() {
       this.$refs["userManagement"].resetFields();
+      this.userModalLoading = false;
       this.isUserModal = false;
+      this.userForm = {
+        userName: "", // 用户名
+        userDepartment: "", // 用户单位
+        userPermissions: "", // 用户权限
+        userPhone: "", // 手机号
+        userPassword: "" // 密码
+      };
     },
     // 页码
     pageNumberChange(pageNumber) {
@@ -497,6 +514,9 @@ export default {
     );
   },
   computed: {
+    getDepartmentList() {
+      return this.$store.state.user.departmentList;
+    },
     getDepartment() {
       return this.$store.state.user.department;
     },

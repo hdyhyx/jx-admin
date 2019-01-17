@@ -17,9 +17,17 @@ export default {
     access: '',
     hasGetInfo: false,
     department: '',
-    role: ''
+    role: '',
+    emailWarning: '',
+    departmentList: []
   },
   mutations: {
+    setDepartmentList(state, departmentList) {
+      state.departmentList = departmentList
+    },
+    setEmailWarning(state, emailWarning) {
+      state.emailWarning = emailWarning
+    },
     setRole(state, role) {
       state.role = role
     },
@@ -101,7 +109,6 @@ export default {
       return new Promise((resolve, reject) => {
         try {
           getUserInfo(state.token).then(res => {
-            console.log(res, 111);
             const data = res.data.results
             // commit('setAvator', data.avator)
             commit('setUserName', data.name)
@@ -110,6 +117,8 @@ export default {
             commit('setHasGetInfo', true)
             commit('setDepartment', data.department)
             commit('setRole', data.role)
+            commit('setEmailWarning', data.emailWarning)
+            commit('setDepartmentList', data.departmentList)
             resolve(data)
           }).catch(err => {
             reject(err)

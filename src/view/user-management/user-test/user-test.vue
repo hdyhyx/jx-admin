@@ -71,7 +71,7 @@
           :on-success="handleSuccess"
           :format="['xls','xlsx']"
           :on-format-error="handleFormatError"
-          action="/workScore/importScore"
+          action="/api/evaluateUser/importEvaluateUser"
         >
           <Button icon="ios-cloud-upload-outline">上传测试对象</Button>
         </Upload>
@@ -208,7 +208,7 @@ export default {
           key: "department"
         },
         {
-          title: "用户权限",
+          title: "用户性别",
           key: "gender"
         },
         {
@@ -325,7 +325,7 @@ export default {
           this.userModalLoading = true;
           if (this.userModalTitle === INSERT_TITLE) {
             this._userAjax(this.userForm, INSERT_URL).then(result => {
-              this.isUserModal = false;
+              this.cancelUserModal();
               this.userModalLoading = false;
               if (result.code === "200") {
                 this.$Message.success("添加成功！");
@@ -341,7 +341,7 @@ export default {
             });
           } else if (this.userModalTitle === UPDATE_TITLE) {
             this._userAjax(this.userForm, UPDATE_URL).then(result => {
-              this.isUserModal = false;
+              this.cancelUserModal();
               this.userModalLoading = false;
               if (result.code === "200") {
                 this.$Message.success("添加成功！");
@@ -365,8 +365,14 @@ export default {
     cancelUserModal() {
       this.$refs["userManagement"].resetFields();
       this.isUserModal = false;
-      this.userForm.age = null;
-      this.userForm.gender = "";
+      this.userModalLoading = false;
+      this.userForm = {
+        name: "",
+        department: "",
+        gender: "",
+        phone: "",
+        age: null
+      };
     },
     // 页码
     pageNumberChange(pageNumber) {
@@ -451,7 +457,6 @@ export default {
         });
     }
   },
-  mounted() {},
   created() {
     this._getUserData(
       this.searchData,

@@ -3,9 +3,13 @@ import {
   format
 } from 'path';
 import {
-  getToken
+  getToken,
+  URL
 } from "@/libs/util";
-const HOST = '/api'
+
+// 以防命名冲突
+const HOST = URL
+
 /**
  * @param {*} token
  * @param {*} formData  数据
@@ -58,7 +62,6 @@ function citylData(formData, KEY_1) {
  * 用于县对乡镇指标管理
  */
 function countyData(formData, KEY_1, KEY_2) {
-  console.log(formData);
   let data = {}
   data['tokenEntity'] = {
     value: getToken()
@@ -184,7 +187,6 @@ function countyData(formData, KEY_1, KEY_2) {
  * @returns
  */
 function incentiveData(formData, keyOne, keyTwo) {
-  console.log(formData)
   let data = {}
   data['tokenEntity'] = {
     value: getToken()
@@ -255,7 +257,6 @@ function workData(formData, keyOne) {
 }
 // 账号管理
 function userData(formData, keyOne) {
-  console.log(formData)
   let data = {}
   data['tokenEntity'] = {
     value: getToken()

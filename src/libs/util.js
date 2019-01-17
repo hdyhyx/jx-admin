@@ -358,3 +358,5 @@ export const localRead = (key) => {
 // 线上 http: //http://119.23.191.0:80
 // export const HOST = "http://192.168.8.107:8080/api"
 export const HOST = "http://119.23.191.0:80"
+
+export const URL = "/api"

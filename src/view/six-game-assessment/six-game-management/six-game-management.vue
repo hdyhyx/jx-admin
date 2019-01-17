@@ -28,26 +28,26 @@
               </i-col>
               <i-col :xs="24" :md="12" :lg="6" v-show="searchData.indexType==='二级指标'">
                 <FormItem label="责任单位">
-                  <Input
-                    search
-                    placeholder="请输入搜索内容"
+                  <Select
+                    clearable
+                    placeholder="请输入责任单位"
                     v-model="searchData.responsibilityUnit"
-                    style="width: auto"
+                    style="width: 150px"
                   >
-                    <Icon type="ios-search" slot="suffix"/>
-                  </Input>
+                    <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+                  </Select>
                 </FormItem>
               </i-col>
               <i-col :xs="24" :md="12" :lg="6" v-show="searchData.indexType==='二级指标'">
                 <FormItem label="牵头单位">
-                  <Input
-                    search
+                  <Select
+                    clearable
                     placeholder="请输入牵头单位"
                     v-model="searchData.leadUnit"
-                    style="width: auto"
+                    style="width: 150px"
                   >
-                    <Icon type="ios-search" slot="suffix"/>
-                  </Input>
+                    <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+                  </Select>
                 </FormItem>
               </i-col>
             </Row>
@@ -199,7 +199,14 @@
         <Row>
           <i-col :xs="24" :md="8" :lg="12">
             <FormItem label="主要牵头单位" prop="mainUnit" v-if="isFormFlase">
-              <Input v-model="formCountyList.mainUnit" placeholder="请输入牵头单位" style="width:auto"></Input>
+              <Select
+                clearable
+                placeholder="请输入牵头单位"
+                v-model="formCountyList.mainUnit"
+                style="width: 150px"
+              >
+                <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+              </Select>
             </FormItem>
           </i-col>
           <i-col :xs="24" :md="8" :lg="12">
@@ -211,11 +218,14 @@
         <Row>
           <i-col :xs="24" :md="8" :lg="12">
             <FormItem label="责任单位" v-if="isFormFlase">
-              <Input
+              <Select
+                clearable
+                placeholder="请输入牵头单位"
                 v-model="formCountyList.responsibilityUnit"
-                placeholder="请输入责任单位"
-                style="width:auto"
-              ></Input>
+                style="width: 150px"
+              >
+                <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+              </Select>
             </FormItem>
           </i-col>
           <i-col :xs="24" :md="8" :lg="12">
@@ -1370,6 +1380,11 @@ export default {
         }
       },
       deep: true
+    }
+  },
+  computed: {
+    getDepartmentList() {
+      return this.$store.state.user.departmentList;
     }
   },
   created() {

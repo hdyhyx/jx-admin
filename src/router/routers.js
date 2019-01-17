@@ -22,6 +22,26 @@ export default [{
   component: () => import("@/view/login/login.vue")
 },
 {
+  path: "/questionnaire",
+  name: "questionnaire",
+  meta: {
+    title: "测评入口",
+    hideInMenu: true
+  },
+  component: () =>
+      import("@/view/questionnaire/questionnaire-ent/questionnaire-ent.vue")
+},
+{
+  path: "/test-page/:option",
+  name: "test_page",
+  meta: {
+    hideInMenu: true
+  },
+  component: () =>
+      import("@/view/questionnaire/questionnaire-page/questionnaire-page.vue")
+
+},
+{
   path: "/",
   name: "_home",
   redirect: "/home",
@@ -224,8 +244,10 @@ export default [{
       icon: "logo-twitter",
       title: "动态新闻"
     },
-    component: () => import("@/view/dynamic-news/dynamic-news-page/dynamic-news-page.vue")
-  }, {
+    component: () =>
+          import("@/view/dynamic-news/dynamic-news-page/dynamic-news-page.vue")
+  },
+  {
     path: "/dynamic_news_edi",
     name: "dynamic_news_edi",
     meta: {
@@ -233,8 +255,10 @@ export default [{
       title: "动态编辑",
       access: ["admin"]
     },
-    component: () => import("@/view/dynamic-news/dynamic-news-edi/dynamic-news-edi.vue")
-  }]
+    component: () =>
+          import("@/view/dynamic-news/dynamic-news-edi/dynamic-news-edi.vue")
+  }
+  ]
 },
 {
   path: "/investigate",
@@ -249,7 +273,8 @@ export default [{
     name: "investigate_outbox",
     meta: {
       icon: "md-funnel",
-      title: "已发送文件"
+      title: "已发送文件",
+      access: ["admin"]
     },
     component: () =>
           import("@/view/investigate/investigate-outbox/investigate-outbox.vue")
@@ -259,7 +284,8 @@ export default [{
     name: "investigate_ide",
     meta: {
       icon: "ios-create-outline",
-      title: "编辑文件"
+      title: "编辑文件",
+      access: ["admin"]
     },
     component: () =>
           import("@/view/investigate/investigate-ide/investigate-ide.vue")
@@ -269,10 +295,21 @@ export default [{
     name: "investigate_inbox",
     meta: {
       icon: "ios-mail-outline",
-      title: "已收到文件"
+      title: "已收到文件",
+      access: ["responsible", "agent"]
     },
     component: () =>
           import("@/view/investigate/investigate-inbox/investigate-inbox.vue")
+  },
+  {
+    path: "investigate_watchEmail/:id",
+    name: "investigate_watchEmail",
+    meta: {
+      title: "查看邮件",
+      hideInMenu: true
+    },
+    component: () =>
+          import("@/view/investigate/investigate-watchEmail/investigate-watchEmail.vue")
   }
   ]
 },
@@ -292,7 +329,8 @@ export default [{
       title: "督查指标管理",
       access: ["admin"]
     },
-    component: () => import("@/view/work-supervision/work-management/work-management.vue")
+    component: () =>
+          import("@/view/work-supervision/work-management/work-management.vue")
   },
   {
     path: "/work_data",
@@ -301,7 +339,8 @@ export default [{
       icon: "md-stats",
       title: "督查数据考核"
     },
-    component: () => import("@/view/work-supervision/work-data/work-data.vue")
+    component: () =>
+          import("@/view/work-supervision/work-data/work-data.vue")
   },
   {
     path: "/work_audit",
@@ -311,7 +350,8 @@ export default [{
       title: "督查审核审批",
       access: ["admin", "responsible"]
     },
-    component: () => import("@/view/work-supervision/work-audit/work-audit.vue")
+    component: () =>
+          import("@/view/work-supervision/work-audit/work-audit.vue")
   }
   ]
 },
@@ -357,11 +397,63 @@ export default [{
   ]
 },
 {
-  path: '/user_management',
-  name: 'user_mangement',
+  path: "/measurement",
+  name: "measurement",
   component: Main,
   meta: {
-    title: '用户管理',
+    title: "测评模块",
+    icon: "ios-school"
+  },
+  children: [{
+    path: "measurement-data",
+    name: "measurement_data",
+    meta: {
+      icon: "md-person-add",
+      title: "测评数据管理"
+    },
+    component: () =>
+          import("@/view/measurement/measurement-data/measurement-data.vue")
+  },
+  {
+    path: "measurement-res",
+    name: "measurement_res",
+    meta: {
+      icon: "ios-construct",
+      title: "测评结果查看"
+    },
+    component: () =>
+          import("@/view/measurement/measurement-res/measurement-res.vue")
+  },
+  {
+    path: "measurement-pages/:id",
+    name: "measurement_pages",
+    meta: {
+      icon: "ios-construct",
+      title: "试卷添加编辑",
+      hideInMenu: "true"
+    },
+    component: () =>
+          import("@/view/measurement/measurement-pages/measurement-pages.vue")
+  },
+  {
+    path: "measurement-details/:id",
+    name: "measurement_details",
+    meta: {
+      icon: "ios-construct",
+      title: "查看试卷",
+      hideInMenu: "true"
+    },
+    component: () =>
+          import("@/view/measurement/measurement-details/measurement-details.vue")
+  }
+  ]
+},
+{
+  path: "/user_management",
+  name: "user_mangement",
+  component: Main,
+  meta: {
+    title: "用户管理",
     icon: "md-person-add"
   },
   children: [{
@@ -372,17 +464,18 @@ export default [{
       title: "用户管理"
     },
     component: () =>
-          import("@/view//user-management/user-account/user-account.vue")
+          import("@/view/user-management/user-account/user-account.vue")
   },
   {
     path: "user-test",
     name: "user_test",
     meta: {
       icon: "ios-construct",
-      title: "测评对象"
+      title: "测评对象",
+      access: ["admin"]
     },
     component: () =>
-          import("@/view//user-management/user-test/user-test.vue")
+          import("@/view/user-management/user-test/user-test.vue")
   }
   ]
 },

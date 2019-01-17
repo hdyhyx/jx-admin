@@ -27,7 +27,14 @@
             </i-col>
             <i-col :xs="24" :md="12" :lg="6">
               <FormItem label="牵头单位" prop="name">
-                <Input v-model="searchData.leadUnit" placeholder="请输入牵头单位" style="width: auto"></Input>
+                <Select
+                  clearable
+                  placeholder="请输入牵头单位"
+                  v-model="searchData.leadUnit"
+                  style="width: 150px"
+                >
+                  <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+                </Select>
               </FormItem>
             </i-col>
           </Row>
@@ -480,6 +487,11 @@ export default {
         .catch(err => {
           console.log(err);
         });
+    }
+  },
+  computed: {
+    getDepartmentList() {
+      return this.$store.state.user.departmentList;
     }
   },
   created() {

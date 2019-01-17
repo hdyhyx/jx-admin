@@ -16,9 +16,9 @@ export default {
   multilevel: '多级菜单',
   directive_page: '指令',
   investigate: '绩效管理察访核验工作',
-  investigate_outbox: '已发送文件',
-  investigate_ide: '编写文件',
-  investigate_inbox: '已收到文件',
+  investigate_outbox: '已发送邮件',
+  investigate_ide: '编写邮件',
+  investigate_inbox: '已收到邮件',
   investigate_feedback: '反馈',
   city_assess_page: '市对县指标考核数据',
   county_assess_page: '县对乡镇指标考核数据',
@@ -67,5 +67,10 @@ export default {
   user_mangement: '用户管理',
   user: '用户管理',
   user_account: '账号管理',
-  user_test: '测评对象'
+  user_test: '测评对象',
+  investigate_watchEmail: '查看邮件',
+  measurement: '测评模块',
+  measurement_data: '测评数据管理',
+  measurement_res: "测评数据结果",
+  measurement_pages: '编辑测评'
 }

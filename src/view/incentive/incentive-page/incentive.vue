@@ -279,7 +279,7 @@
       </Form>
       <div class="demo-drawer-footer">
         <Button type="primary" :loading="submitLoading" @click="submitDrawer">上传提交</Button>
-        <Button style="margin-right: 8px" @click="closeDrawer">Cancel</Button>
+        <Button style="margin-right: 8px" @click="closeDrawer">关闭</Button>
       </div>
     </Drawer>
   </div>

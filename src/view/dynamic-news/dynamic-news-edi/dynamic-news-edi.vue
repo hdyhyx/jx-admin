@@ -116,7 +116,7 @@
                   :on-format-error="handleFormatError"
                   :on-exceeded-size="handleMaxSize"
                   :on-success="handleSuccess"
-                  action="/api/upload/fileUpload"
+                  action="/upload/fileUpload"
                 >
                   <Button
                     :disabled="file !==null"

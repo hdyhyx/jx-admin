@@ -15,26 +15,26 @@
             </i-col>
             <i-col :xs="24" :md="12" :lg="6">
               <FormItem label="责任单位">
-                <Input
-                  search
-                  placeholder="请输入搜索内容"
+                <Select
+                  clearable
+                  placeholder="请输入责任单位"
                   v-model="searchData.responsibilityUnit"
-                  style="width: auto"
+                  style="width: 150px"
                 >
-                  <Icon type="ios-search" slot="suffix"/>
-                </Input>
+                  <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+                </Select>
               </FormItem>
             </i-col>
             <i-col :xs="24" :md="12" :lg="6">
               <FormItem label="牵头单位">
-                <Input
-                  search
-                  placeholder="请输入搜索内容"
+                <Select
+                  clearable
+                  placeholder="请输入牵头单位"
                   v-model="searchData.leadUnit"
-                  style="width: auto"
+                  style="width: 150px"
                 >
-                  <Icon type="ios-search" slot="suffix"/>
-                </Input>
+                  <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+                </Select>
               </FormItem>
             </i-col>
           </Row>
@@ -278,33 +278,70 @@ export default {
         {
           title: "一级指标",
           key: "superiorIndexId",
-          minWidth: 70,
+          minWidth: 120,
           ellipsis: true,
-          tooltip: true
+          tooltip: true,
+          fixed: "left"
         },
         {
           title: "二级指标",
           key: "indexName",
-          minWidth: 70
-        },
-        {
-          title: "标准值",
-          key: "standardValue",
-          ellipsis: true,
-          tooltip: true
+          minWidth: 120,
+          fixed: "left"
         },
         {
           title: "牵头单位",
+          minWidth: 100,
           key: "leadUnit"
         },
         {
           title: "责任单位",
-          key: "responsibilityUnit"
+          key: "responsibilityUnit",
+          minWidth: 100
+        },
+        {
+          title: "权数上限",
+          minWidth: 60,
+          key: "weight"
+        },
+        {
+          title: "得分",
+          minWidth: 60,
+          maxWidth: 60,
+          key: "finalScore"
+        },
+        {
+          title: "得分率",
+          minWidth: 80,
+          maxWidth: 80,
+          key: "score"
+        },
+        {
+          title: "排名",
+          minWidth: 80,
+          maxWidth: 80,
+          key: "alternateField1" // 排名
+        },
+        {
+          title: "方向",
+          maxWidth: 60,
+          minWidth: 60,
+          key: "direction"
+        },
+        {
+          title: "标准值",
+          key: "standardValue",
+          minWidth: 70,
+          maxWidth: 80,
+          ellipsis: true,
+          tooltip: true
         },
         {
           title: "审核状态",
-          maxWidth: 120,
+          minWidth: 100,
+          maxWidth: 100,
           key: "audit",
+          fixed: "right",
           render: (h, params) => {
             const row = params.row;
             var color = "";
@@ -316,11 +353,11 @@ export default {
                 break;
               case "1":
                 color = "primary";
-                text = "责任人审核";
+                text = "责任人";
                 break;
               case "2":
                 color = "success";
-                text = "管理员审核";
+                text = "管理员";
                 break;
               case "3":
                 color = "error";
@@ -343,35 +380,12 @@ export default {
           }
         },
         {
-          title: "权数上限",
-          maxWidth: 70,
-          key: "weight"
-        },
-        {
-          title: "得分",
-          maxWidth: 70,
-          key: "finalScore"
-        },
-        {
-          title: "得分率",
-          maxWidth: 70,
-          key: "score"
-        },
-        {
-          title: "排名",
-          maxWidth: 60,
-          key: "alternateField1" // 排名
-        },
-        {
-          title: "方向",
-          maxWidth: 60,
-          key: "direction"
-        },
-        {
           title: "操作",
           key: "action",
+          minWidth: 100,
           maxWidth: 100,
           align: "center",
+          fixed: "right",
           render: (h, params) => {
             var isDisabled = "";
             var text = "";
@@ -627,6 +641,9 @@ export default {
     }
   },
   computed: {
+    getDepartmentList() {
+      return this.$store.state.user.departmentList;
+    },
     access() {
       return this.$store.state.user.access;
     },

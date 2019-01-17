@@ -9,7 +9,7 @@
         <p slot="title" style="font-size:22px;color:#fff">永泰县绩效管理系统</p>
         <div class="form-con">
           <login-form @on-success-valid="handleSubmit"></login-form>
-          <p class="login-tip"></p>
+          <Button type="primary" @click="routerTo">问卷入口</Button>
         </div>
       </Card>
     </div>
@@ -29,6 +29,11 @@ export default {
     LoginForm
   },
   methods: {
+    routerTo() {
+      this.$router.push({
+        name: "questionnaire"
+      });
+    },
     ...mapActions(["handleLogin", "getUserInfo"]),
     handleSubmit({ userName, password }) {
       this.handleLogin({ userName, password }).then(res => {

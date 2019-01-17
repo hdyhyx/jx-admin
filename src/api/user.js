@@ -1,6 +1,7 @@
 import axios from '@/libs/api.request'
-
-const Url = '/api'
+import {
+  URL
+} from '@/libs/util'
 export const login = ({
   userName,
   password
@@ -10,7 +11,7 @@ export const login = ({
     userPassword: password
   }
   return axios.request({
-    url: Url + '/Login/loginGetToken',
+    url: URL + '/Login/loginGetToken',
     data,
     method: 'post'
   })
@@ -18,7 +19,7 @@ export const login = ({
 
 export const getUserInfo = (token) => {
   return axios.request({
-    url: Url + '/Login/loginUserInfo',
+    url: URL + '/Login/loginUserInfo',
     data: {
       value: token
     },
@@ -28,7 +29,7 @@ export const getUserInfo = (token) => {
 
 export const logout = (token) => {
   return axios.request({
-    url: Url + '/Login/exit',
+    url: URL + '/Login/exit',
     data: {
       value: token
     },
