@@ -112,7 +112,7 @@
       <i-col :md="24" :lg="12" style="margin-bottom: 20px;">
         <Card shadow>
           <example
-            v-if="lineData.lineName.length"
+            v-if="lineData"
             style="height: 400px;"
             :title="exampleTitle"
             :data="lineData"
@@ -302,10 +302,7 @@ export default {
       pageSize: 10, // 页数
       pageNumber: 1, // 页码
       pieData: [], // 饼图数据
-      lineData: {
-        lineName: [], // x轴
-        lineData: [] // 数据
-      }, // 折线图数据
+      lineData: {}, // 折线图数据
       searchLoading: false, // 搜索Loading
       submitLoading: false, // 提交Loading
       tabelLoading: true, // 表格Loading
@@ -793,29 +790,20 @@ export default {
       result => {
         if (result.code === "200") {
           var pie = []; // 饼图
-          var lineName = []; // 则线图
-          var lineData = [];
           result.results.pointType.forEach(item => {
             var obj = Object.assign(
               {},
               {
-                value: item.num === null ? 0 : itemnum,
+                value: item.num === null ? 0 : item.num,
                 name: item.pointsType + "类"
               }
             );
             pie.push(obj);
           });
           result.results.monthType.forEach(item => {
-            lineName.push(item.monthTime + "月");
-            lineData.push(item.num);
+            this.lineData[item.monthTime + "月"] = item.num;
           });
-          this.lineData = Object.assign(
-            {},
-            {
-              lineName,
-              lineData
-            }
-          );
+          console.log(this.lineData);
           this.pieData = pie;
           this.isPieLoading = false;
         }

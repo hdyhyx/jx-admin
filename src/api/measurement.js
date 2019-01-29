@@ -20,21 +20,32 @@ function measurementData(formData, keyOne, keyTwo) {
     id: formData.id === undefined ? '' : formData.id,
     name: formData.name === undefined ? '' : formData.name,
     type: formData.type === undefined ? '' : formData.type,
-    testObj: formData.testObj === undefined ? '' : formData.testObj.join('、'),
+    measurementId: formData.id,
+    testObj: RegTestObj(formData.testObj),
     totalScore: formData.totalScore === undefined ? '' : formData.totalScore,
     startTime: formData.startTime === undefined ? '' : formData.startTime,
     endTime: formData.endTime === undefined ? '' : formData.endTime,
     status: formData.status === undefined ? '' : formData.status,
     pageSize: formData.pageSize === undefined ? '' : formData.pageSize,
-    pageNumber: formData.pageNumber === undefined ? '' : formData.pageNumber
+    pageNumber: formData.pageNumber === undefined ? '' : formData.pageNumber,
+    scoreA: formData.scoreA === undefined ? "" : formData.scoreA,
+    evalutedObj: formData.evalutedObj,
+    scoreB: formData.scoreB,
+    scoreC: formData.scoreC,
+    scoreD: formData.scoreD,
+    scoreE: formData.scoreE,
+    scoreF: formData.scoreF
   }
+  console.log(data)
   if (formData['list'] !== undefined) {
     data[keyTwo] = formData.list
   }
+  console.log(data);
   return data
 }
 
 function answerData(formData, keyOne, keyTwo, keyThree) {
+  console.log(formData)
   let data = {}
   data['tokenEntity'] = {
     value: getToken()
@@ -53,8 +64,10 @@ function answerData(formData, keyOne, keyTwo, keyThree) {
   }
 
   data[keyTwo] = formData.list
-  data[keyThree] = {
-    phone: formData.phone
+  if (keyThree !== undefined) {
+    data[keyThree] = {
+      phone: formData.phone
+    }
   }
 
   return data
@@ -63,11 +76,15 @@ function answerData(formData, keyOne, keyTwo, keyThree) {
 function RegTestObj(obj) {
   if (obj === undefined) {
     return ''
-  } else if (obj === '') {
+  } else if (obj === '' || obj === null) {
     return ''
   } else {
     if (obj.length > 1) {
-      return Obj.join('、')
+      let objArr = []
+      obj.forEach(item => {
+        objArr.push(item)
+      });
+      return objArr.join('、')
     } else {
       return obj[0]
     }
@@ -75,7 +92,6 @@ function RegTestObj(obj) {
 }
 
 function questionnaireData(formData, keyOne, keyTwo) {
-  console.log(formData)
   let data = {}
   data[keyOne] = {
     phone: formData.phone,
@@ -94,6 +110,7 @@ export const measurementAjax = ({
   keyTwo
 }) => {
   let data = ''
+  console.log(formData)
   data = measurementData(formData, keyOne, keyTwo);
   return axios.request({
     url: HOST + url,

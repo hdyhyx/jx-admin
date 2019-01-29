@@ -95,7 +95,9 @@
           <InputNumber :max="100" :min="1" v-model="userForm.age" style="width: 300px"></InputNumber>
         </FormItem>
         <FormItem label="用户单位" prop="department">
-          <Input v-model="userForm.department" placeholder="请输入用户单位" style="width: auto"></Input>
+          <Select v-model="userForm.department" style="width:200px">
+            <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+          </Select>
         </FormItem>
         <FormItem label="性别">
           <Select v-model="userForm.gender" style="width:200px">
@@ -464,6 +466,11 @@ export default {
       this.pageSize,
       this.pageNumber
     );
+  },
+  computed: {
+    getDepartmentList() {
+      return this.$store.state.user.departmentList;
+    }
   }
 };
 </script>

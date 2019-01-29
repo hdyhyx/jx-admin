@@ -4,12 +4,12 @@
       <Card>
         <Form ref="formData" :model="formData" :label-width="80" :rules="formDataValidate">
           <Row :gutter="32">
-            <Col span="12">
+            <Col :xs="24" :sm="12" :md="8" :lg="8">
               <FormItem label="测评名称" prop="name">
                 <Input v-model="formData.name" placeholder="请输入测评名称"/>
               </FormItem>
             </Col>
-            <Col span="12">
+            <Col :xs="24" :sm="12" :md="8" :lg="8">
               <FormItem label="测评类型" prop="type">
                 <Select v-model="formData.type" placeholder="请选择测评试卷的类型" style="width:auto">
                   <Option value="0">指定对象</Option>
@@ -19,7 +19,7 @@
             </Col>
           </Row>
           <Row :gutter="32">
-            <Col span="12">
+            <Col :xs="24" :sm="12" :md="8" :lg="8">
               <FormItem label="测试时间" prop="dateTime">
                 <DatePicker
                   style="width:auto"
@@ -32,7 +32,18 @@
                 ></DatePicker>
               </FormItem>
             </Col>
-            <Col span="12">
+            <Col :xs="24" :sm="12" :md="8" :lg="8">
+              <FormItem label="评估对象" prop="evalutedObj">
+                <Select clearable v-model="formData.evalutedObj" style="width:200px">
+                  <Option
+                    v-for="item in getDepartmentList"
+                    :value="item"
+                    :key="item.value"
+                  >{{ item }}</Option>
+                </Select>
+              </FormItem>
+            </Col>
+            <Col :xs="24" :sm="12" :md="8" :lg="8">
               <FormItem label="测评对象" prop="testObj" v-show="false || formData.type === '0'">
                 <Select v-model="formData.testObj" multiple style="width:200px">
                   <Option
@@ -44,6 +55,38 @@
               </FormItem>
             </Col>
           </Row>
+          <Row>
+            <Col :xs="24" :sm="6" :md="3" :lg="3">
+              <FormItem label="选项A分值" prop="testObj">
+                <InputNumber :max="10" :min="0" v-model="formData.scoreA"></InputNumber>
+              </FormItem>
+            </Col>
+            <Col :xs="24" :sm="6" :md="3" :lg="3">
+              <FormItem label="选项B分值" prop="testObj">
+                <InputNumber :max="10" :min="0" v-model="formData.scoreB"></InputNumber>
+              </FormItem>
+            </Col>
+            <Col :xs="24" :sm="6" :md="3" :lg="3">
+              <FormItem label="选项C分值" prop="testObj">
+                <InputNumber :max="10" :min="0" v-model="formData.scoreC"></InputNumber>
+              </FormItem>
+            </Col>
+            <Col :xs="24" :sm="6" :md="3" :lg="3">
+              <FormItem label="选项D分值" prop="testObj">
+                <InputNumber :max="10" :min="0" v-model="formData.scoreD"></InputNumber>
+              </FormItem>
+            </Col>
+            <Col :xs="24" :sm="6" :md="3" :lg="3">
+              <FormItem label="选项E分值" prop="testObj">
+                <InputNumber :max="10" :min="0" v-model="formData.scoreE"></InputNumber>
+              </FormItem>
+            </Col>
+            <Col :xs="24" :sm="6" :md="3" :lg="3">
+              <FormItem label="选项F分值" prop="testObj">
+                <InputNumber :max="10" :min="0" v-model="formData.scoreF"></InputNumber>
+              </FormItem>
+            </Col>
+          </Row>
           <Divider style="margin:10px 0"/>
           <Button @click="showTestTitle">添加题目</Button>
           <Table :columns="columns" :data="data">
@@ -51,7 +94,6 @@
               <Input type="text" v-model="editName" v-if="editIndex === index"/>
               <span v-else>{{ row.question }}</span>
             </template>
-
             <template slot-scope="{ row, index }" slot="required">
               <Select type="text" v-model="editRequired" v-if="editIndex === index">
                 <Option value="0">否</Option>
@@ -87,6 +129,10 @@
             <template slot-scope="{ row, index }" slot="optionE">
               <Input type="text" v-model="editOptionE" v-if="editIndex === index"/>
               <span v-else>{{ row.optionE }}</span>
+            </template>
+            <template slot-scope="{ row, index }" slot="optionF">
+              <Input type="text" v-model="editOptionF" v-if="editIndex === index"/>
+              <span v-else>{{ row.optionF }}</span>
             </template>
             <template slot-scope="{ row, index }" slot="action">
               <div v-if="editIndex === index">
@@ -146,6 +192,9 @@
           <FormItem label="选项E">
             <Input v-model="formValidate.optionE"></Input>
           </FormItem>
+          <FormItem label="选项F">
+            <Input v-model="formValidate.optionF"></Input>
+          </FormItem>
         </div>
       </Form>
       <div slot="footer">
@@ -176,9 +225,16 @@ export default {
         dateTime: [],
         name: "", // 试卷名称
         testObj: [], // 测评对象
+        evalutedObj: "", // 评估对象
         type: "", // 是否指定类型
         startTime: "", // 开始时间
-        endTime: "" // 截止时间
+        endTime: "", // 截止时间
+        scoreA: null,
+        scoreB: null,
+        scoreC: null,
+        scoreD: null,
+        scoreE: null,
+        scoreF: null
       },
       formValidate: {
         question: "",
@@ -188,7 +244,8 @@ export default {
         optionB: "",
         optionC: "",
         optionD: "",
-        optionE: ""
+        optionE: "",
+        optionF: ""
       },
       ruleValidate: {
         question: [
@@ -221,6 +278,13 @@ export default {
             trigger: "blur"
           }
         ],
+        evalutedObj: [
+          {
+            required: false,
+            message: "评估对象不能为空",
+            trigger: "change"
+          }
+        ],
         type: [
           {
             required: true,
@@ -242,32 +306,7 @@ export default {
           }
         ]
       },
-      testObj: [
-        {
-          value: "New York",
-          label: "New York"
-        },
-        {
-          value: "London",
-          label: "London"
-        },
-        {
-          value: "Sydney",
-          label: "Sydney"
-        },
-        {
-          value: "Ottawa",
-          label: "Ottawa"
-        },
-        {
-          value: "Paris",
-          label: "Paris"
-        },
-        {
-          value: "Canberra",
-          label: "Canberra"
-        }
-      ],
+      testObj: [],
       columns: [
         {
           title: "题目名",
@@ -275,7 +314,8 @@ export default {
         },
         {
           title: "是否必选",
-          slot: "required"
+          slot: "required",
+          maxwidth: "60"
         },
         {
           title: "题目类型",
@@ -302,6 +342,10 @@ export default {
           slot: "optionE"
         },
         {
+          title: "选项F",
+          slot: "optionF"
+        },
+        {
           title: "操作",
           slot: "action"
         }
@@ -315,7 +359,8 @@ export default {
       editOptionB: "", // 第四列输入框
       editOptionC: "", // 第四列输入框
       editOptionD: "", // 第四列输入框
-      editOptionE: "" // 第四列输入框
+      editOptionE: "", // 第四列输入框
+      editOptionF: ""
     };
   },
   watch: {
@@ -335,6 +380,21 @@ export default {
     // 重置
     resetForm() {
       this.$refs["formData"].resetFields();
+      this.formData = {
+        dateTime: [],
+        name: "", // 试卷名称
+        testObj: [], // 测评对象
+        evalutedObj: "", // 评估对象
+        type: "", // 是否指定类型
+        startTime: "", // 开始时间
+        endTime: "", // 截止时间
+        scoreA: null,
+        scoreB: null,
+        scoreC: null,
+        scoreD: null,
+        scoreE: null,
+        scoreF: null
+      };
       this.data = [];
     },
     // 选择时间
@@ -347,6 +407,7 @@ export default {
       this.$refs["formData"].validate(valid => {
         if (valid) {
           this.submitLoading = true;
+          // 如果页面没有params的值，为新创建
           if (this.paramsData === undefined) {
             let formData = Object.assign(this.formData, {
               list: this.data
@@ -418,7 +479,8 @@ export default {
                 optionB: "",
                 optionC: "",
                 optionD: "",
-                optionE: ""
+                optionE: "",
+                optionF: ""
               }
             );
           }
@@ -449,6 +511,7 @@ export default {
       this.editOptionC = row.optionC;
       this.editOptionD = row.optionD;
       this.editOptionE = row.optionE;
+      this.editOptionF = row.optionF;
       this.editType = row.type;
       this.editIndex = index;
     },
@@ -462,12 +525,14 @@ export default {
         this.data[index].optionC = "";
         this.data[index].optionD = "";
         this.data[index].optionE = "";
+        this.data[index].optionF = "";
       } else {
         this.data[index].optionA = this.editOptionA;
         this.data[index].optionB = this.editOptionB;
         this.data[index].optionC = this.editOptionC;
         this.data[index].optionD = this.editOptionD;
         this.data[index].optionE = this.editOptionE;
+        this.data[index].optionF = this.editOptionF;
       }
       this.editIndex = -1;
     },
@@ -506,7 +571,10 @@ export default {
                 testData.information.startTime,
                 testData.information.endTime
               ],
-              testObj: testData.information.testObj.split("、")
+              testObj:
+                testData.information.testObj === null
+                  ? []
+                  : testData.information.testObj.split("、")
             });
             this.data = this.data.concat(
               testData.singleList,
@@ -528,6 +596,21 @@ export default {
   mounted() {
     if (this.paramsData !== undefined) {
       this._getMeasurementData(this.paramsData);
+    }
+    this.getDepartmentList.forEach(item => {
+      item = Object.assign(
+        {},
+        {
+          value: item,
+          label: item
+        }
+      );
+      this.testObj.push(item);
+    });
+  },
+  computed: {
+    getDepartmentList() {
+      return this.$store.state.user.departmentList;
     }
   }
 };

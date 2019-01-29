@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Row class="details">
+    <Row class="details" v-if="testDetails">
       <Card>
         <p slot="title" class="details-title">测评统计结果</p>
         <Row>
@@ -14,56 +14,31 @@
         <Row style="margin-top:20px">
           <Col :span="8">
             <Row class="details-name">
-              <Col :span="8" class="title">需测评人数：</Col>
-              <Col :span="16">{{testDetails.totalPeople}}</Col>
+              <Col :span="8" class="title">已测评人数：</Col>
+              <Col :span="16">{{testDetails.answerPeople}}</Col>
             </Row>
           </Col>
         </Row>
-        <Row>
-          <Col
-            :span="8"
-            style="height:330px;margin-top:20px;"
-            v-for="(item,index) in testResult"
-            :key="index"
-          >
-            <div class="topic-warpper">
-              <h3 class="title">{{item.question}}</h3>
-              <span class="topic-option">({{item.type==='0'?'单选':'多选'}})</span>
+        <Row style="margin-top:20px">
+          <Col :span="12" v-for="(item,index) in testResult" :key="index">
+            <div style="background:#eee;padding: 20px">
+              <Card :bordered="false">
+                <p>{{item.answer}}</p>
+              </Card>
             </div>
-            <p class="topic" v-if="item.optionA!==''">
-              <Tag type="dot" color="primary">{{item.optionA}}</Tag>
-              <span class="topic-count">{{item.optionANum}}</span>
-            </p>
-            <p class="topic" v-if="item.optionB!==''">
-              <Tag type="dot" color="primary">{{item.optionB}}</Tag>
-              <span class="topic-count">{{item.optionBNum}}</span>
-            </p>
-            <p class="topic" v-if="item.optionC!==''">
-              <Tag type="dot" color="primary">{{item.optionC}}</Tag>
-              <span class="topic-count">{{item.optionCNum}}</span>
-            </p>
-            <p class="topic" v-if="item.optionD!==''">
-              <Tag type="dot" color="primary">{{item.optionD}}</Tag>
-              <span class="topic-count">{{item.optionDNum}}</span>
-            </p>
-            <p class="topic" v-if="item.optionE!==''">
-              <Tag type="dot" color="primary">{{item.optionE}}</Tag>
-              <span class="topic-count">{{item.optionENum}}</span>
-            </p>
-            <p class="topic" v-if="item.optionF!==''">
-              <Tag type="dot" color="primary">{{item.optionF}}</Tag>
-              <span class="topic-count">{{item.optionFNum}}</span>
-            </p>
           </Col>
         </Row>
       </Card>
+    </Row>
+    <Row v-else>
+      <Card>暂无数据</Card>
     </Row>
   </div>
 </template>
 <script>
 import { measurementAjax } from "@/api/measurement";
-const QUERY_URL = "/answer/queryForAnswerCount";
-const KEY_ONE = "answerFilter";
+const QUERY_URL = "/assessmentTest/queryForAnswer";
+const KEY_ONE = "measurementInformationFilter";
 export default {
   data() {
     return {
@@ -79,6 +54,7 @@ export default {
           console.log(result);
           if (result.data.code === "200") {
             this.testResult = result.data.results;
+            console.log(this.testResult);
             this.testDetails = this.testResult[0];
           } else {
             this.$Message.error(result.data.message);

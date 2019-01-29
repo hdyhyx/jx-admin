@@ -199,6 +199,7 @@ function incentiveData(formData, keyOne, keyTwo) {
     commendedUnit: formData.commendedUnit === undefined ? '' : formData.commendedUnit, // 被表彰机关
     audit: formData.audit === undefined ? '' : formData.audit, // 审核状态,
     dateTime: formData.dateTime === undefined ? '' : formData.dateTime, // 年份
+    monthTime: formData.monthTime,
     point: formData.point === undefined ? '' : formData.point, // 分值
     fileName: formData.fileName === undefined ? '' : formData.fileName, // 证明材料名称
     fileId: formData.fileId === undefined ? '' : formData.fileId, // 材料附件Id
@@ -267,6 +268,7 @@ function userData(formData, keyOne) {
     userDepartment: formData.userDepartment,
     userPermissions: formData.userPermissions,
     userPhone: formData.userPhone,
+    department: formData.department,
     userPassword: formData.userPassword,
     pageSize: formData.pageSize, // 显示页数
     pageNumber: formData.pageNumber // 页码

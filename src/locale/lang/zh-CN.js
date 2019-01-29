@@ -68,9 +68,12 @@ export default {
   user: '用户管理',
   user_account: '账号管理',
   user_test: '测评对象',
+  user_department: '部门管理',
   investigate_watchEmail: '查看邮件',
   measurement: '测评模块',
   measurement_data: '测评数据管理',
   measurement_res: "测评数据结果",
-  measurement_pages: '编辑测评'
+  measurement_pages: '编辑测评',
+  measurement_details: '测评统计',
+  measurement_answer: '简答统计'
 }

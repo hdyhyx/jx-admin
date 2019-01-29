@@ -60,6 +60,9 @@
                         <Col :xs="8" :sm="8" :md="8" :lg="4" style="text-align:center">
                           <Radio label="E" v-if="item.optionE!==''">{{item.optionE}}</Radio>
                         </Col>
+                        <Col :xs="8" :sm="8" :md="8" :lg="4" style="text-align:center">
+                          <Radio label="F" v-if="item.optionF!==''">{{item.optionF}}</Radio>
+                        </Col>
                       </Row>
                     </RadioGroup>
                   </FormItem>
@@ -89,6 +92,9 @@
                         </Col>
                         <Col :xs="8" :sm="4" :md="4" :lg="4" style="text-align:center">
                           <Checkbox label="E" v-if="item.optionE!==''">{{item.optionE}}</Checkbox>
+                        </Col>
+                        <Col :xs="8" :sm="4" :md="4" :lg="4" style="text-align:center">
+                          <Checkbox label="F" v-if="item.optionF!==''">{{item.optionF}}</Checkbox>
                         </Col>
                       </Row>
                     </CheckboxGroup>
@@ -213,23 +219,119 @@ export default {
           var keyOne = "measurementInformationEntity";
           var keyTwo = "answerList";
           for (const key in this.formDynamic) {
-            if (!this.formDynamic[key].length) {
-              continue;
-            }
-            this.formDynamic[key].forEach(item => {
-              let itemObj = Object.assign(
-                {},
-                {
-                  questionId: item.id,
-                  questionType: item.type,
-                  answer:
-                    typeof item.answer === "object"
-                      ? item.answer.join(",")
-                      : item.answer
+            if (key === "checkbox") {
+              this.formDynamic[key].forEach(item => {
+                var itemObj = {};
+                var optionA = "0";
+                var optionB = "0";
+                var optionC = "0";
+                var optionD = "0";
+                var optionE = "0";
+                var optionF = "0";
+                item.answer.forEach(i => {
+                  switch (i) {
+                    case "A":
+                      optionA = "1";
+                      break;
+                    case "B":
+                      optionB = "1";
+                      break;
+                    case "C":
+                      optionC = "1";
+                      break;
+                    case "D":
+                      optionD = "1";
+                      break;
+                    case "E":
+                      optionE = "1";
+                      break;
+                    default:
+                      optionF = "1";
+                      break;
+                  }
+                });
+                itemObj = Object.assign(
+                  {},
+                  {
+                    questionId: item.id,
+                    questionType: item.type,
+                    optionA: optionA,
+                    optionB: optionB,
+                    optionC: optionC,
+                    optionD: optionD,
+                    optionE: optionE,
+                    optionF: optionF,
+                    answer:
+                      typeof item.answer === "object"
+                        ? item.answer.join(",")
+                        : item.answer
+                  }
+                );
+                answerList.push(itemObj);
+              });
+            } else {
+              this.formDynamic[key].forEach(item => {
+                var itemObj = {};
+                var optionA = "0";
+                var optionB = "0";
+                var optionC = "0";
+                var optionD = "0";
+                var optionE = "0";
+                var optionF = "0";
+                switch (item.answer) {
+                  case "A":
+                    optionA = "1";
+                    break;
+                  case "B":
+                    optionB = "1";
+                    break;
+                  case "C":
+                    optionC = "1";
+                    break;
+                  case "D":
+                    optionD = "1";
+                    break;
+                  case "E":
+                    optionE = "1";
+                    break;
+                  default:
+                    optionF = "1";
+                    break;
                 }
-              );
-              answerList.push(itemObj);
-            });
+                if (key === "radio") {
+                  itemObj = Object.assign(
+                    {},
+                    {
+                      questionId: item.id,
+                      questionType: item.type,
+                      optionA: optionA,
+                      optionB: optionB,
+                      optionC: optionC,
+                      optionD: optionD,
+                      optionE: optionE,
+                      optionF: optionF,
+                      answer:
+                        typeof item.answer === "object"
+                          ? item.answer.join(",")
+                          : item.answer
+                    }
+                  );
+                } else {
+                  itemObj = Object.assign(
+                    {},
+                    {
+                      questionId: item.id,
+                      questionType: item.type,
+                      answer:
+                        typeof item.answer === "object"
+                          ? item.answer.join(",")
+                          : item.answer
+                    }
+                  );
+                }
+                answerList.push(itemObj);
+              });
+            }
           }
           // 如果是登录用户需要把userInfo传给后台
           if (this.option === "note") {
@@ -246,7 +348,6 @@ export default {
               list: answerList
             });
           }
-          console.log(formData);
           answerAjax({ formData, url, keyOne, keyTwo, keyThree }).then(
             result => {
               console.log(result);

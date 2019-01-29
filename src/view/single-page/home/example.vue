@@ -26,15 +26,16 @@ export default {
       default: () => []
     }
   },
-  created() {
-    console.log(this.data);
-  },
+  created() {},
   methods: {
     resize() {
       this.dom.resize();
     }
   },
   mounted() {
+    let xAxisData = Object.keys(this.data);
+    let seriesData = Object.values(this.data);
+    console.log(this.data);
     const option = {
       title: {
         text: this.title,
@@ -58,7 +59,7 @@ export default {
         {
           type: "category",
           boundaryGap: false,
-          data: this.data.lineName
+          data: xAxisData
         }
       ],
       yAxis: [
@@ -95,7 +96,7 @@ export default {
               color: "rgba(86, 216, 151, 0.4)"
             }
           },
-          data: this.data.lineData
+          data: seriesData
         }
       ]
     };

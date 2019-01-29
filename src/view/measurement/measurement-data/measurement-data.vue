@@ -79,6 +79,7 @@
         <Button @click="insertMeasurement">添加测评</Button>
         <Table
           border
+          tooltip
           highlight-row
           :loading="tabelLoading"
           ref="currentRowTable"
@@ -95,6 +96,14 @@
             show-sizer
           />
         </div>
+        <Upload
+          :on-success="handleSuccess"
+          :format="['xls','xlsx']"
+          :on-format-error="handleFormatError"
+          action="/api/assessmentTest/importMeasurement"
+        >
+          <Button icon="ios-cloud-upload-outline">上传指标</Button>
+        </Upload>
       </Card>
     </Row>
   </div>
@@ -232,32 +241,7 @@ export default {
       pageTotal: 10,
       pageNumber: 1,
       pageSize: 10,
-      testObj: [
-        {
-          value: "New York",
-          label: "New York"
-        },
-        {
-          value: "London",
-          label: "London"
-        },
-        {
-          value: "Sydney",
-          label: "Sydney"
-        },
-        {
-          value: "Ottawa",
-          label: "Ottawa"
-        },
-        {
-          value: "Paris",
-          label: "Paris"
-        },
-        {
-          value: "Canberra",
-          label: "Canberra"
-        }
-      ]
+      testObj: []
     };
   },
   filters: {
@@ -287,6 +271,26 @@ export default {
     }
   },
   methods: {
+    handleSuccess(res, file) {
+      if (res.code === "200") {
+        this.$Notice.success({
+          title: res.message,
+          desc: res.results
+        });
+      } else {
+        this.$Notice.error({
+          title: res.message,
+          desc: res.results
+        });
+      }
+    },
+    // 验证上传格式
+    handleFormatError(file) {
+      this.$Notice.warning({
+        title: "文件格式错误",
+        desc: "文件" + file.name + " 格式错误, 请选择xls或者xlsx"
+      });
+    },
     inserOption(vla) {
       var i = 1;
       this.options.push(i++);
@@ -309,18 +313,20 @@ export default {
     // 页码
     pageNumberChange(pageNumber) {
       this.pageNumber = pageNumber;
+      this._getMeasurementData(this.searchData, this.pageSize, this.pageNumber);
     },
     // 页数
     pageSizeChange(pageSize) {
       this.pageSize = pageSize;
+      this._getMeasurementData(this.searchData, this.pageSize, this.pageNumber);
     },
     submitReset() {
       this.searchData = {
-        cityResponUnit: "", // 责任单位
-        leadUnit: "", // 牵头单位
-        indexName: "", // 指标名称
-        dateTime: "", // 年份
-        audit: ""
+        testObj: [],
+        name: "", //
+        type: "", //
+        startTime: "", // 审核状态
+        endTime: "" // 指标名称
       };
       this.searchLoading = false;
     },
@@ -360,6 +366,22 @@ export default {
   },
   created() {
     this._getMeasurementData(this.searchData, this.pageSize, this.pageNumber);
+    console.log(this.getDepartmentList);
+    this.getDepartmentList.forEach(item => {
+      item = Object.assign(
+        {},
+        {
+          value: item,
+          label: item
+        }
+      );
+      this.testObj.push(item);
+    });
+  },
+  computed: {
+    getDepartmentList() {
+      return this.$store.state.user.departmentList;
+    }
   }
 };
 </script>

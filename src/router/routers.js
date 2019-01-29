@@ -41,6 +41,7 @@ export default [{
       import("@/view/questionnaire/questionnaire-page/questionnaire-page.vue")
 
 },
+
 {
   path: "/",
   name: "_home",
@@ -269,7 +270,7 @@ export default [{
   },
   component: Main,
   children: [{
-    path: "investigate_outbox",
+    path: "/investigate_outbox",
     name: "investigate_outbox",
     meta: {
       icon: "md-funnel",
@@ -280,7 +281,7 @@ export default [{
           import("@/view/investigate/investigate-outbox/investigate-outbox.vue")
   },
   {
-    path: "investigate_ide",
+    path: "/investigate_ide",
     name: "investigate_ide",
     meta: {
       icon: "ios-create-outline",
@@ -291,7 +292,7 @@ export default [{
           import("@/view/investigate/investigate-ide/investigate-ide.vue")
   },
   {
-    path: "investigate_inbox",
+    path: "/investigate_inbox",
     name: "investigate_inbox",
     meta: {
       icon: "ios-mail-outline",
@@ -302,7 +303,7 @@ export default [{
           import("@/view/investigate/investigate-inbox/investigate-inbox.vue")
   },
   {
-    path: "investigate_watchEmail/:id",
+    path: "/investigate_watchEmail/:id",
     name: "investigate_watchEmail",
     meta: {
       title: "查看邮件",
@@ -356,12 +357,11 @@ export default [{
   ]
 },
 {
-  path: "/no_entry_unit",
+  path: "/no-entry-unit",
   name: "no_entry_unit",
   meta: {
     icon: "ios-search",
-    title: "未录入单位",
-    access: ["hide"]
+    title: "未录入单位"
   },
   component: Main,
   children: [{
@@ -445,11 +445,22 @@ export default [{
     },
     component: () =>
           import("@/view/measurement/measurement-details/measurement-details.vue")
+  },
+  {
+    path: "measurement-answer/:id",
+    name: "measurement_answer",
+    meta: {
+      icon: "ios-construct",
+      title: "查看简答",
+      hideInMenu: "true"
+    },
+    component: () =>
+          import("@/view/measurement/measurement-answer/measurement-answer.vue")
   }
   ]
 },
 {
-  path: "/user_management",
+  path: "/user-management",
   name: "user_mangement",
   component: Main,
   meta: {
@@ -457,7 +468,7 @@ export default [{
     icon: "md-person-add"
   },
   children: [{
-    path: "user-account",
+    path: "/user-account",
     name: "user_account",
     meta: {
       icon: "md-person-add",
@@ -467,7 +478,7 @@ export default [{
           import("@/view/user-management/user-account/user-account.vue")
   },
   {
-    path: "user-test",
+    path: "/user-test",
     name: "user_test",
     meta: {
       icon: "ios-construct",
@@ -476,6 +487,16 @@ export default [{
     },
     component: () =>
           import("@/view/user-management/user-test/user-test.vue")
+  }, {
+    path: "/user-department",
+    name: "user_department",
+    meta: {
+      icon: "ios-construct",
+      title: "部门管理",
+      access: ["admin"]
+    },
+    component: () =>
+          import("@/view/user-management/user-department/user-department.vue")
   }
   ]
 },

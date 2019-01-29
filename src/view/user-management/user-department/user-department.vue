@@ -5,36 +5,15 @@
         <Form ref="search" :model="searchData" :rules="searchReg" :label-width="80">
           <Row>
             <i-col :xs="24" :md="12" :lg="6">
-              <FormItem label="用户名" prop="name">
+              <FormItem label="部门" prop="name">
                 <Input
-                  v-model="searchData.userName"
+                  v-model="searchData.department"
                   suffix="ios-search"
                   placeholder="请输入用户名称"
                   style="width: auto"
                 >
                   <Icon type="ios-search" slot="suffix"/>
                 </Input>
-              </FormItem>
-            </i-col>
-            <i-col :xs="24" :md="12" :lg="6">
-              <FormItem label="用户单位" prop="name">
-                <Select
-                  clearable
-                  placeholder="请输入用户单位"
-                  v-model="searchData.userDepartment"
-                  style="width: 150px"
-                >
-                  <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
-                </Select>
-              </FormItem>
-            </i-col>
-            <i-col :xs="24" :md="12" :lg="6">
-              <FormItem label="用户权限" prop="name">
-                <Select v-model="searchData.userPermissions" style="width:200px">
-                  <Option v-if="this.accessAdmin" value="admin">管理员</Option>
-                  <Option v-if="this.accessAdmin" value="responsible">责任人</Option>
-                  <Option value="agent">经办人</Option>
-                </Select>
               </FormItem>
             </i-col>
           </Row>
@@ -74,46 +53,13 @@
       @on-cancel="cancelUserModal"
     >
       <Form ref="userManagement" :model="userForm" :rules="userReg" :label-width="80">
-        <FormItem label="用户名" prop="userName">
+        <FormItem label="部门" prop="department">
           <Input
             :disabled="roleSelect"
-            v-model="userForm.userName"
-            placeholder="请输入用户名称"
+            v-model="userForm.department"
+            placeholder="请输入部门"
             style="width: 300px"
           ></Input>
-        </FormItem>
-        <FormItem label="用户密码" prop="userPassword">
-          <Input
-            v-model="userForm.userPassword"
-            type="password"
-            placeholder="请输入用户密码"
-            style="width: auto"
-          ></Input>
-        </FormItem>
-        <FormItem label="联系电话" prop="userPhone">
-          <Input
-            :number="true"
-            v-model="userForm.userPhone"
-            placeholder="请输入联系电话"
-            style="width: 300px"
-          ></Input>
-        </FormItem>
-        <FormItem label="用户单位" prop="department">
-          <Select
-            v-model="userForm.userDepartment"
-            style="width:200px"
-            :disabled="this.accessRespons || this.accessAgent"
-          >
-            <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
-          </Select>
-        </FormItem>
-
-        <FormItem label="用户权限" prop="userPermissions">
-          <Select :disabled="roleSelect" v-model="userForm.userPermissions" style="width:200px">
-            <Option v-if="this.accessAdmin" value="admin">管理员</Option>
-            <Option v-if="isResponsible" value="responsible">责任人</Option>
-            <Option value="agent">经办人</Option>
-          </Select>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -127,29 +73,18 @@
 import { hasOneOf } from "@/libs/tools";
 import { userAjax } from "@/api/city";
 // 删除URL
-const DELETE_URL = "/user/delete";
+const DELETE_URL = "/department/delete";
 // 修改URL
-const UPDATE_URL = "/user/update";
+const UPDATE_URL = "/department/update";
 // 添加URL
-const INSERT_URL = "/user/insert";
+const INSERT_URL = "/department/insert";
 // 查询URL
-const QUERY_URL = "/user/query";
-// 手机验证
-const PHONE_REG = new RegExp("^1(3|4|5|7|8)\\d{9}$");
+const QUERY_URL = "/department/query";
 const INSERT_TITLE = "添加用户";
 const UPDATE_TITLE = "编辑用户";
 export default {
   data() {
     // 验证手机号码
-    const phoneReg = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请输入联系电话"));
-      } else if (!PHONE_REG.test(this.userForm.userPhone)) {
-        callback(new Error("请输入正确的手机号码"));
-      } else {
-        callback();
-      }
-    };
     return {
       roleSelect: false, // 权限管理
       isUserModal: false, // 模态框
@@ -162,48 +97,15 @@ export default {
       pageNumber: 1,
       pageTotal: 10,
       userForm: {
-        userName: "", // 用户名
-        userDepartment: "", // 用户单位
-        userPermissions: "", // 用户权限
-        userPhone: "", // 手机号
-        userPassword: "" // 密码
+        department: "" // 用户名
       },
       searchData: {
-        userName: "",
-        userDepartment: "",
-        userPermissions: ""
+        department: ""
       },
+      userData: [],
       searchReg: {},
       userReg: {
-        userName: [
-          {
-            required: true,
-            message: "请输入指标名称",
-            trigger: "blur"
-          }
-        ],
-        userDepartment: [
-          {
-            required: true,
-            message: "请输入指标名称",
-            trigger: "blur"
-          }
-        ],
-        userPhone: [
-          {
-            required: true,
-            validator: phoneReg,
-            trigger: "blur"
-          }
-        ],
-        userPassword: [
-          {
-            required: true,
-            message: "请输入指标名称",
-            trigger: "blur"
-          }
-        ],
-        userPermissions: [
+        department: [
           {
             required: true,
             message: "请输入指标名称",
@@ -211,14 +113,6 @@ export default {
           }
         ]
       },
-      userData: [
-        {
-          userName: "111",
-          userPassword: "111",
-          userDepartment: "user",
-          userPermissions: "111"
-        }
-      ],
       userHead: [
         {
           type: "index",
@@ -226,57 +120,8 @@ export default {
           align: "center"
         },
         {
-          title: "用户名称",
-          key: "userName"
-        },
-        {
-          title: "联系电话",
-          key: "userPhone"
-        },
-        {
-          title: "用户密码",
-          key: "userPassword",
-          render: (h, params) => {
-            return h("div", {}, "*********");
-          }
-        },
-        {
-          title: "用户单位",
-          key: "userDepartment"
-        },
-        {
-          title: "用户权限",
-          key: "userPermissions",
-          render: (h, params) => {
-            var text = "";
-            var tagColor = "";
-            switch (params.row.userPermissions) {
-              case "admin":
-                text = "管理员";
-                tagColor = "primary";
-                break;
-              case "responsible":
-                text = "责任人";
-                tagColor = "success";
-                break;
-              case "agent":
-                text = "经办人";
-                tagColor = "warning";
-                break;
-              default:
-                break;
-            }
-            return h(
-              "Tag",
-              {
-                props: {
-                  type: "dot",
-                  color: tagColor
-                }
-              },
-              text
-            );
-          }
+          title: "部门",
+          key: "department"
         },
         {
           title: "Action",
@@ -339,9 +184,7 @@ export default {
     submitReset() {
       this.searchLoading = false;
       this.searchData = {
-        userName: "",
-        userDepartment: "",
-        userPermissions: ""
+        department: ""
       };
     },
     // 删除用户
@@ -406,7 +249,8 @@ export default {
                   this.pageNumber
                 );
               } else {
-                this.$Message.error("添加失败！");
+                console.log(result);
+                this.$Message.error(result.message);
               }
             });
           } else if (this.userModalTitle === UPDATE_TITLE) {
@@ -436,11 +280,7 @@ export default {
       this.userModalLoading = false;
       this.isUserModal = false;
       this.userForm = {
-        userName: "", // 用户名
-        userDepartment: "", // 用户单位
-        userPermissions: "", // 用户权限
-        userPhone: "", // 手机号
-        userPassword: "" // 密码
+        department: "" // 用户单位
       };
     },
     // 页码
@@ -465,7 +305,7 @@ export default {
     },
     // 添加/修改
     _userAjax(formData, url) {
-      const keyOne = "userEntity";
+      const keyOne = "departmentEntity";
       return new Promise((resolve, reject) => {
         userAjax({ formData, url, keyOne })
           .then(result => {
@@ -487,7 +327,7 @@ export default {
         pageSize,
         pageNumber
       });
-      const keyOne = "userFilter";
+      const keyOne = "departmentFilter";
       userAjax({ formData, url, keyOne })
         .then(result => {
           this.tabelLoading = false;

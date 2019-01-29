@@ -134,9 +134,21 @@ export default {
         {
           title: "测评对象",
           key: "testObj",
+          ellipsis: true,
+          width: 120,
           render: (h, params) => {
-            var text = params.row.type === "" ? "-" : params.row.type;
-            return h("div", [h("strong", text)]);
+            var text = params.row.testObj === "" ? "-" : params.row.testObj;
+            return h("div", [
+              h(
+                "Tooltip",
+                {
+                  props: {
+                    content: text
+                  }
+                },
+                text
+              )
+            ]);
           }
         },
         {
@@ -150,6 +162,7 @@ export default {
         {
           title: "已测评人数",
           key: "answerPeople",
+          width: 70,
           render: (h, params) => {
             var text =
               params.row.answerPeople === null ? "-" : params.row.answerPeople;
@@ -159,6 +172,7 @@ export default {
         {
           title: "需测评人数",
           key: "totalPeople",
+          width: 70,
           render: (h, params) => {
             var text =
               params.row.totalPeople === null ? "-" : params.row.totalPeople;
@@ -168,15 +182,26 @@ export default {
         {
           title: "测评状态",
           key: "status",
+          width: 100,
           render: (h, params) => {
             var text = params.row.status === "2" ? "测评结束" : "进行测评";
             return h("div", text);
           }
         },
         {
-          title: "Action",
+          title: "测评得分",
+          key: "finalScore",
+          width: 70,
+          render: (h, params) => {
+            var text =
+              params.row.finalScore === null ? "-" : params.row.finalScore;
+            return h("div", text);
+          }
+        },
+        {
+          title: "操作",
           key: "action",
-          width: 150,
+          width: 240,
           align: "center",
           render: (h, params) => {
             return h("div", [
@@ -192,6 +217,13 @@ export default {
                   },
                   on: {
                     click: () => {
+                      if (
+                        parseInt(params.row.totalPeople) < 1 ||
+                        params.row.totalPeople === null
+                      ) {
+                        this.$Message.error("暂无数据");
+                        return;
+                      }
                       this.$router.push({
                         name: "measurement_details",
                         params: {
@@ -201,7 +233,30 @@ export default {
                     }
                   }
                 },
-                "查看"
+                "查看选择"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "5px"
+                  },
+                  on: {
+                    click: () => {
+                      this.$router.push({
+                        name: "measurement_answer",
+                        params: {
+                          data: params.row
+                        }
+                      });
+                    }
+                  }
+                },
+                "查看简答"
               ),
               h(
                 "Button",

@@ -42,6 +42,10 @@
                 <Tag type="dot" color="primary">审核状态</Tag>
                 <span>{{incentiveItem.audit | auditState}}</span>
               </i-col>
+              <i-col :xs="24" :md="12" :lg="12">
+                <Tag type="dot" color="primary">月份</Tag>
+                <span>{{incentiveItem.monthTime}}</span>
+              </i-col>
             </Row>
             <Row style="margin-top:20px">
               <i-col :xs="24" :md="24" :lg="24">

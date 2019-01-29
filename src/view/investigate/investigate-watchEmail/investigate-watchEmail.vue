@@ -143,7 +143,7 @@
             <Tag type="dot" color="primary">审核分数</Tag>
           </Col>
           <Col :span="22">
-            <InputNumber :max="100" :min="1" :step="0.1" v-model="point"></InputNumber>
+            <InputNumber :max="100" :min="0" :step="0.1" v-model="point"></InputNumber>
           </Col>
         </Row>
         <Row style="margin-top:20px">

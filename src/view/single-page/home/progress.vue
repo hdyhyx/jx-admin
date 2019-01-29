@@ -1,21 +1,21 @@
 <template>
   <div class="progress">
-    <div class="progress-count" :style="{background:color,width:widthVal+'%'}"></div>
+    <div class="progress-count" :style="{background:color,width:widthVal*100+'%'}"></div>
   </div>
 </template>
 <script>
 export default {
-  data () {
+  data() {
     return {};
   },
   props: {
     color: {
       type: String,
-      default: '#2196F3'
+      default: "#2196F3"
     },
     widthVal: {
       type: Number,
-      default: 50
+      default: 0
     }
   }
 };
