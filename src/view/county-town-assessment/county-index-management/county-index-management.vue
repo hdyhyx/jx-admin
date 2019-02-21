@@ -778,7 +778,6 @@ export default {
     },
     // 指标提交
     BtnSubmit(name) {
-      console.log(this.formCountyList);
       this.$refs[name].validate(valid => {
         if (valid) {
           this.submitloading = true;
@@ -1396,7 +1395,6 @@ export default {
       res.results.firstIndex.forEach(item => {
         this.superiorIndexSelect.push(item.indexName);
       });
-      console.log(this.superiorIndexSelect);
       this.pageTotal = parseInt(res.results.pageTotal) * 10;
       this.indexOne = res.results.list;
       this.TableOneLoading = false;

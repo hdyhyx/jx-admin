@@ -51,10 +51,8 @@ export default {
     _getmeasurementData(url, keyOne, formData, keyTwo = "") {
       measurementAjax({ url, keyOne, formData, keyTwo })
         .then(result => {
-          console.log(result);
           if (result.data.code === "200") {
             this.testResult = result.data.results;
-            console.log(this.testResult);
             this.testDetails = this.testResult[0];
           } else {
             this.$Message.error(result.data.message);

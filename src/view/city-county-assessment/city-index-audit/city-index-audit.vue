@@ -617,7 +617,6 @@ export default {
       });
       return new Promise((resolve, reject) => {
         cityAjax({ formData, url, key }).then(res => {
-          console.log(res);
           if (res.data !== undefined) {
             resolve(res.data);
           } else {
@@ -643,7 +642,6 @@ export default {
   created() {
     this._getCityList(this.searchData, this.pageSize, this.pageNumber)
       .then(result => {
-        console.log(result);
         if (result.code === "200") {
           // seach指标搜索 组件 需要的数据格式
           var indexList = result.results.indexMap;

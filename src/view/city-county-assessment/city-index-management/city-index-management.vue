@@ -13,7 +13,6 @@
                         <Select v-model="searchData.indexType" placeholder="请选择指标等级" style="width:185px">
                             <Option value="一级指标">一级指标</Option>
                             <Option value="二级指标">二级指标</Option>
-                            <Option value="三级指标">三级指标</Option>
                         </Select>
                     </FormItem>
                   </i-col>
@@ -128,7 +127,6 @@
               <Select v-model="formCityList.indexType" placeholder="请选择指标等级" style="width:500px" :disabled="isIndexType">
                   <Option value="一级指标">一级指标</Option>
                   <Option value="二级指标">二级指标</Option>
-                  <Option value="三级指标">三级指标</Option>
               </Select>
           </FormItem>
           <FormItem label="上级指标" prop="superiorIndexId" v-if="isFormFlase">
@@ -137,17 +135,23 @@
               </Select>
           </FormItem>
           <FormItem label="主要牵头单位" prop="mainUnit" v-if="isFormFlase">
-            <Select placeholder="请输入牵头单位" v-model="formCityList.mainUnit" style="width:500px">
-              <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
-            </Select>
+            <Tooltip content="选择需要录入指标分值单位">
+              <Select placeholder="请输入牵头单位" v-model="formCityList.mainUnit" style="width:500px">
+                <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+              </Select>
+            </Tooltip>
           </FormItem>
           <FormItem label="牵头单位" prop="leadUnit" v-if="isFormFlase">
-              <Input v-model="formCityList.leadUnit" placeholder="请输入牵头单位" style="width:500px"></Input>
+            <Tooltip content="填入牵头单位">
+              <Select  v-model="formCityList.leadUnit"  multiple placeholder="请输入牵头单位" style="width:500px">
+                  <Option v-for="item in departmentList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+              </Select>
+            </Tooltip>
           </FormItem>
           <FormItem label="责任单位" prop="dutyUint" v-if="isFormFlase">
-              <Select v-model="formCityList.responsibilityUnit"  placeholder="请选择责任单位" style="width:500px">
-                  <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
-              </Select>
+            <Select v-model="formCityList.responsibilityUnit"  multiple  placeholder="请选择责任单位" style="width:500px">
+                <Option v-for="item in departmentList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+            </Select>
           </FormItem>
           <FormItem label="标准值" prop="standard" v-if="isFormFlase">
               <Input v-model="formCityList.standardValue" placeholder="请输入标准值" style="width:500px"></Input>
@@ -162,7 +166,7 @@
               <Input v-model="formCityList.weight" placeholder="请输入权数值" style="width:500px"></Input>
           </FormItem>
           <FormItem label="指标年份"  prop="year">
-             <DatePicker  type="year" format="yyyy" v-model="formCityList.year" @on-change="IndexFormat" placeholder="请选择指标年份" style="width:185px"></DatePicker>
+             <DatePicker  type="year" format="yyyy" :value="formCityList.year" @on-change="IndexFormat" placeholder="请选择指标年份" style="width:185px"></DatePicker>
           </FormItem>
         </Form>
         <div slot="footer">
@@ -191,6 +195,7 @@ export default {
       }
     };
     return {
+      departmentList: [], // 部门列表
       addIndex: false, // 显示增加模态框
       isIndexOne: true, // 是否指标等级一
       isIndexTwo: false, // 是否指标等级二
@@ -214,10 +219,10 @@ export default {
       searchData: {
         // 搜索数据
         indexType: "一级指标",
-        responsibilityUnit: "",
-        lead: "",
+        responsibilityUnit: [],
+        leadUnit: [],
         indexName: "",
-        year: ""
+        dateTime: ""
       },
       colIndexOne: [
         // 一级指标 表格表头
@@ -353,15 +358,25 @@ export default {
                   },
                   on: {
                     click: () => {
+                      function checkArr(option) {
+                        if (typeof option === 'string') {
+                          return option.split(',') || option.split('、')
+                        } else {
+                          return option
+                        }
+                      }
                       if (params.row.id !== "") {
-                        this.formCityList = Object.assign(params.row, {
-                          year: params.row.dateTime
+                        var row = JSON.parse(JSON.stringify(params.row));
+                        var indexItem = Object.assign(row, {
+                          year: params.row.dateTime,
+                          leadUnit: checkArr(params.row.leadUnit),
+                          responsibilityUnit: checkArr(params.row.responsibilityUnit)
                         })
                       } else {
                         this.$Message.error("刷新页面后尝试此操作");
                         return;
                       }
-                      this.formCityList = JSON.parse(JSON.stringify(this.formCityList));
+                      this.formCityList = JSON.parse(JSON.stringify(indexItem));
                       this.isIndexType = true; // 更新改修指标，禁止修改指标等级
                       this.addIndex = true;
                       this.isFormfalse = true;
@@ -445,13 +460,13 @@ export default {
         indexName: "", // 指标名称
         indexType: "一级指标", // 指标类型
         superiorIndexId: "", // 上级单位 一级指标没有上级单位
-        leadUnit: "", // 牵头单位
-        responsibilityUnit: "", // 责任单位
+        leadUnit: [], // 牵头单位
+        responsibilityUnit: [], // 责任单位
         score: "", // 分数
         standardValue: "", // 标准值
         direction: "", // 方向
         weight: "", // 权数
-        year: "", // 年份
+        dateTime: "", // 年份
         mainUnit: ''// 主要牵头单位 用来填写分数和审核分数
       },
       // 上传表格
@@ -474,21 +489,21 @@ export default {
     },
     // FORM表单年份
     IndexFormat(year) {
-      this.formCityList.year = year;
+      this.formCityList.dateTime = year;
     },
     // 搜索框年份
     handlerFormat(year) {
-      this.searchData.year = year;
+      this.searchData.dateTime = year;
     },
     // 关闭模态框增加或者编辑
     closeAddIndex() {
+      this.indexTwo = Object.assign({}, this.indexTwo)
       this.addIndex = false;
       this.isIndexType = false;
     },
     // 添加指标 编辑指标
     BtnSubmit(e) {
       this.$refs["formCityList"].validate(valid => {
-        console.log(this.formCityList);
         if (valid) {
           this.submitloading = true;
           if (this.targetName === "永泰县指标增加") {
@@ -679,7 +694,7 @@ export default {
           standardValue: "",
           direction: "",
           weight: "",
-          year: "",
+          dateTime: "",
           mainUnit: ''
         };
       }
@@ -848,7 +863,6 @@ export default {
         this.$Message.info("文件读取成功");
         const data = e.target.result;
         var { header, results } = excel.read(data, "array");
-        console.log(header);
 
         header = header.slice(0, 10); // 截取有效数据
         var tableTitle = header.map((item, i) => {
@@ -971,7 +985,6 @@ export default {
       // 处理二级指标
       for (let i = 0; i < this.tableData.length; i++) {
         if (this.tableData[i].associated !== undefined) {
-          console.log(this.tableData[i].associated);
           var indexAssociated = Object.assign(
             {},
             {
@@ -1101,6 +1114,20 @@ export default {
     }
   },
   created() {
+    if (this.getDepartmentList.length) {
+      this.getDepartmentList.forEach(item => {
+        let departmentItem = Object.assign({}, {
+          value: item,
+          label: item
+        })
+        this.departmentList.push(departmentItem)
+      })
+    } else {
+      this.departmentList.push({
+        value: "暂无数据",
+        label: "暂无数据"
+      })
+    }
     // 打开页面
     this._getCityList(
       this.formCityList,

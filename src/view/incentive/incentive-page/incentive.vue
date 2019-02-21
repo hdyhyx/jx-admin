@@ -112,7 +112,7 @@
       <i-col :md="24" :lg="12" style="margin-bottom: 20px;">
         <Card shadow>
           <example
-            v-if="lineData"
+            v-if="isEample"
             style="height: 400px;"
             :title="exampleTitle"
             :data="lineData"
@@ -293,6 +293,7 @@ export default {
   data() {
     return {
       HOST: "", // HTTP//192....
+      isEample: false,
       exampleTitle: "各月获得表彰项目数量",
       isShowMatters: false, // 增加修改模态框
       addMattersTitle: "", // title
@@ -444,7 +445,7 @@ export default {
           }
         },
         {
-          title: "正名材料",
+          title: "证明材料",
           key: "fileName"
         },
         {
@@ -803,6 +804,7 @@ export default {
           result.results.monthType.forEach(item => {
             this.lineData[item.monthTime + "月"] = item.num;
           });
+          this.isEample = true;
           console.log(this.lineData);
           this.pieData = pie;
           this.isPieLoading = false;

@@ -35,7 +35,6 @@ export default {
   mounted() {
     let xAxisData = Object.keys(this.data);
     let seriesData = Object.values(this.data);
-    console.log(this.data);
     const option = {
       title: {
         text: this.title,

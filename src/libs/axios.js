@@ -5,7 +5,6 @@ import {
   Message
 } from 'iview'
 const TOKEN_KEY = 'token'
-// import { Spin } from 'iview'
 const addErrorLog = errorInfo => {
   const {
     statusText,
@@ -62,7 +61,6 @@ class HttpRequest {
         data,
         status
       } = res
-      console.log(res);
       if (data.code === '40002') {
         // 后端服务在个别情况下回报201，待确认
         Cookies.remove(TOKEN_KEY)

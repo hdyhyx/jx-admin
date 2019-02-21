@@ -37,7 +37,6 @@ export default {
       this.dom.resize();
     },
     bar() {
-      console.log(this.data);
       const option = {
         color: this.colors,
         tooltip: {
@@ -121,6 +120,7 @@ export default {
             name: "排名",
             type: "bar",
             data: this.data.rank,
+            barWidth: "50",
             markLine: {
               lineStyle: {
                 normal: {

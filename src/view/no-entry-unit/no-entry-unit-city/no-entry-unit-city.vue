@@ -18,24 +18,26 @@
             </i-col>
             <i-col :xs="24" :md="12" :lg="6">
               <FormItem label="责任单位">
-                <Input
-                  search
-                  placeholder="请输入搜索内容"
-                  v-model="searchData.ducyUnit"
-                  style="width: auto"
+                <Select
+                  clearable
+                  placeholder="请输入责任单位"
+                  v-model="searchData.responsibilityUnit"
+                  style="width: 150px"
                 >
-                  <Icon type="ios-search" slot="suffix"/>
-                </Input>
+                  <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+                </Select>
               </FormItem>
             </i-col>
             <i-col :xs="24" :md="12" :lg="6">
               <FormItem label="牵头单位">
-                <Input
-                  search
+                <Select
+                  clearable
                   placeholder="请输入牵头单位"
                   v-model="searchData.leadUnit"
-                  style="width: auto"
-                ></Input>
+                  style="width: 150px"
+                >
+                  <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+                </Select>
               </FormItem>
             </i-col>
           </Row>
@@ -68,7 +70,6 @@
               <DatePicker
                 type="date"
                 format="yyyy-MM-dd"
-                v-model="endTime"
                 @on-change="handlerFormat"
                 placeholder="请选择截止日期"
                 style="width: 200px"
@@ -119,7 +120,7 @@
   </div>
 </template>
 <script>
-import { countyAjax } from "@/api/city";
+import { cityAjax } from "@/api/city";
 import { noEntryAjax } from "@/api/no-entry";
 export default {
   data() {
@@ -133,12 +134,9 @@ export default {
       pageSize: 10, // 页数
       pageNumber: 1, // 页码
       searchData: {
-        indexType: "二级指标",
-        superiorIndexId: "", // 一级指标
         leadUnit: "", // 牵头单位
         indexName: "", // 二级指标
-        responsibilityUnit: "", // 责任单位
-        dateTime: "" // 年份
+        responsibilityUnit: "" // 责任单位
       },
       selectIndexType: [
         // 搜索指标里的关联指标
@@ -159,7 +157,7 @@ export default {
         },
         {
           title: "二级指标",
-          key: "superiorIndexId",
+          key: "indexName",
           render: (h, params) => {
             const row = params.row;
             var color = row.endTime === null ? "primary" : "success";
@@ -252,9 +250,8 @@ export default {
         return;
       }
       this.submitLoading = true;
-
-      var url = "warning/setTownEndTime";
-      var keyOne = "townIndicatorsEntityList";
+      var url = "warning/setCountryEndTime";
+      var keyOne = "countryIndicatorsEntityList";
       var formData = Object.assign(
         {},
         {
@@ -271,13 +268,7 @@ export default {
           this.submitLoading = false;
           if (result.data.code === "200") {
             this.$Message.success("设置成功");
-            this.selectList = [];
-            this.endTime = "";
-            this._getCountyList(
-              this.searchData,
-              this.pageSize,
-              this.pageNumber
-            );
+            this._getCityList(this.searchData, this.pageSize, this.pageNumber);
           } else {
             this.$Message.error(result.data.message);
           }
@@ -289,12 +280,12 @@ export default {
     // 页码
     pageNumberChange(pageNumber) {
       this.pageNumber = pageNumber;
-      this._getCountyList(this.searchData, this.pageSize, this.pageNumber);
+      this._getCityList(this.searchData, this.pageSize, this.pageNumber);
     },
     // 页数
     pageSizeChange(pageSize) {
       this.pageSize = pageSize;
-      this._getCountyList(this.searchData, this.pageSize, this.pageNumber);
+      this._getCityList(this.searchData, this.pageSize, this.pageNumber);
     },
     selectAllCancel(selection) {
       this.selectList = selection;
@@ -311,22 +302,26 @@ export default {
     },
     // 提交搜索
     seachSubmit(pageSize, pageNumber) {
-      this.tableLoading = true;
-      this._getCountyList(this.searchData, this.pageSize, this.pageNumber);
+      this._getCityList(this.searchData, this.pageSize, this.pageNumber);
       this.$Message.success("成功");
     },
     // 重置搜索
     seachReset(name) {
       this.$refs[name].resetFields();
+      this.searchData = {
+        leadUnit: "", // 牵头单位
+        indexName: "", // 二级指标
+        responsibilityUnit: "" // 责任单位
+      };
     },
-    _getCountyList(form, pageSize, pageNumber) {
-      const url = "/townIndicators/query";
-      const keyOne = "townIndicatorsFilter";
+    _getCityList(form, pageSize, pageNumber) {
+      const url = "/countryIndicators/query";
+      const key = "countryIndicatorsFilter";
       let formData = Object.assign(form, {
         pageSize,
         pageNumber
       });
-      countyAjax({ formData, url, keyOne }).then(result => {
+      cityAjax({ formData, url, key }).then(result => {
         if (result.data.code === "200") {
           console.log(result);
           this.pageTotal = parseInt(result.data.results.pageTotal) * 10; // 总页数
@@ -338,7 +333,12 @@ export default {
     }
   },
   created() {
-    this._getCountyList(this.searchData, this.pageSize, this.pageNumber);
+    this._getCityList(this.searchData, this.pageSize, this.pageNumber);
+  },
+  computed: {
+    getDepartmentList() {
+      return this.$store.state.user.departmentList;
+    }
   }
 };
 </script>

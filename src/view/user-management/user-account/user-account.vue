@@ -507,7 +507,6 @@ export default {
   },
   mounted() {},
   created() {
-    console.log(this.getDepartment);
     this._getUserData(
       this.searchData,
       QUERY_URL,

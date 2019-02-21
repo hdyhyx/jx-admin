@@ -425,7 +425,6 @@ export default {
         .then(result => {
           this.tabelLoading = false;
           this.searchLoading = false;
-          console.log(result);
           if (result.data.code === "200" && result.data !== undefined) {
             this.tabelContent = result.data.results.list;
             this.pageTotal = parseInt(result.data.results.pageTotal);

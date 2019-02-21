@@ -100,9 +100,9 @@
           :on-success="handleSuccess"
           :format="['xls','xlsx']"
           :on-format-error="handleFormatError"
-          action="/api/assessmentTest/importMeasurement"
+          action="/assessmentTest/importMeasurement"
         >
-          <Button icon="ios-cloud-upload-outline">上传指标</Button>
+          <Button icon="ios-cloud-upload-outline">上传测评</Button>
         </Upload>
       </Card>
     </Row>
@@ -351,7 +351,6 @@ export default {
         .then(result => {
           this.tabelLoading = false;
           this.searchLoading = false;
-          console.log(result);
           if (result.data.code === "200" && result.data !== undefined) {
             this.tabelContent = result.data.results.list;
             this.pageTotal = parseInt(result.data.results.pageTotal);
@@ -366,7 +365,6 @@ export default {
   },
   created() {
     this._getMeasurementData(this.searchData, this.pageSize, this.pageNumber);
-    console.log(this.getDepartmentList);
     this.getDepartmentList.forEach(item => {
       item = Object.assign(
         {},

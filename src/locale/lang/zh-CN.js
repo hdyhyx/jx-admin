@@ -15,7 +15,7 @@ export default {
   update_paste_page: '粘贴表格数据',
   multilevel: '多级菜单',
   directive_page: '指令',
-  investigate: '绩效管理察访核验工作',
+  investigate: '察访核验工作',
   investigate_outbox: '已发送邮件',
   investigate_ide: '编写邮件',
   investigate_inbox: '已收到邮件',
@@ -52,6 +52,7 @@ export default {
   incentive: '正向激励',
   incentive_audit: '正向激励审核审批',
   no_entry_unit: '录入指标单位',
+  no_entry_unit_city: '市对县指标填写时间',
   no_entry_unit_county: '乡镇指标填写时间',
   no_entry_unit_game: '六抓六赛指标填写时间',
   no_entry_unit_all: '指标未录入预警',
@@ -64,8 +65,8 @@ export default {
   work_management: '督查指标管理',
   work_data: '督查考核数据',
   work_audit: '督查审核审批',
-  user_mangement: '用户管理',
-  user: '用户管理',
+  user_mangement: '系统管理',
+  user: '系统管理',
   user_account: '账号管理',
   user_test: '测评对象',
   user_department: '部门管理',
@@ -75,5 +76,6 @@ export default {
   measurement_res: "测评数据结果",
   measurement_pages: '编辑测评',
   measurement_details: '测评统计',
-  measurement_answer: '简答统计'
+  measurement_answer: '简答统计',
+  rights_management: "权限管理"
 }

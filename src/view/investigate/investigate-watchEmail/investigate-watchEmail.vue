@@ -44,16 +44,20 @@
               <Button type="primary" @click="loadFile(detailsItem.fileUrl)">下载</Button>
             </Col>
           </Row>
-          <Row style="margin-top:20px" v-if="detailsItem.point!==null">
-            <Col :span="12">
+          <Row style="margin-top:20px">
+            <Col :span="12" v-if="detailsItem.point!==null">
               <Tag type="dot" color="primary">核验分值：</Tag>
               {{detailsItem.point}}
+            </Col>
+            <Col :span="12">
+              <Tag type="dot" color="primary">察访核验对象：</Tag>
+              {{detailsItem.type==='0'?'对全县察访核验':'对部门或乡镇察访核验'}}
             </Col>
           </Row>
           <Row style="margin-top:20px">
             <Col :span="24">
               <Tag type="dot" color="primary">邮件内容：</Tag>
-              {{detailsItem.content}}
+              <div style="padding:0 20px">{{detailsItem.content}}</div>
             </Col>
           </Row>
         </p>
@@ -119,7 +123,7 @@
                 :on-format-error="handleFormatError"
                 :on-exceeded-size="handleMaxSize"
                 :on-success="handleSuccess"
-                action="upload/fileUpload"
+                action="/upload/fileUpload"
               >
                 <Button
                   :disabled="file !==null"
@@ -143,7 +147,7 @@
             <Tag type="dot" color="primary">审核分数</Tag>
           </Col>
           <Col :span="22">
-            <InputNumber :max="100" :min="0" :step="0.1" v-model="point"></InputNumber>
+            <InputNumber :max="100" :min="-100" :step="0.1" v-model="point"></InputNumber>
           </Col>
         </Row>
         <Row style="margin-top:20px">

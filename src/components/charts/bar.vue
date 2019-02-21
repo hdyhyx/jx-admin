@@ -37,9 +37,9 @@ export default {
           }
         },
         title: {
-          text: "",
-          subtext: this.subtext,
-          x: "left"
+          text: this.subtext,
+          subtext: "",
+          x: "center"
         },
         grid: {
           top: "20%",
@@ -57,6 +57,7 @@ export default {
         },
         series: [
           {
+            name: "得分",
             data: seriesData,
             type: "bar",
             barWidth: 30

@@ -194,7 +194,7 @@ export default [{
   name: "incentive",
   meta: {
     hide: true,
-    icon: "md-flame"
+    icon: "md-menu"
   },
   component: Main,
   children: [{
@@ -231,33 +231,44 @@ export default [{
   ]
 },
 {
-  path: "/dynamic_news",
-  name: "dynamic_news",
+  path: "/work_supervision",
+  name: "work_supervision",
   meta: {
-    icon: "logo-twitter",
-    hide: true
+    icon: "md-menu",
+    title: "工作督查"
   },
   component: Main,
   children: [{
-    path: "/dynamic_news_page",
-    name: "dynamic_news_page",
+    path: "/work_management",
+    name: "work_management",
     meta: {
-      icon: "logo-twitter",
-      title: "动态新闻"
-    },
-    component: () =>
-          import("@/view/dynamic-news/dynamic-news-page/dynamic-news-page.vue")
-  },
-  {
-    path: "/dynamic_news_edi",
-    name: "dynamic_news_edi",
-    meta: {
-      icon: "ios-create-outline",
-      title: "动态编辑",
+      icon: "md-trending-up",
+      title: "督查指标管理",
       access: ["admin"]
     },
     component: () =>
-          import("@/view/dynamic-news/dynamic-news-edi/dynamic-news-edi.vue")
+          import("@/view/work-supervision/work-management/work-management.vue")
+  },
+  {
+    path: "/work_data",
+    name: "work_data",
+    meta: {
+      icon: "md-stats",
+      title: "督查数据考核"
+    },
+    component: () =>
+          import("@/view/work-supervision/work-data/work-data.vue")
+  },
+  {
+    path: "/work_audit",
+    name: "work_audit",
+    meta: {
+      icon: "md-checkbox-outline",
+      title: "督查审核审批",
+      access: ["admin", "responsible"]
+    },
+    component: () =>
+          import("@/view/work-supervision/work-audit/work-audit.vue")
   }
   ]
 },
@@ -265,7 +276,7 @@ export default [{
   path: "/investigate",
   name: "investigate",
   meta: {
-    icon: "ios-search",
+    icon: "md-menu",
     title: "察访工作"
   },
   component: Main,
@@ -315,48 +326,6 @@ export default [{
   ]
 },
 {
-  path: "/work_supervision",
-  name: "work_supervision",
-  meta: {
-    icon: "ios-search",
-    title: "工作督查"
-  },
-  component: Main,
-  children: [{
-    path: "/work_management",
-    name: "work_management",
-    meta: {
-      icon: "md-trending-up",
-      title: "督查指标管理",
-      access: ["admin"]
-    },
-    component: () =>
-          import("@/view/work-supervision/work-management/work-management.vue")
-  },
-  {
-    path: "/work_data",
-    name: "work_data",
-    meta: {
-      icon: "md-stats",
-      title: "督查数据考核"
-    },
-    component: () =>
-          import("@/view/work-supervision/work-data/work-data.vue")
-  },
-  {
-    path: "/work_audit",
-    name: "work_audit",
-    meta: {
-      icon: "md-checkbox-outline",
-      title: "督查审核审批",
-      access: ["admin", "responsible"]
-    },
-    component: () =>
-          import("@/view/work-supervision/work-audit/work-audit.vue")
-  }
-  ]
-},
-{
   path: "/no-entry-unit",
   name: "no_entry_unit",
   meta: {
@@ -365,7 +334,17 @@ export default [{
   },
   component: Main,
   children: [{
-    path: "no_entry_unit_county",
+    path: "/no-entry-unit-city",
+    name: "no_entry_unit_city",
+    meta: {
+      icon: "md-funnel",
+      title: "乡镇指标未录入"
+    },
+    component: () =>
+          import("@/view/no-entry-unit/no-entry-unit-city/no-entry-unit-city.vue")
+  },
+  {
+    path: "/no-entry-unit-county",
     name: "no_entry_unit_county",
     meta: {
       icon: "md-funnel",
@@ -375,7 +354,7 @@ export default [{
           import("@/view/no-entry-unit/no-entry-unit-county/no-entry-unit-county.vue")
   },
   {
-    path: "no_entry_unit_game",
+    path: "/no-entry-unit-game",
     name: "no_entry_unit_game",
     meta: {
       icon: "ios-create-outline",
@@ -385,7 +364,7 @@ export default [{
           import("@/view/no-entry-unit/no-entry-unit-game/no-entry-unit-game.vue")
   },
   {
-    path: "no_entry_unit_all",
+    path: "no-entry-unit-all",
     name: "no_entry_unit_all",
     meta: {
       icon: "ios-mail-outline",
@@ -402,7 +381,8 @@ export default [{
   component: Main,
   meta: {
     title: "测评模块",
-    icon: "ios-school"
+    icon: "ios-school",
+    access: ["admin"]
   },
   children: [{
     path: "measurement-data",
@@ -497,6 +477,48 @@ export default [{
     },
     component: () =>
           import("@/view/user-management/user-department/user-department.vue")
+  },
+  {
+    path: "/dynamic_news",
+    name: "dynamic_news",
+    meta: {
+      icon: "logo-twitter",
+      hide: true
+    },
+    component: parentView,
+    children: [{
+      path: "/dynamic_page",
+      name: "dynamic_news_page",
+      meta: {
+        icon: "logo-twitter",
+        title: "动态新闻"
+      },
+      component: () =>
+              import("@/view/dynamic-news/dynamic-news-page/dynamic-news-page.vue")
+    },
+    {
+      path: "/dynamic_edi",
+      name: "dynamic_news_edi",
+      meta: {
+        icon: "ios-create-outline",
+        title: "动态编辑",
+        access: ["admin"]
+      },
+      component: () =>
+              import("@/view/dynamic-news/dynamic-news-edi/dynamic-news-edi.vue")
+    }
+    ]
+  },
+  {
+    path: "/rights-management",
+    name: "rights_management",
+    meta: {
+      icon: "ios-construct",
+      title: "权限管理",
+      access: ["hide"]
+    },
+    component: () =>
+          import("@/view/user-management/rights-management/rights-management.vue")
   }
   ]
 },

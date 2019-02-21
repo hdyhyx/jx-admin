@@ -1,13 +1,18 @@
 <template>
   <div>
     <!-- 首页顶部四个框 -->
-    <Row :gutter="20">
+    <Row :gutter="20" style="height:120px">
       <!-- 县绩效考核总分 -->
       <i-col :xs="24" :md="12" :lg="6" style="height: 160px;padding-bottom: 10px;">
-        <infor-card shadow :icon-size="36" :color="inforCardData[0].color">
+        <infor-card shadow :icon-size="36" :color="'#9CCC65'">
           <div class="henader-nav">
             <h2 class="head-title">
-              <count-to :decimals="1" :end="inforCardData[0].count" count-class="count-style"/>
+              <count-to
+                v-if="inforCardData.length"
+                :decimals="1"
+                :end="inforCardData[0].count"
+                count-class="count-style"
+              />
             </h2>
             <p class="sub-text">市对县指标得分</p>
             <div style="margin-top:50px">
@@ -16,12 +21,13 @@
           </div>
         </infor-card>
       </i-col>
-      <!-- 县绩效考核排名 -->
       <i-col :xs="24" :md="12" :lg="6" style="height: 160px;padding-bottom: 10px;">
-        <infor-card shadow :icon-size="36" :color="inforCardData[1].color">
+        <infor-card shadow :icon-size="36" :color="'#4DD0E1'">
           <div class="henader-nav">
             <h2 class="head-title">
               <count-to
+                v-if="inforCardData.length"
+                :decimals="1"
                 :end="inforCardData[1].count"
                 style="margin:0 10px;"
                 count-class="count-style"
@@ -36,7 +42,7 @@
       </i-col>
       <!-- 指标预警 -->
       <i-col :xs="24" :md="12" :lg="6" style="height: 160px;padding-bottom: 10px;">
-        <infor-card shadow :icon-size="36" :color="inforCardData[2].color">
+        <infor-card shadow :icon-size="36" :color="'#FFCA28'">
           <div class="henader-nav">
             <h2 class="head-title blod-font">察访核验</h2>
           </div>
@@ -44,13 +50,25 @@
             <i-col :xs="12" :md="12" :lg="12">
               <p>市对县察访核验扣分</p>
               <p style="font-size:18px; margin-top:10px;">
-                <count-to :end="0" style="margin:0 10px;" count-class="count-style"/>分
+                <count-to
+                  v-if="inforCardData.length"
+                  :decimals="1"
+                  :end="inforCardData[2].cityCount"
+                  style="margin:0 10px;"
+                  count-class="count-style"
+                />分
               </p>
             </i-col>
             <i-col :xs="12" :md="12" :lg="12">
               <p>县对部门察访核验扣分</p>
               <p style="font-size:18px; margin-top:10px;">
-                <count-to :end="0" style="margin:0 10px;" count-class="count-style"/>分
+                <count-to
+                  v-if="inforCardData.length"
+                  :decimals="1"
+                  :end="inforCardData[2].countyCount"
+                  style="margin:0 10px;"
+                  count-class="count-style"
+                />分
               </p>
             </i-col>
           </Row>
@@ -58,34 +76,51 @@
       </i-col>
       <!-- 未录入指标单位 -->
       <i-col :xs="24" :md="12" :lg="6" style="height: 160px;padding-bottom: 10px;">
-        <infor-card shadow :icon-size="36" :color="inforCardData[3].color">
-          <div class="henader-nav">
-            <h2 class="head-title blod-font">专项工作督查</h2>
-          </div>
-          <Row style="margin-top:50px;color:#fff;font-size:14px">
-            <i-col :xs="8" :md="8" :lg="8">
-              <p>市指标</p>
+        <infor-card shadow :icon-size="36" :color="'#FF8A65'">
+          <Row style="color:#fff;font-size:14px">
+            <i-col :xs="8" :md="8" :lg="12">
+              <h2 style="font-weight: 500">专项工作督查</h2>
+              <p style="text-align:center">扣分</p>
               <p style="font-size:18px; margin-top:10px;">
-                <count-to :end="0" count-class="count-style"/>项
+                <count-to
+                  v-if="inforCardData.length"
+                  :decimals="1"
+                  :end="inforCardData[3].count"
+                  count-class="count-style"
+                  style="margin:0 10px;"
+                />分
               </p>
             </i-col>
-            <i-col :xs="8" :md="8" :lg="8">
-              <p>县指标</p>
+            <i-col :xs="8" :md="8" :lg="12">
+              <h2 style="font-weight: 500">测评模块</h2>
+              <p style="text-align:center">得分</p>
               <p style="font-size:18px; margin-top:10px;">
-                <count-to :end="0" count-class="count-style"/>项
-              </p>
-            </i-col>
-            <i-col :xs="8" :md="8" :lg="8">
-              <p>六抓六赛</p>
-              <p style="font-size:18px; margin-top:10px;">
-                <count-to :end="0" count-class="count-style"/>项
+                <count-to
+                  v-if="inforCardData.length"
+                  :decimals="1"
+                  :end="inforCardData[4].count"
+                  count-class="count-style"
+                  style="margin:0 10px;"
+                />分
               </p>
             </i-col>
           </Row>
         </infor-card>
       </i-col>
     </Row>
-
+    <Row style="margin-top:40px">
+      <i-col :xs="24" :md="24" :lg="24">
+        <Card>
+          <swiper :options="swiperOption">
+            <swiper-slide v-for="(item,index) in newsLoopData" :key="index">
+              <div @click="watchNews(item)" class="demo-carousel">{{item.title}}</div>
+            </swiper-slide>
+            <div class="swiper-button-prev" slot="button-prev"></div>
+            <div class="swiper-button-next" slot="button-next"></div>
+          </swiper>
+        </Card>
+      </i-col>
+    </Row>
     <!-- 督查工作 -->
     <Row :gutter="20" style="margin-top: 10px;">
       <i-col :md="24" :lg="12" style="margin-bottom: 20px;">
@@ -94,15 +129,14 @@
             <i-col class="title" :md="20" :lg="20">
               <h2 style="display: inline-block;font-size:18px">市对县专项工作督查</h2>
             </i-col>
-            <i-col class="title" :md="4" :lg="4">
-              <Button type="success" style="float:right">备注</Button>
-            </i-col>
+            <i-col class="title" :md="4" :lg="4"></i-col>
           </Row>
           <div style="margin-top:20px">
             <Table
               highlight-row
               stripe
               border
+              height="400"
               ref="currentRowTable"
               :columns="columns3"
               :data="data1"
@@ -136,7 +170,12 @@
               ></DatePicker>
             </Col>
             <Col :span="4">
-              <Button :loading="incentiveLoaidng" @click="incentiveSubmit" style="width:70px;">确定</Button>
+              <Button
+                :loading="incentiveLoaidng"
+                @click="incentiveSubmit"
+                type="success"
+                style="width:70px;"
+              >确定</Button>
             </Col>
           </Row>
           <!-- 判断对象里是不是有02月份那个值 -->
@@ -178,12 +217,19 @@
           <Col :span="5">
             <Button
               :loading="cityBtnLoading"
+              type="success"
               @click="citySubmit"
               style="width:70px;margin-left:5px;"
             >确定</Button>
           </Col>
         </Row>
-        <div style="margin-top:60px">
+        <div style="margin-top:20px">
+          <Row style="text-align: right;">
+            <RadioGroup v-model="citySort" type="button" size="large">
+              <Radio label="正序"></Radio>
+              <Radio label="倒序"></Radio>
+            </RadioGroup>
+          </Row>
           <bar-stack
             v-if="cityEchartsData.name.length"
             @clickData="getClickBar"
@@ -197,7 +243,7 @@
     </Row>
     <!-- 各乡镇六抓六赛考核指标 -->
     <Row style="margin-top:20px">
-      <Card shadow>
+      <Card shadow style="height:620px">
         <Row>
           <i-col :md="24" :lg="12">
             <h2 style="font-size:18px">各乡镇六抓六赛考核指标</h2>
@@ -208,6 +254,8 @@
                 <span>选择时间：</span>
                 <DatePicker
                   @on-change="sixDate"
+                  :value="sixDateDefault"
+                  :clearable="false"
                   type="month"
                   placeholder="请选择时间"
                   style="width:100px;"
@@ -215,7 +263,8 @@
               </Col>
               <Col :span="12">
                 <Cascader
-                  :data="selectIndexType"
+                  v-model="xisIndex"
+                  :data="xisSelectType"
                   change-on-select
                   @on-change="sixSelectIndex"
                   style="width:250px"
@@ -223,6 +272,8 @@
               </Col>
               <Col :span="4">
                 <Button
+                  type="success"
+                  :disabled="sixSelectVal.indexName===''"
                   :loading="sixBtnLoading"
                   @click="sixSubmit"
                   style="width:70px;margin-left:5px;"
@@ -231,15 +282,27 @@
             </Row>
           </i-col>
         </Row>
-        <div style="margin-top:60px">
-          <example :title="'总分'" :data="lineData" :yName="'项'" style="height: 510px;"/>
+        <div style="margin-top:20px">
+          <Row style="text-align: right;">
+            <RadioGroup v-model="sixSort" type="button" size="large">
+              <Radio label="正序"></Radio>
+              <Radio label="倒序"></Radio>
+            </RadioGroup>
+          </Row>
+          <example
+            v-if="sixEchartsShow"
+            :title="xisEchartsName"
+            :data="lineData"
+            :yName="'分'"
+            style="height: 510px;"
+          />
         </div>
-        <Spin size="large" fix v-if="countyLoading">暂无数据</Spin>
+        <Spin size="large" fix v-if="sixLoading"></Spin>
       </Card>
     </Row>
     <!-- 各乡镇绩效考核指标 -->
     <Row>
-      <Card shadow style="margin-top: 20px;">
+      <Card shadow style="margin-top: 20px;height:640px">
         <Row>
           <i-col :lg="24">
             <h2 style="font-size:18px">各乡镇绩效考核指标</h2>
@@ -250,13 +313,16 @@
                 <span>选择时间：</span>
                 <DatePicker
                   @on-change="countyDate"
+                  :value="counDateDefault"
                   type="month"
                   placeholder="请选择时间"
+                  :clearable="false"
                   style="width:100px;"
                 ></DatePicker>
               </Col>
               <Col :span="12">
                 <Cascader
+                  v-model="countyIndex"
                   :data="selectIndexType"
                   change-on-select
                   @on-change="countySelectIndex"
@@ -265,6 +331,8 @@
               </Col>
               <Col :span="4">
                 <Button
+                  type="success"
+                  :disabled="countySelectVal.indexName===''"
                   :loading="countyBtnLoading"
                   @click="countySubmit"
                   style="width:70px;margin-left:5px;"
@@ -273,9 +341,23 @@
             </Row>
           </i-col>
         </Row>
-        <chart-bar v-if="barData['白云乡']" style="height: 500px;" :value="barData" text/>
+        <div>
+          <Row style="float:left;position: absolute;right:30px;top:100px;z-index:99">
+            <RadioGroup @on-change="countyChange" v-model="countySort" type="button" size="large">
+              <Radio label="排序"></Radio>
+              <Radio label="倒序"></Radio>
+            </RadioGroup>
+          </Row>
+          <chart-bar
+            :subtext="countyEchartsName"
+            v-if="countyEchartsShow"
+            style="height: 500px;"
+            :value="barData"
+            text
+          />
+          <Spin size="large" fix v-if="countyLoading"></Spin>
+        </div>
       </Card>
-      <Spin size="large" fix v-if="!countyLoading"></Spin>
     </Row>
     <!-- 测评模块 -->
     <Row :gutter="20" style="margin-top: 20px;">
@@ -316,10 +398,43 @@
       </div>
       <char-line-bar style="height:380px;width:800px"></char-line-bar>
     </Modal>
+    <Drawer
+      v-if="newsItem !==null"
+      width="55%"
+      :closable="false"
+      :styles="styles"
+      v-model="showNews"
+    >
+      <h2 style="text-align: center;">{{newsItem.title}}</h2>
+      <p style="font-size:14px;padding-left:10px;">发布日期：{{newsItem.editTime}}</p>
+      <Divider style="margin:15px 0"/>
+      <div class="news-content" v-html="newsItem.content"></div>
+      <Divider/>
+      <div class="demo-drawer-footer">
+        <Button :size="buttonSize" v-if="newsItem.num !==null" type="text">附件：{{newsItem.num}}</Button>
+        <Button
+          :size="buttonSize"
+          type="primary"
+          icon="ios-download-outline"
+          v-if="newsItem.fileUrl !==null"
+          style="margin:0 50px 0 10px"
+        >
+          <a style="color:#fff" :href="host+newsItem.fileUrl">下载附件</a>
+        </Button>
+
+        <Button
+          :size="buttonSize"
+          style="float:right;margin-right:10px"
+          @click="showNews = false"
+        >关闭新闻</Button>
+      </div>
+    </Drawer>
   </div>
 </template>
 
 <script>
+import "swiper/dist/css/swiper.css";
+import { swiper, swiperSlide } from "vue-awesome-swiper";
 import { homeAjax } from "@/api/home";
 import { cityAjax } from "@/api/city";
 import InforCard from "_c/info-card";
@@ -332,6 +447,7 @@ import BgBar from "./bg-bar.vue";
 import { hasOneOf } from "@/libs/tools";
 import Radar from "./radar";
 import MyProgress from "./progress";
+import { HOST } from "@/libs/util";
 // 市对县指标考核 URL
 const CITY_URL = "/index/indexCountryIndicators";
 // 正向激励
@@ -340,6 +456,14 @@ const INCENTIVE_URL = "/index/indexIncentive";
 const WORL_URL = "/index/indexMeasurement";
 // 县对乡镇URL
 const COUNTY_URL = "/index/indexTown";
+// 六抓六赛
+const XIS_URL = "/index/indexSix";
+// 工作督查
+const WORK_URL = "/index/indexWork";
+// 首页 TOP
+const TOP_URL = "/index/indexTop";
+// 新闻轮播
+const LOOP_URL = "/index/news";
 export default {
   name: "home",
   components: {
@@ -353,10 +477,41 @@ export default {
     BgExample,
     BgBar,
     barStack,
-    CharLineBar
+    CharLineBar,
+    swiper,
+    swiperSlide
   },
   data() {
     return {
+      citySort: "",
+      sixSort: "",
+      countySort: "正序",
+      swiperOption: {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        autoplay: {
+          delay: 4000,
+          disableOnInteraction: false
+        },
+        preventClicks: true,
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev"
+        }
+      },
+      host: "",
+      newsLoop: 0,
+      newsItem: "", // 单条新闻
+      newsLoopData: [],
+      buttonSize: "large", // 按钮样式
+      autoplay: false,
+      showNews: false, // 新闻侧边栏
+      autoplaySpeed: 4000,
+      dots: "none",
       countySelectVal: {
         superiorIndexId: "", // 一级指标
         indexName: "", // 二级指标
@@ -369,13 +524,6 @@ export default {
         dateTime: "",
         monthTime: ""
       },
-      selectIndexType: [
-        // 搜索指标里的关联指标
-        {
-          label: "全部",
-          value: "全部"
-        }
-      ],
       incentiveEchartsData: {}, // 正向激励
       incentiveTotalCount: 0, // 正向激励的项数
       incentiveLoaidng: false,
@@ -389,12 +537,22 @@ export default {
         score: [],
         rank: []
       },
-      cityLoading: true, // 市对县图表Loaidng
-      countyLoading: true, // 县对乡镇图表Loaidng
-      sixLoading: false, // 六抓六赛图表Loaidng
-      cityBtnLoading: false, // 市对县按钮loading
-      countyBtnLoading: false, // 县对乡镇按钮loading
+      xisIndex: [], // 六抓六赛已选择指标
+      xisSelectType: [], // 六抓六赛 选择指标
       sixBtnLoading: false, // 六抓六赛按钮loading
+      sixDateDefault: "", // 默认时间
+      sixLoading: false, // 六抓六赛图表Loaidng
+      sixEchartsShow: false, // 六抓六赛图标显示
+      xisEchartsName: "",
+      selectIndexType: [], // 县对乡镇 选择指标
+      countyIndex: [], // 县对乡镇选择指标
+      countyEchartsShow: false, // 县对乡镇的图标显示
+      counDateDefault: "", // 默认时间
+      countyEchartsName: "", // 县对乡镇显示指标名
+      countyLoading: true, // 县对乡镇图表Loaidng
+      countyBtnLoading: false, // 县对乡镇按钮loading
+      cityLoading: true, // 市对县图表Loaidng
+      cityBtnLoading: false, // 市对县按钮loading
       citySelectVal: {
         // 雷达图选择显示的数据
         value: "rank",
@@ -418,46 +576,8 @@ export default {
         "11月": 80,
         "12月": 55
       },
-      lineData: {
-        葛岭镇: 80,
-        城峰镇: 80,
-        嵩口镇: 80,
-        清凉镇: 80,
-        梧桐镇: 80,
-        樟城镇: 80,
-        长庆镇: 80,
-        同安镇: 80,
-        大洋镇: 80,
-        塘前乡: 80,
-        富泉乡: 80,
-        岭路乡: 80,
-        赤锡乡: 80,
-        洑口乡: 80,
-        盖洋乡: 80,
-        东洋乡: 80,
-        霞拔乡: 80,
-        盘谷乡: 80,
-        红星乡: 80,
-        白云乡: 80,
-        丹云乡: 80
-      }, // 折线图数据
-      inforCardData: [
-        {
-          count: 100,
-          color: "#9CCC65"
-        },
-        { count: 1, color: "#4DD0E1" },
-        {
-          count: 20,
-          color: "#FFCA28"
-        },
-        { count: 657, color: "#FF8A65" },
-        {
-          count: 0,
-          color: "#FFCA28"
-        },
-        { count: 14, color: "#9A66E4" }
-      ],
+      lineData: {}, // 折线图数据
+      inforCardData: [],
 
       columns3: [
         {
@@ -489,50 +609,27 @@ export default {
             // 宽度占比
             var pressWidth = "";
             // 实际扣分
-            var actualPoint = params.row.point === null ? 0 : params.row.point;
-            if (params.row.point !== null) {
-              pressWidth = (params.row.point / params.row.maxPoint) * 120;
+            var actualPoint = params.row.score === null ? 0 : params.row.score;
+            if (params.row.score !== null) {
+              pressWidth = (params.row.score / params.row.maxPoint) * 160;
             } else {
               pressWidth = 0;
             }
             return h("div", [
-              h("div", {
-                style: {
-                  position: "relative",
-                  width: "120px",
-                  height: "30px",
-                  lineHeight: "30px",
-                  marginRight: "5px",
-                  background: "#999",
-                  color: "#fff"
-                }
-              }),
               h(
                 "div",
                 {
                   style: {
-                    position: "absolute",
-                    marginTop: "-30px",
-                    width: pressWidth.toFixed(0) + "px",
-                    height: "30px",
-                    background: "#FF6975"
-                  }
-                },
-                ""
-              ),
-              h(
-                "div",
-                {
-                  style: {
-                    position: "absolute",
-                    marginTop: "-23px",
+                    position: "relative",
+                    left: "-18px",
+                    width: pressWidth + "px",
+                    height: "40px",
+                    lineHeight: "40px",
+                    marginRight: "5px",
+                    background: "rgb(255, 105, 117)",
+                    fontSize: "15px",
                     color: "#fff",
-                    width: "120px",
-                    height: "20px",
-                    fontSize: "16px",
-                    lineHeight: "20px",
-                    textAlign: "center",
-                    whiteSpace: "pre"
+                    textAlign: "center"
                   }
                 },
                 actualPoint + "   /   " + params.row.maxPoint
@@ -542,82 +639,147 @@ export default {
         },
         {
           title: "市考核责任单位",
-          key: "cityResponUnit"
+          key: "cityResponUnit",
+          width: 140
         },
         {
           title: "工作目标牵头单位",
-          key: "leadUnit"
+          key: "leadUnit",
+          width: 160
         }
       ],
-      data1: [
-        {
-          indexName: "构建现代化公共文化服务区",
-          cityResponUnit: "市文广新局",
-          leadUnit: "县科技文体局",
-          maxPoint: 3,
-          point: 2
-        },
-        {
-          indexName: "新型智慧城市标杆创建工作",
-          cityResponUnit: "智慧福州",
-          leadUnit: "智慧永泰",
-          maxPoint: 10,
-          point: 5
-        },
-        {
-          indexName: "数字城管及12345诉求办理",
-          cityResponUnit: "智慧福州",
-          leadUnit: "智慧永泰",
-          maxPoint: 5,
-          point: 4
-        },
-        {
-          indexName: "消防工作落实情况",
-          cityResponUnit: "市消防支队",
-          leadUnit: "县消防支队",
-          maxPoint: 6,
-          point: 2
-        },
-        {
-          indexName: "审计查出问题整改落实",
-          cityResponUnit: "市审计局",
-          leadUnit: "县审计局",
-          maxPoint: 10,
-          point: 5
-        },
-        {
-          indexName: "支持电网建设工作",
-          cityResponUnit: "市经信委",
-          leadUnit: "县商务局",
-          maxPoint: 10,
-          point: 5
-        },
-        {
-          indexName: "防震减灾工作落实情况",
-          cityResponUnit: "市地震局",
-          leadUnit: "县地震局",
-          maxPoint: 10,
-          point: 10
-        },
-        {
-          indexName: "温泉资源综合开发",
-          cityResponUnit: "市旅游委",
-          leadUnit: "县旅游委",
-          maxPoint: 10,
-          point: 5
-        }
-      ],
+      data1: [],
       maxScore: 0, // 最高的分数作为条形最大宽度
       progress: [],
-      barData: {}
+      barData: {},
+      styles: {
+        // 侧边栏样式
+        height: "calc(100% - 55px)",
+        overflow: "auto",
+        paddingBottom: "53px",
+        position: "static"
+      }
     };
   },
   methods: {
-    countySubmit() {},
+    countyChange(value) {
+      this.countyEchartsShow = false;
+      if (value === "排序") {
+        this.countyLoading = true;
+      } else {
+        this.barData = this.sortObj(this.barData);
+        this.countyEchartsShow = true;
+        this.countyLoading = false;
+      }
+    },
+    sortObj(obj) {
+      var arr = [];
+      for (var i in obj) {
+        arr.push([obj[i], i]);
+      }
+      console.log(arr);
+      arr.reverse();
+      var len = arr.length;
+      let Valobj = {};
+      for (let i = 0; i < len; i++) {
+        Valobj[arr[i][1]] = arr[i][0];
+      }
+      return Valobj;
+    },
+    watchNews(item) {
+      this.showNews = true;
+      this.newsItem = item;
+    },
+    countySubmit() {
+      this.countyLoading = true;
+      this.countyBtnLoading = true;
+      this.countyEchartsShow = false;
+      if (this.countySelectVal.dateTime === "") {
+        var time = this.counDateDefault.split("-");
+        this.countySelectVal.dateTime = time[0];
+        this.countySelectVal.monthTime = time[1];
+      }
+      this._getHomeData(this.countySelectVal, COUNTY_URL).then(result => {
+        this.countyLoading = false;
+        this.countyBtnLoading = false;
+        // 如果有数据显示
+        if (result.list.length) {
+          result.list.forEach(item => {
+            this.barData[item.townName] = item.score;
+          });
+          this.countyEchartsName = result.list[0].indexName;
+          this.counDateDefault =
+            result.list[0].dateTime + "-" + result.list[0].monthTime;
+          // 没有数据的默认为0
+        } else {
+          this.countyEchartsName = "暂无数据";
+          this.barData = {
+            葛岭镇: "0",
+            城峰镇: "0",
+            嵩口镇: 0,
+            清凉镇: 0,
+            梧桐镇: 0,
+            樟城镇: 0,
+            长庆镇: 0,
+            同安镇: 0,
+            大洋镇: 0,
+            塘前乡: 0,
+            富泉乡: 0,
+            岭路乡: 0,
+            赤锡乡: 0,
+            洑口乡: 0,
+            盖洋乡: 0,
+            东洋乡: 0,
+            霞拔乡: 0,
+            盘谷乡: 0,
+            红星乡: 0,
+            白云乡: 0,
+            丹云乡: 0
+          };
+        }
+        this.countyEchartsShow = true;
+      });
+    },
     countyDate(date) {
       var time = date.split("-");
       this.countySelectVal.dateTime = time[0];
       this.countySelectVal.monthTime = time[1];
+      this.selectIndexType = [];
+      this.countyIndex = [];
+      this._getHomeData(this.countySelectVal, COUNTY_URL).then(result => {
+        var indexList = result.indexMap;
+        if (indexList.length) {
+          indexList.forEach(list => {
+            let children = [];
+            if (list.secondIndex !== undefined) {
+              list.secondIndex.forEach(item => {
+                let listChild = Object.assign(
+                  {},
+                  {
+                    label: item.indexName,
+                    value: item.indexName
+                  }
+                );
+                children.push(listChild);
+              });
+            }
+            let data = Object.assign(
+              {},
+              {
+                label: list.firstName.indexName,
+                value: list.firstName.id,
+                children
+              }
+            );
+            this.selectIndexType.push(data);
+          });
+        } else {
+          this.selectIndexType.push({
+            label: "暂无数据",
+            value: "暂无数据"
+          });
+        }
+      });
     },
     countySelectIndex(value) {
       if (value[1] !== undefined) {
@@ -629,12 +791,95 @@ export default {
       }
     },
     sixSubmit() {
-      console.log(this.sixSelectVal);
+      this.sixLoading = true;
+      this.sixBtnLoading = true;
+      this.sixEchartsShow = false;
+      if (this.sixSelectVal.dateTime === "") {
+        var time = this.sixDateDefault.split("-");
+        this.sixSelectVal.dateTime = time[0];
+        this.sixSelectVal.monthTime = time[1];
+      }
+      this._getHomeData(this.sixSelectVal, XIS_URL).then(result => {
+        this.sixLoading = false;
+        this.sixBtnLoading = false;
+        // 如果有数据显示
+        if (result.list.length) {
+          result.list.forEach(item => {
+            this.lineData[item.townName] = item.score;
+          });
+          this.xisEchartsName = result.list[0].indexName;
+          this.sixDateDefault =
+            result.list[0].dateTime + "-" + result.list[0].monthTime;
+          // 没有数据的默认为0
+        } else {
+          this.xisEchartsName = "暂无数据";
+          this.lineData = {
+            葛岭镇: 0,
+            城峰镇: 0,
+            嵩口镇: 0,
+            清凉镇: 0,
+            梧桐镇: 0,
+            樟城镇: 0,
+            长庆镇: 0,
+            同安镇: 0,
+            大洋镇: 0,
+            塘前乡: 0,
+            富泉乡: 0,
+            岭路乡: 0,
+            赤锡乡: 0,
+            洑口乡: 0,
+            盖洋乡: 0,
+            东洋乡: 0,
+            霞拔乡: 0,
+            盘谷乡: 0,
+            红星乡: 0,
+            白云乡: 0,
+            丹云乡: 0
+          };
+        }
+        this.sixEchartsShow = true;
+      });
     },
     sixDate(date) {
       var time = date.split("-");
       this.sixSelectVal.dateTime = time[0];
       this.sixSelectVal.monthTime = time[1];
+      this.xisIndex = []; // 六抓六赛已选择指标
+      this.xisSelectType = []; // 六抓六赛 选择指标
+      this._getHomeData(this.sixSelectVal, XIS_URL).then(result => {
+        var indexList = result.indexMap;
+        if (indexList.length) {
+          indexList.forEach(list => {
+            let children = [];
+            if (list.secondIndex !== undefined) {
+              list.secondIndex.forEach(item => {
+                let listChild = Object.assign(
+                  {},
+                  {
+                    label: item.indexName,
+                    value: item.indexName
+                  }
+                );
+                children.push(listChild);
+              });
+            }
+            let data = Object.assign(
+              {},
+              {
+                label: list.firstName.indexName,
+                value: list.firstName.id,
+                children
+              }
+            );
+            this.xisSelectType.push(data);
+          });
+        } else {
+          this.xisSelectType.push({
+            label: "暂无数据",
+            value: "暂无数据"
+          });
+        }
+      });
     },
     // 六赛指标选择
     sixSelectIndex(value) {
@@ -661,7 +906,8 @@ export default {
         result.list.forEach(item => {
           this.incentiveEchartsData[item.monthTime + "月"] = item.point || 0;
         });
-        this.incentiveTotalCount = parseInt(result.point) || 0;
+        this.incentiveTotalCount =
+          result.point === null ? 0 : parseInt(result.point);
         this.incentiveEchartsData = Object.assign(
           this.incentiveEchartsData,
           {}
@@ -733,26 +979,33 @@ export default {
     this._getHomeData(this.citySelectVal, CITY_URL).then(result => {
       this.cityBtnLoading = false;
       this.cityLoading = false;
-      result.forEach(item => {
-        this.cityEchartsData["name"].push(item.indexName);
-        this.cityEchartsData["score"].push(item.finalScore);
-        this.cityEchartsData["rank"].push(item.alternateField1);
-      });
+      if (result) {
+        result.forEach(item => {
+          this.cityEchartsData["name"].push(item.indexName);
+          this.cityEchartsData["score"].push(item.finalScore);
+          this.cityEchartsData["rank"].push(item.alternateField1);
+        });
+      } else {
+        this.cityEchartsData = {
+          name: ["暂无数据"],
+          score: [0],
+          rank: [0]
+        };
+      }
     });
     this._getHomeData(this.incentiveData, INCENTIVE_URL).then(result => {
       result.list.forEach(item => {
         this.incentiveEchartsData[item.monthTime + "月"] = item.point;
       });
-      this.incentiveTotalCount = parseInt(result.point);
+      this.incentiveTotalCount =
+        result.point === null ? 0 : parseInt(result.point);
       this.incentiveEchartsData = Object.assign(this.incentiveEchartsData, {});
     });
     this._getHomeData(this.incentiveData, WORL_URL).then(result => {
       if (result.length) {
-        console.log(result, 111);
         result.forEach((item, index) => {
           if (index === 0) {
             this.maxScore = item.finalScore;
-            console.log(this.maxScore);
           }
           // 测评对象 条形颜色
           var color = [
@@ -777,36 +1030,185 @@ export default {
       }
     });
     this._getHomeData(this.countySelectVal, COUNTY_URL).then(result => {
+      this.countyLoading = false;
       var indexList = result.indexMap;
-      indexList.forEach(list => {
-        let children = [];
-        if (list.secondIndex !== undefined) {
-          list.secondIndex.forEach(item => {
-            let listChild = Object.assign(
-              {},
-              {
-                label: item.indexName,
-                value: item.indexName
-              }
-            );
-            children.push(listChild);
-          });
-        }
-        let data = Object.assign(
-          {},
-          {
-            label: list.firstName.indexName,
-            value: list.firstName.id,
-            children
+      if (indexList.length) {
+        indexList.forEach(list => {
+          let children = [];
+          if (list.secondIndex !== undefined) {
+            list.secondIndex.forEach(item => {
+              let listChild = Object.assign(
+                {},
+                {
+                  label: item.indexName,
+                  value: item.indexName
+                }
+              );
+              children.push(listChild);
+            });
           }
-        );
-        this.selectIndexType.push(data);
-      });
-      result.list.forEach(item => {
-        this.barData[item.townName] = item.score;
-      });
-      console.log(this.barData, 123);
+          let data = Object.assign(
+            {},
+            {
+              label: list.firstName.indexName,
+              value: list.firstName.id,
+              children
+            }
+          );
+          this.selectIndexType.push(data);
+        });
+      } else {
+        this.selectIndexType.push({
+          value: "暂无数据",
+          label: "暂无数据"
+        });
+      }
+      // 如果有数据显示
+      if (result.list.length) {
+        result.list.forEach(item => {
+          this.barData[item.townName] = item.score;
+        });
+        this.countyEchartsName = result.list[0].indexName;
+        this.counDateDefault =
+          result.list[0].dateTime + "-" + result.list[0].monthTime;
+        // 没有数据的默认为0
+      } else {
+        this.countyEchartsName = "暂无数据";
+        this.barData = {
+          葛岭镇: 0,
+          城峰镇: 0,
+          嵩口镇: 0,
+          清凉镇: 0,
+          梧桐镇: 0,
+          樟城镇: 0,
+          长庆镇: 0,
+          同安镇: 0,
+          大洋镇: 0,
+          塘前乡: 0,
+          富泉乡: 0,
+          岭路乡: 0,
+          赤锡乡: 0,
+          洑口乡: 0,
+          盖洋乡: 0,
+          东洋乡: 0,
+          霞拔乡: 0,
+          盘谷乡: 0,
+          红星乡: 0,
+          白云乡: 0,
+          丹云乡: 0
+        };
+      }
+      this.countyEchartsShow = true;
     });
+    // 六抓六赛
+    this._getHomeData(this.sixSelectVal, XIS_URL).then(result => {
+      var indexList = result.indexMap;
+      if (indexList.length) {
+        indexList.forEach(list => {
+          let children = [];
+          if (list.secondIndex !== undefined) {
+            list.secondIndex.forEach(item => {
+              let listChild = Object.assign(
+                {},
+                {
+                  label: item.indexName,
+                  value: item.indexName
+                }
+              );
+              children.push(listChild);
+            });
+          }
+          let data = Object.assign(
+            {},
+            {
+              label: list.firstName.indexName,
+              value: list.firstName.id,
+              children
+            }
+          );
+          this.xisSelectType.push(data);
+        });
+      } else {
+        this.xisSelectType.push({
+          value: "暂无数据",
+          label: "暂无数据"
+        });
+      }
+      // 如果有数据显示
+      if (result.list.length) {
+        result.list.forEach(item => {
+          this.lineData[item.townName] = item.score;
+        });
+        this.xisEchartsName = result.list[0].indexName;
+        this.sixDateDefault =
+          result.list[0].dateTime + "-" + result.list[0].monthTime;
+        // 没有数据的默认为0
+      } else {
+        this.xisEchartsName = "暂无数据";
+        this.lineData = {
+          葛岭镇: 0,
+          城峰镇: 0,
+          嵩口镇: 0,
+          清凉镇: 0,
+          梧桐镇: 0,
+          樟城镇: 0,
+          长庆镇: 0,
+          同安镇: 0,
+          大洋镇: 0,
+          塘前乡: 0,
+          富泉乡: 0,
+          岭路乡: 0,
+          赤锡乡: 0,
+          洑口乡: 0,
+          盖洋乡: 0,
+          东洋乡: 0,
+          霞拔乡: 0,
+          盘谷乡: 0,
+          红星乡: 0,
+          白云乡: 0,
+          丹云乡: 0
+        };
+      }
+      this.sixEchartsShow = true;
+    });
+    // 工作督查表格
+    var formData = {};
+    this._getHomeData(formData, WORK_URL).then(result => {
+      if (result) {
+        this.data1 = result;
+      } else {
+        this.data1 = [];
+      }
+    });
+    this._getHomeData(formData, TOP_URL).then(result => {
+      console.log(result);
+      this.inforCardData = [
+        {
+          count: result.countryScore,
+          color: "#9CCC65"
+        },
+        { count: result.incentive, color: "#4DD0E1" },
+        {
+          cityCount:
+            result.check[0].point === null
+              ? 0
+              : parseInt(result.check[0].point),
+          countyCount:
+            result.check[1].point === null
+              ? 0
+              : parseInt(result.check[1].point),
+          color: "#FFCA28"
+        },
+        { count: result.work, color: "#FF8A65" },
+        {
+          count: result.measurement === null ? 0 : result.measurement.finalScore
+        }
+      ];
+    });
+    this._getHomeData(formData, LOOP_URL).then(result => {
+      this.newsLoopData = result;
+    });
+    this.host = HOST;
   },
   watch: {
     selectIndexType: {
@@ -816,17 +1218,6 @@ export default {
       deep: true
     }
   }
-  // computed: {
-  //   access () {
-  //     return this.$store.state.user.access;
-  //   },
-  //   viewAccessAll () {
-  //     return hasOneOf(['super_admin', 'admin'], this.access);
-  //   },
-  //   viewAccessSuper () {
-  //     return hasOneOf(['sssssss'], this.access);
-  //   }
-  // }
 };
 </script>
 
@@ -909,5 +1300,18 @@ export default {
   top: 10px;
   right: 40px;
   z-index: 100;
+}
+.demo-carousel {
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: rgb(255, 105, 117);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

@@ -19,9 +19,13 @@ export default {
     department: '',
     role: '',
     emailWarning: '',
-    departmentList: []
+    departmentList: [],
+    warnIndex: []
   },
   mutations: {
+    setwarnIndex(state, warnIndex) {
+      state.warnIndex = warnIndex
+    },
     setDepartmentList(state, departmentList) {
       state.departmentList = departmentList
     },
@@ -110,7 +114,9 @@ export default {
         try {
           getUserInfo(state.token).then(res => {
             const data = res.data.results
+            console.log(data)
             // commit('setAvator', data.avator)
+            commit('setwarnIndex', data.warn)
             commit('setUserName', data.name)
             commit('setUserId', data.user_id)
             commit('setAccess', data.access)

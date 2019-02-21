@@ -18,7 +18,8 @@ function homeData(formData, keyOne) {
   data[keyOne] = {
     dateTime: formData.dateTime,
     monthTime: formData.monthTime,
-    value: formData.value
+    value: formData.value,
+    indexName: formData.indexName
   }
   return data
 }

@@ -249,7 +249,6 @@ export default {
                   this.pageNumber
                 );
               } else {
-                console.log(result);
                 this.$Message.error(result.message);
               }
             });
@@ -347,7 +346,6 @@ export default {
   },
   mounted() {},
   created() {
-    console.log(this.getDepartment);
     this._getUserData(
       this.searchData,
       QUERY_URL,

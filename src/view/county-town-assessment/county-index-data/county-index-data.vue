@@ -132,6 +132,18 @@
         </div>
       </Card>
     </Row>
+    <Row style="margin-top:20px">
+      <Card>
+        <Upload
+          :on-success="handleSuccess"
+          :format="['xls','xlsx']"
+          :on-format-error="handleFormatError"
+          action="/api/townScore/importTownScore"
+        >
+          <Button icon="ios-cloud-upload-outline">上传分数</Button>
+        </Upload>
+      </Card>
+    </Row>
     <Drawer
       title="各乡镇数据"
       :mask-closable="false"
@@ -170,7 +182,7 @@
           </Col>
         </Row>
         <Row :gutter="24">
-          <Col span="3" v-for="(item,index) in countyList" :key="index">
+          <Col span="3" v-for="(item,index) in countyList" :key="index" v-if="item.weight !==null">
             <Card style="width:100%">
               <div class="title" style="text-align: center;margin-bottom:10px;">{{index}}</div>
               <div class="content">
@@ -217,7 +229,7 @@
                     <FormItem>
                       <Button type="warning" style="width:100%">排名</Button>
                       <InputNumber
-                        :disabled="isScoreDisabled || countyList[index].weight===null"
+                        :disabled="true"
                         style="width:100%"
                         :max="100"
                         :min="0"
@@ -418,7 +430,7 @@ export default {
           {
             required: true,
             message: "请输入时间",
-            trigger: "change"
+            trigger: "blur"
           }
         ]
       },
@@ -868,6 +880,27 @@ export default {
     };
   },
   methods: {
+    // 验证上传格式
+    handleFormatError(file) {
+      this.$Notice.warning({
+        title: "文件格式错误",
+        desc: "文件" + file.name + " 格式错误, 请选择xls或者xlsx"
+      });
+    },
+
+    handleSuccess(res, file) {
+      if (res.code === "200") {
+        this.$Notice.success({
+          title: res.message,
+          desc: res.results
+        });
+      } else {
+        this.$Notice.error({
+          title: res.message,
+          desc: res.results
+        });
+      }
+    },
     // 关闭侧边栏
     closeDrawerShow() {
       this.isDrawerShow = false;
@@ -882,6 +915,7 @@ export default {
           if (this.selectTime !== "") {
             // 组成后台处理格式
             for (const item in this.countyList) {
+              console.log(this.countyList[item]);
               var countyObj = Object.assign(
                 {},
                 {
@@ -889,12 +923,18 @@ export default {
                   townName: item,
                   monthTime: this.formData.monthTime,
                   score: this.countyList[item].score,
-                  rank: this.countyList[item].rank
+                  rank: this.countyList[item].rank,
+                  weight:
+                    this.countyList[item].weight === null
+                      ? "0"
+                      : this.countyList[item].weight
                 }
               );
               setCountyListScore["list"].push(countyObj);
+              this.formData = Object.assign(this.formData, setCountyListScore);
             }
-            this._setCountyScore(setCountyListScore).then(res => {
+
+            this._setCountyScore(this.formData).then(res => {
               if (res.code === "200") {
                 this.$Message.success("操作成功");
                 this.isScoreSubmitLoading = false;
@@ -936,7 +976,6 @@ export default {
           this.formData = res.results.list[0];
           this.countyList = this.formData.townList;
           this.spinShow = false;
-          console.log(this.formData.audit !== "0");
           if (this.formData.audit !== "1" && this.formData.audit !== "2") {
             this.isScoreDisabled = false;
             if (this.formData.audit === "3") {
@@ -982,11 +1021,9 @@ export default {
       this.submitloading = true;
       this.isTabelAllLoading = true;
       this.isTabelInedxLoading = true;
-      console.log(this.searchData.showDefault.length);
       if (!this.searchData.showDefault.length) {
         this.searchData.showDefault = ["showAll", "0"];
         this.searchData.showType = "showAll";
-        this.searchData.scoreType = "0";
       }
       this._getCountyList(this.searchData, pageNumber, pageSize)
         .then(result => {
@@ -1008,7 +1045,7 @@ export default {
               }
             }
           } else {
-            console.log(1111);
+            this.$Message.error("请刷新页面后重试");
           }
         })
         .catch(err => {
@@ -1092,8 +1129,9 @@ export default {
     // 添加分数
     _setCountyScore(formData) {
       const url = "/townScore/setScore";
+      const keyOne = "townIndicatorsFilter";
       return new Promise((resolve, reject) => {
-        countyAjax({ formData, url }).then(res => {
+        countyAjax({ formData, url, keyOne }).then(res => {
           if (res.data !== undefined) {
             resolve(res.data);
           } else {

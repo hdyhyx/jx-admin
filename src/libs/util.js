@@ -59,7 +59,8 @@ export const getMenuByRouter = (list, access) => {
  * @returns {Array}
  */
 export const getBreadCrumbList = (route, homeRoute) => {
-  let homeItem = { ...homeRoute,
+  let homeItem = {
+    ...homeRoute,
     icon: homeRoute.meta.icon
   }
   let routeMetched = route.matched
@@ -67,7 +68,8 @@ export const getBreadCrumbList = (route, homeRoute) => {
   let res = routeMetched.filter(item => {
     return item.meta === undefined || !item.meta.hide
   }).map(item => {
-    let meta = { ...item.meta
+    let meta = {
+      ...item.meta
     }
     if (meta.title && typeof meta.title === 'function') meta.title = meta.title(route)
     let obj = {
@@ -80,15 +82,18 @@ export const getBreadCrumbList = (route, homeRoute) => {
   res = res.filter(item => {
     return !item.meta.hideInMenu
   })
-  return [{ ...homeItem,
+  return [{
+    ...homeItem,
     to: homeRoute.path
   }, ...res]
 }
 
 export const getRouteTitleHandled = route => {
-  let router = { ...route
+  let router = {
+    ...route
   }
-  let meta = { ...route.meta
+  let meta = {
+    ...route.meta
   }
   if (meta.title && typeof meta.title === 'function') meta.title = meta.title(router)
   router.meta = meta

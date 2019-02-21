@@ -180,7 +180,7 @@ export default {
           }
         },
         {
-          title: "正名材料",
+          title: "证明材料",
           key: "fileName"
         },
         {

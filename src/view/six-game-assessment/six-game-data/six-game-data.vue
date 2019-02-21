@@ -132,6 +132,18 @@
         </div>
       </Card>
     </Row>
+    <Row style="margin-top:20px">
+      <Card>
+        <Upload
+          :on-success="handleSuccess"
+          :format="['xls','xlsx']"
+          :on-format-error="handleFormatError"
+          action="/api/sixScore/importSixScore"
+        >
+          <Button icon="ios-cloud-upload-outline">上传分数</Button>
+        </Upload>
+      </Card>
+    </Row>
     <Drawer
       title="各乡镇数据"
       :mask-closable="false"
@@ -217,7 +229,7 @@
                     <FormItem>
                       <Button type="warning" style="width:100%">排名</Button>
                       <InputNumber
-                        :disabled="isScoreDisabled || countyList[index].weight===null"
+                        :disabled="true"
                         style="width:100%"
                         :max="100"
                         :min="0"
@@ -418,7 +430,7 @@ export default {
           {
             required: true,
             message: "请输入时间",
-            trigger: "change"
+            trigger: "blur"
           }
         ]
       },
@@ -873,6 +885,27 @@ export default {
     };
   },
   methods: {
+    // 验证上传格式
+    handleFormatError(file) {
+      this.$Notice.warning({
+        title: "文件格式错误",
+        desc: "文件" + file.name + " 格式错误, 请选择xls或者xlsx"
+      });
+    },
+
+    handleSuccess(res, file) {
+      if (res.code === "200") {
+        this.$Notice.success({
+          title: res.message,
+          desc: res.results
+        });
+      } else {
+        this.$Notice.error({
+          title: res.message,
+          desc: res.results
+        });
+      }
+    },
     // 关闭侧边栏
     closeDrawerShow() {
       this.isDrawerShow = false;
@@ -941,7 +974,6 @@ export default {
           this.formData = res.results.list[0];
           this.countyList = this.formData.townList;
           this.spinShow = false;
-          console.log(this.formData.audit !== "0");
           if (this.formData.audit !== "1" && this.formData.audit !== "2") {
             this.isScoreDisabled = false;
             if (this.formData.audit === "3") {
@@ -987,7 +1019,6 @@ export default {
       this.submitloading = true;
       this.isTabelAllLoading = true;
       this.isTabelInedxLoading = true;
-      console.log(this.searchData.showDefault.length);
       if (!this.searchData.showDefault.length) {
         this.searchData.showDefault = ["showAll", "0"];
         this.searchData.showType = "showAll";

@@ -18,6 +18,7 @@ function investigateData(formData, keyOne) {
   }
   data[keyOne] = {
     id: formData.id,
+    type: formData.type, // 察访核验对象
     title: formData.title, // 标题
     content: formData.content, // 具体内容
     endTime: formData.endTime, // 截止日期

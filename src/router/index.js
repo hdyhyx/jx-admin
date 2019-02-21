@@ -30,7 +30,6 @@ const turnTo = (to, access, next) => {
 }
 
 router.beforeEach((to, from, next) => {
-  console.log(to)
   iView.LoadingBar.start()
   const token = getToken()
   if (to.name === 'questionnaire') {

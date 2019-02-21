@@ -117,6 +117,9 @@ export default {
     },
     emailWarning() {
       return this.$store.state.user.emailWarning;
+    },
+    getwarnIndex() {
+      return this.$store.state.user.warnIndex;
     }
   },
   methods: {
@@ -188,11 +191,22 @@ export default {
         name: this.$config.homeName
       });
     }
+    // 邮箱提示
     if (this.emailWarning) {
       this.$Notice.warning({
         title: "邮件未读",
         desc: "绩效管理察访核验工作中已收到邮件尚未读取",
         duration: 0
+      });
+    }
+    // 预警指标
+    if (this.getwarnIndex) {
+      this.getwarnIndex.forEach(item => {
+        this.$Notice.warning({
+          title: "指标预警",
+          desc: item.message,
+          duration: 0
+        });
       });
     }
   }

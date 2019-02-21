@@ -2,13 +2,19 @@
   <div>
     <Row>
       <Card>
-        <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
+        <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="100">
           <FormItem label="标题" prop="title">
             <Input v-model="formValidate.title" placeholder="请输入标题"></Input>
           </FormItem>
           <FormItem label="收件人" prop="addressee" style="width:300px">
             <Select placeholder="请输入收件单位" v-model="formValidate.addressee" style="width: auto">
               <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+            </Select>
+          </FormItem>
+          <FormItem label="察访核验对象" prop="type" style="width:300px">
+            <Select placeholder="选择察访核验对象" v-model="formValidate.type" style="width: auto">
+              <Option value="0">对全县察访核验</Option>
+              <Option value="1">对单位或乡镇察访核验</Option>
             </Select>
           </FormItem>
           <FormItem label="截止日期" prop="endTime">
@@ -29,7 +35,7 @@
               :on-format-error="handleFormatError"
               :on-exceeded-size="handleMaxSize"
               :on-success="handleSuccess"
-              action="upload/fileUpload"
+              action="/upload/fileUpload"
             >
               <Button
                 :disabled="file !==null"
@@ -72,6 +78,7 @@ export default {
       submitLoading: false,
       formValidate: {
         title: "", // 标题
+        type: "",
         addressee: "", // 收件人
         content: "", // 内容
         endTime: "" // 截止日期
@@ -89,6 +96,13 @@ export default {
             required: true,
             message: "请输入收件人",
             trigger: "blur"
+          }
+        ],
+        type: [
+          {
+            required: true,
+            message: "请输入察访核验对象",
+            trigger: "change"
           }
         ],
         endTime: [

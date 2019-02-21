@@ -97,7 +97,7 @@
           :on-success="handleSuccess"
           :format="['xls','xlsx']"
           :on-format-error="handleFormatError"
-          action="/api/workSupervision/importData"
+          action="/workSupervision/importData"
         >
           <Button icon="ios-cloud-upload-outline">上传指标</Button>
         </Upload>
@@ -113,7 +113,9 @@
           <Input v-model="workForm.cityResponUnit" placeholder="请输入市考核责任单位" style="width:300px"></Input>
         </FormItem>
         <FormItem label="市考核牵头单位" prop="leadUnit">
-          <Input v-model="workForm.leadUnit" placeholder="请输入市考核责任单位" style="width:300px"></Input>
+          <Select clearable placeholder="请输入牵头单位" v-model="workForm.leadUnit" style="width:300px">
+            <Option v-for="item in getDepartmentList" :value="item" :key="item">{{ item }}</Option>
+          </Select>
         </FormItem>
         <FormItem label="考核配合单位">
           <Input v-model="workForm.cooperateUnit" placeholder="请输入考核配合单位" style="width:300px"></Input>
@@ -266,6 +268,9 @@ export default {
                     click: () => {
                       this.modalTitle = UPDATE_TITLE;
                       // 表格数据 进行深拷贝
+                      params.row = Object.assign(params.row, {
+                        maxPoint: parseInt(params.row.maxPoint)
+                      });
                       this.workForm = JSON.parse(JSON.stringify(params.row));
                       this.isInsertModal = true;
                     }

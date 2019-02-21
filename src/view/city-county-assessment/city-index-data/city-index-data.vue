@@ -10,7 +10,12 @@
           <Row>
             <i-col :xs="24" :md="12" :lg="6">
               <FormItem label="指标搜索" prop="superiorIndexId">
-                <Cascader :data="selectIndexType" change-on-select @on-change="selectIndex"></Cascader>
+                <Cascader
+                  :data="selectIndexType"
+                  v-model="searchData.indexSeachVal"
+                  change-on-select
+                  @on-change="selectIndex"
+                ></Cascader>
               </FormItem>
             </i-col>
             <i-col :xs="24" :md="12" :lg="6">
@@ -56,6 +61,7 @@
                 <DatePicker
                   type="year"
                   format="yyyy"
+                  v-model="searchData.dateTime"
                   @on-change="handlerFormat"
                   placeholder="请选择指标年份"
                   style="width:185px"
@@ -231,6 +237,7 @@ export default {
       pageCurrent: 1, // 当前页
       selectTime: "", // form表单里月份选择器
       searchData: {
+        indexSeachVal: [],
         superiorIndexId: "", // 一级指标
         leadUnit: "", // 牵头单位
         indexName: "", // 二级指标
@@ -306,8 +313,8 @@ export default {
         },
         {
           title: "得分",
-          minWidth: 60,
-          maxWidth: 60,
+          minWidth: 70,
+          maxWidth: 70,
           key: "finalScore"
         },
         {
@@ -505,6 +512,7 @@ export default {
           // Loading
           this.ModalLoading = true;
           this._addCityIndex(this.formCityData).then(result => {
+            console.log(result);
             if (result.data.code === "200") {
               this.ModalLoading = false;
               this.indexModal = false;
@@ -538,8 +546,11 @@ export default {
     },
     // 提交搜索  pagesize显示条数  pageNumber页码
     seachSubmit(pageSize, pageNumber) {
-      console.log(this.searchData);
       this.tableLoading = true;
+      this.searchData = Object.assign(this.searchData, {
+        leadUnit: [this.searchData.leadUnit],
+        responsibilityUnit: [this.searchData.responsibilityUnit]
+      });
       this._getCityList(this.searchData, pageSize, pageNumber)
         .then(result => {
           this.pageTotal = parseInt(result.results.pageTotal) * 10;
@@ -559,7 +570,9 @@ export default {
         indexName: "", // 二级指标
         responsibilityUnit: "", // 责任单位
         audit: "", // 审核状态
-        direction: ""
+        direction: "",
+        dateTime: "",
+        indexSeachVal: []
       };
     },
     // 获取city指标

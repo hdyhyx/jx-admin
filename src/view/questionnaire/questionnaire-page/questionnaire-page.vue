@@ -350,7 +350,6 @@ export default {
           }
           answerAjax({ formData, url, keyOne, keyTwo, keyThree }).then(
             result => {
-              console.log(result);
               if (result.data.code === "200") {
                 this.$Message.success("操作成功");
                 this.$router.push({

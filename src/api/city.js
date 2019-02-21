@@ -17,6 +17,15 @@ const HOST = URL
  * @returns
  * 用于市对乡镇指标管理
  */
+function chekName(params) {
+  console.log(params)
+  if (typeof params === "string") {
+    return params
+  } else {
+    return params.join(',')
+  }
+}
+
 function citylData(formData, KEY_1) {
   let data = {}
   data['tokenEntity'] = {
@@ -28,12 +37,12 @@ function citylData(formData, KEY_1) {
       indexName: formData.indexName === undefined ? '' : formData.indexName, // 指标名称
       indexType: formData.indexType === undefined ? '' : formData.indexType, // 指标类型
       superiorIndexId: formData.superiorIndexId === undefined ? '' : formData.superiorIndexId, // 上级单位
-      leadUnit: formData.leadUnit === undefined ? '' : formData.leadUnit, // 牵头单位
-      responsibilityUnit: formData.responsibilityUnit === undefined ? '' : formData.responsibilityUnit, // 责任单位
+      leadUnit: formData.leadUnit === undefined ? '' : chekName(formData.leadUnit), // 牵头单位
+      responsibilityUnit: formData.responsibilityUnit === undefined ? '' : chekName(formData.responsibilityUnit), // 责任单位
       standardValue: formData.standardValue, // 标准值
       direction: formData.direction, // 方向
       weight: formData.weight, // 权重
-      dateTime: formData.year, // 指标年份
+      dateTime: formData.dateTime, // 指标年份
       mainUnit: formData.mainUnit === undefined ? '' : formData.mainUnit, // 主要牵头单位
       monthTime: formData.monthTime === undefined ? '' : formData.monthTime, // 月份
       audit: formData.audit === undefined ? '' : formData.audit, // 审核状态
@@ -42,14 +51,13 @@ function citylData(formData, KEY_1) {
       pageSize: formData.pageSize === undefined ? '' : formData.pageSize, // 页数
       pageNumber: formData.pageNumber === undefined ? '' : formData.pageNumber, // 页码
       indicatorsId: formData.id === undefined ? '' : formData.id, // 对应指标ID
-      alternateField1: formData.alternateField1 === undefined ? '' : formData.alternateField1,
+      alternateField1: formData.alternateField1 === undefined ? '' : formData.alternateField1, // 排名
       reason: formData.reason === undefined ? '' : formData.reason, // 回退原因
       alternateField2: formData.alternateField2 === undefined ? '' : formData.alternateField2 // 考核数据月份提交Id 根据后台要求
     }
   } else {
     data['list'] = formData['list'] // excle 导入 穿给后台为LIST
   }
-  console.log(data);
   return data
 }
 /**
@@ -174,6 +182,24 @@ function countyData(formData, KEY_1, KEY_2) {
       ]
     }
   } else {
+    data[KEY_1] = {
+      id: formData.id === undefined ? '' : formData.id, // id
+      indexName: formData.indexName, // 指标名称
+      indexType: formData.indexType, // 指标类型
+      leadUnit: formData.leadUnit, // 牵头单位
+      superiorIndexId: formData.superiorIndexId, // 上级单位
+      responsibilityUnit: formData.responsibilityUnit, // 责任单位
+      score: formData.score, // 分数
+      weight: formData.weight, // 招权重
+      pageSize: formData.pageSize, // 显示页数
+      pageNumber: formData.pageNumber, // 页码
+      mainUnit: formData.mainUnit === undefined ? '' : formData.mainUnit, // 主要牵头单位
+      audit: formData.audit === undefined ? '' : formData.audit, // 审核状态
+      monthTime: formData.monthTime === undefined ? '' : formData.monthTime, // 月份
+      dateTime: formData.dateTime, // 指标年份
+      scoreType: formData.scoreType === undefined ? '' : formData.scoreType, // 分数类型
+      reason: formData.reason === undefined ? '' : formData.reason // 回退原因
+    }
     data['list'] = formData['list']
   }
   console.log(data);

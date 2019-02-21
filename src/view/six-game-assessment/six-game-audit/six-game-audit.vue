@@ -1015,7 +1015,6 @@ export default {
       this.searchLoading = true;
       this.isTabelAllLoading = true;
       this.isTabelInedxLoading = true;
-      console.log(this.searchData.showDefault.length);
       if (!this.searchData.showDefault.length) {
         this.searchData.showDefault = ["showAll", "0"];
         this.searchData.showType = "showAll";
