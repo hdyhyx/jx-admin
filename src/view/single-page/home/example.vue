@@ -33,8 +33,12 @@ export default {
     }
   },
   mounted() {
-    let xAxisData = Object.keys(this.data);
-    let seriesData = Object.values(this.data);
+    var xAxisData = [];
+    var seriesData = [];
+    for (let i = 0; i < this.data.length; i++) {
+      xAxisData.push(this.data[i].name);
+      seriesData.push(this.data[i].score);
+    }
     const option = {
       title: {
         text: this.title,

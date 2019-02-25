@@ -303,7 +303,7 @@ export default {
       pageSize: 10, // 页数
       pageNumber: 1, // 页码
       pieData: [], // 饼图数据
-      lineData: {}, // 折线图数据
+      lineData: [], // 折线图数据
       searchLoading: false, // 搜索Loading
       submitLoading: false, // 提交Loading
       tabelLoading: true, // 表格Loading
@@ -802,10 +802,16 @@ export default {
             pie.push(obj);
           });
           result.results.monthType.forEach(item => {
-            this.lineData[item.monthTime + "月"] = item.num;
+            var lineObj = Object.assign(
+              {},
+              {
+                name: item.monthTime + "月",
+                score: item.num
+              }
+            );
+            this.lineData.push(lineObj);
           });
           this.isEample = true;
-          console.log(this.lineData);
           this.pieData = pie;
           this.isPieLoading = false;
         }

@@ -10,7 +10,7 @@ echarts.registerTheme("tdTheme", tdTheme);
 export default {
   name: "ChartBar",
   props: {
-    value: Object,
+    value: Array,
     text: String,
     subtext: String
   },
@@ -26,8 +26,12 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      let xAxisData = Object.keys(this.value);
-      let seriesData = Object.values(this.value);
+      var xAxisData = [];
+      var seriesData = [];
+      for (let i = 0; i < this.value.length; i++) {
+        xAxisData.push(this.value[i].name);
+        seriesData.push(this.value[i].score);
+      }
       let option = {
         tooltip: {
           trigger: "axis",

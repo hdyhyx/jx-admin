@@ -1126,8 +1126,9 @@ export default {
     // 添加分数
     _setCountyScore(formData) {
       const url = "/sixScore/setScore";
+      const keyOne = "sixIndicatorsFilter";
       return new Promise((resolve, reject) => {
-        countyAjax({ formData, url }).then(res => {
+        countyAjax({ formData, url, keyOne }).then(res => {
           if (res.data !== undefined) {
             resolve(res.data);
           } else {

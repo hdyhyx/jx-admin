@@ -171,7 +171,7 @@
             </Col>
             <Col :span="4">
               <Button
-                :loading="incentiveLoaidng"
+                :loading="incentiveSubmitLoaidng"
                 @click="incentiveSubmit"
                 type="success"
                 style="width:70px;"
@@ -180,13 +180,13 @@
           </Row>
           <!-- 判断对象里是不是有02月份那个值 -->
           <example
-            v-if="incentiveEchartsData['02月']"
+            v-if="incentiveEchartsShow"
             :yName="'分'"
             :data="incentiveEchartsData"
             style="height:360px;"
           />
         </Card>
-        <Spin size="large" fix v-if="!incentiveEchartsData['02月']"></Spin>
+        <Spin size="large" fix v-if="incentiveLoading"></Spin>
       </i-col>
     </Row>
     <!-- 福州市对永泰县绩效考核指标 -->
@@ -199,7 +199,7 @@
           <i-col :md="12" :lg="12" style="float:left"></i-col>
         </Row>
         <Row class="city-select">
-          <Col :span="13">
+          <Col :span="18">
             <span>选择时间：</span>
             <DatePicker
               @on-change="cityDate"
@@ -209,23 +209,17 @@
             ></DatePicker>
           </Col>
           <Col :span="6">
-            <Select v-model="citySelectVal.value" style="width:70px;margin-left:5px;">
-              <Option :value="'rank'">排名</Option>
-              <Option :value="'score'">得分</Option>
-            </Select>
-          </Col>
-          <Col :span="5">
             <Button
               :loading="cityBtnLoading"
               type="success"
               @click="citySubmit"
-              style="width:70px;margin-left:5px;"
+              style="width:70px;"
             >确定</Button>
           </Col>
         </Row>
         <div style="margin-top:20px">
           <Row style="text-align: right;">
-            <RadioGroup v-model="citySort" type="button" size="large">
+            <RadioGroup @on-change="cityChange" v-model="citySort" type="button" size="large">
               <Radio label="正序"></Radio>
               <Radio label="倒序"></Radio>
             </RadioGroup>
@@ -284,7 +278,7 @@
         </Row>
         <div style="margin-top:20px">
           <Row style="text-align: right;">
-            <RadioGroup v-model="sixSort" type="button" size="large">
+            <RadioGroup @on-change="sixChange" v-model="sixSort" type="button" size="large">
               <Radio label="正序"></Radio>
               <Radio label="倒序"></Radio>
             </RadioGroup>
@@ -344,7 +338,7 @@
         <div>
           <Row style="float:left;position: absolute;right:30px;top:100px;z-index:99">
             <RadioGroup @on-change="countyChange" v-model="countySort" type="button" size="large">
-              <Radio label="排序"></Radio>
+              <Radio label="正序"></Radio>
               <Radio label="倒序"></Radio>
             </RadioGroup>
           </Row>
@@ -524,9 +518,11 @@ export default {
         dateTime: "",
         monthTime: ""
       },
-      incentiveEchartsData: {}, // 正向激励
+      incentiveEchartsData: [], // 正向激励
+      incentiveEchartsShow: false,
+      incentiveLoading: true,
       incentiveTotalCount: 0, // 正向激励的项数
-      incentiveLoaidng: false,
+      incentiveSubmitLoaidng: false,
       incentiveData: {
         // 正向激励图标
         dateTime: ""
@@ -576,7 +572,7 @@ export default {
         "11月": 80,
         "12月": 55
       },
-      lineData: {}, // 折线图数据
+      lineData: [], // 折线图数据
       inforCardData: [],
 
       columns3: [
@@ -651,40 +647,266 @@ export default {
       data1: [],
       maxScore: 0, // 最高的分数作为条形最大宽度
       progress: [],
-      barData: {},
+      barData: [],
       styles: {
         // 侧边栏样式
         height: "calc(100% - 55px)",
         overflow: "auto",
         paddingBottom: "53px",
         position: "static"
-      }
+      },
+      townDefault: [
+        {
+          name: "葛岭镇",
+          score: 0
+        },
+        {
+          name: "城峰镇",
+          score: 0
+        },
+        {
+          name: "嵩口镇",
+          score: 0
+        },
+
+        {
+          name: "清凉镇",
+          score: 0
+        },
+
+        {
+          name: "梧桐镇",
+          score: 0
+        },
+        {
+          name: "樟城镇",
+          score: 0
+        },
+
+        {
+          name: "长庆镇",
+          score: 0
+        },
+        {
+          name: "同安镇",
+          score: 0
+        },
+        {
+          name: "大洋镇",
+          score: 0
+        },
+        {
+          name: "塘前乡",
+          score: 0
+        },
+        {
+          name: "富泉乡",
+          score: 0
+        },
+        {
+          name: "岭路乡",
+          score: 0
+        },
+        {
+          name: "赤锡乡",
+          score: 0
+        },
+        {
+          name: "岭路乡",
+          score: 0
+        },
+        {
+          name: "盖洋乡",
+          score: 0
+        },
+        {
+          name: "东洋乡",
+          score: 0
+        },
+        {
+          name: "洑口乡",
+          score: 0
+        },
+        {
+          name: "霞拔乡",
+          score: 0
+        },
+        {
+          name: "盘谷乡",
+          score: 0
+        },
+        {
+          name: "红星乡",
+          score: 0
+        },
+        {
+          name: "白云乡",
+          score: 0
+        },
+        {
+          name: "丹云乡",
+          score: 0
+        }
+      ]
     };
   },
   methods: {
-    countyChange(value) {
-      this.countyEchartsShow = false;
-      if (value === "排序") {
-        this.countyLoading = true;
+    cityChange(value) {
+      this.cityEchartsShow = false;
+      this.cityLoading = true;
+      this.cityEchartsData = {
+        // 市对县考核
+        name: [],
+        score: [],
+        rank: []
+      };
+      if (value === "正序") {
+        this.citySelectVal = Object.assign(this.citySelectVal, {
+          type: "0"
+        });
+        this._getHomeData(this.citySelectVal, CITY_URL).then(result => {
+          this.cityBtnLoading = false;
+          this.cityLoading = false;
+          if (result) {
+            result.forEach(item => {
+              this.cityEchartsData["name"].push(item.indexName);
+              this.cityEchartsData["score"].push(item.finalScore);
+              this.cityEchartsData["rank"].push(item.alternateField1);
+            });
+          }
+        });
       } else {
-        this.barData = this.sortObj(this.barData);
-        this.countyEchartsShow = true;
-        this.countyLoading = false;
+        this.citySelectVal = Object.assign(this.citySelectVal, {
+          type: "1"
+        });
+        this._getHomeData(this.citySelectVal, CITY_URL).then(result => {
+          this.cityBtnLoading = false;
+          this.cityLoading = false;
+          if (result) {
+            result.forEach(item => {
+              this.cityEchartsData["name"].push(item.indexName);
+              this.cityEchartsData["score"].push(item.finalScore);
+              this.cityEchartsData["rank"].push(item.alternateField1);
+            });
+          }
+        });
       }
     },
-    sortObj(obj) {
-      var arr = [];
-      for (var i in obj) {
-        arr.push([obj[i], i]);
+    sixChange(value) {
+      this.sixEchartsShow = false;
+      this.sixLoading = true;
+      this.lineData = [];
+
+      if (value === "正序") {
+        this.sixSelectVal = Object.assign(this.sixSelectVal, {
+          type: "0"
+        });
+        this._getHomeData(this.sixSelectVal, XIS_URL).then(result => {
+          console.log(result);
+          this.sixLoading = false;
+          // 如果有数据显示
+          if (result.list.length) {
+            result.list.forEach(item => {
+              var dataObj = Object.assign(
+                {},
+                {
+                  name: item.townName,
+                  score: item.score
+                }
+              );
+              this.lineData.push(dataObj);
+            });
+            this.countyEchartsName = result.list[0].indexName;
+            this.counDateDefault =
+              result.list[0].dateTime + "-" + result.list[0].monthTime;
+            // 没有数据的默认为0
+          }
+          this.sixEchartsShow = true;
+        });
+      } else {
+        this.sixSelectVal = Object.assign(this.sixSelectVal, {
+          type: "1"
+        });
+        this._getHomeData(this.sixSelectVal, XIS_URL).then(result => {
+          this.sixLoading = false;
+          // 如果有数据显示
+          if (result.list.length) {
+            result.list.forEach(item => {
+              var dataObj = Object.assign(
+                {},
+                {
+                  name: item.townName,
+                  score: item.score
+                }
+              );
+              this.lineData.push(dataObj);
+            });
+            this.countyEchartsName = result.list[0].indexName;
+            this.counDateDefault =
+              result.list[0].dateTime + "-" + result.list[0].monthTime;
+            // 没有数据的默认为0
+          }
+          this.sixEchartsShow = true;
+        });
       }
-      console.log(arr);
-      arr.reverse();
-      var len = arr.length;
-      let Valobj = {};
-      for (let i = 0; i < len; i++) {
-        Valobj[arr[i][1]] = arr[i][0];
+    },
+    countyChange(value) {
+      this.countyEchartsShow = false;
+      this.countyLoading = true;
+
+      if (value === "正序") {
+        this.countySelectVal = Object.assign(this.countySelectVal, {
+          type: "0"
+        });
+        this._getHomeData(this.countySelectVal, COUNTY_URL).then(result => {
+          this.countyLoading = false;
+          this.barData = [];
+          // 如果有数据显示
+          if (result.list.length) {
+            result.list.forEach(item => {
+              var dataObj = Object.assign(
+                {},
+                {
+                  name: item.townName,
+                  score: item.score
+                }
+              );
+              this.barData.push(dataObj);
+            });
+            this.countyEchartsName = result.list[0].indexName;
+            this.counDateDefault =
+              result.list[0].dateTime + "-" + result.list[0].monthTime;
+            // 没有数据的默认为0
+          }
+          this.countyEchartsShow = true;
+        });
+      } else {
+        this.countySelectVal = Object.assign(this.countySelectVal, {
+          type: "1"
+        });
+        this._getHomeData(this.countySelectVal, COUNTY_URL).then(result => {
+          this.countyLoading = false;
+          this.barData = [];
+          // 如果有数据显示
+          if (result.list.length) {
+            result.list.forEach(item => {
+              var dataObj = Object.assign(
+                {},
+                {
+                  name: item.townName,
+                  score: item.score
+                }
+              );
+              this.barData.push(dataObj);
+            });
+            this.countyEchartsName = result.list[0].indexName;
+            this.counDateDefault =
+              result.list[0].dateTime + "-" + result.list[0].monthTime;
+            // 没有数据的默认为0
+          }
+          this.countyEchartsShow = true;
+        });
       }
-      return Valobj;
     },
     watchNews(item) {
       this.showNews = true;
@@ -694,48 +916,38 @@ export default {
       this.countyLoading = true;
       this.countyBtnLoading = true;
       this.countyEchartsShow = false;
+      this.barData = [];
       if (this.countySelectVal.dateTime === "") {
         var time = this.counDateDefault.split("-");
         this.countySelectVal.dateTime = time[0];
         this.countySelectVal.monthTime = time[1];
       }
       this._getHomeData(this.countySelectVal, COUNTY_URL).then(result => {
+        console.log(result.list);
         this.countyLoading = false;
         this.countyBtnLoading = false;
         // 如果有数据显示
         if (result.list.length) {
           result.list.forEach(item => {
-            this.barData[item.townName] = item.score;
+            var dataObj = Object.assign(
+              {},
+              {
+                name: item.townName,
+                score: item.score
+              }
+            );
+            this.barData.push(dataObj);
           });
+          this.countyEchartsName = result.list[0].indexName;
+          this.counDateDefault =
+            result.list[0].dateTime + "-" + result.list[0].monthTime;
           this.countyEchartsName = result.list[0].indexName;
           this.counDateDefault =
             result.list[0].dateTime + "-" + result.list[0].monthTime;
           // 没有数据的默认为0
         } else {
           this.countyEchartsName = "暂无数据";
-          this.barData = {
-            葛岭镇: "0",
-            城峰镇: "0",
-            嵩口镇: 0,
-            清凉镇: 0,
-            梧桐镇: 0,
-            樟城镇: 0,
-            长庆镇: 0,
-            同安镇: 0,
-            大洋镇: 0,
-            塘前乡: 0,
-            富泉乡: 0,
-            岭路乡: 0,
-            赤锡乡: 0,
-            洑口乡: 0,
-            盖洋乡: 0,
-            东洋乡: 0,
-            霞拔乡: 0,
-            盘谷乡: 0,
-            红星乡: 0,
-            白云乡: 0,
-            丹云乡: 0
-          };
+          this.barData = this.townDefault;
         }
         this.countyEchartsShow = true;
       });
@@ -794,6 +1006,7 @@ export default {
       this.sixLoading = true;
       this.sixBtnLoading = true;
       this.sixEchartsShow = false;
+      this.lineData = [];
       if (this.sixSelectVal.dateTime === "") {
         var time = this.sixDateDefault.split("-");
         this.sixSelectVal.dateTime = time[0];
@@ -805,7 +1018,14 @@ export default {
         // 如果有数据显示
         if (result.list.length) {
           result.list.forEach(item => {
-            this.lineData[item.townName] = item.score;
+            var dataObj = Object.assign(
+              {},
+              {
+                name: item.townName,
+                score: item.score
+              }
+            );
+            this.lineData.push(dataObj);
           });
           this.xisEchartsName = result.list[0].indexName;
           this.sixDateDefault =
@@ -813,29 +1033,7 @@ export default {
           // 没有数据的默认为0
         } else {
           this.xisEchartsName = "暂无数据";
-          this.lineData = {
-            葛岭镇: 0,
-            城峰镇: 0,
-            嵩口镇: 0,
-            清凉镇: 0,
-            梧桐镇: 0,
-            樟城镇: 0,
-            长庆镇: 0,
-            同安镇: 0,
-            大洋镇: 0,
-            塘前乡: 0,
-            富泉乡: 0,
-            岭路乡: 0,
-            赤锡乡: 0,
-            洑口乡: 0,
-            盖洋乡: 0,
-            东洋乡: 0,
-            霞拔乡: 0,
-            盘谷乡: 0,
-            红星乡: 0,
-            白云乡: 0,
-            丹云乡: 0
-          };
+          this.lineData = this.townDefault;
         }
         this.sixEchartsShow = true;
       });
@@ -897,11 +1095,11 @@ export default {
     },
     // 正向激励提交
     incentiveSubmit() {
-      this.incentiveLoaidng = true;
+      this.incentiveSubmitLoaidng = true;
       this.incentiveEchartsData = {};
 
       this._getHomeData(this.incentiveData, INCENTIVE_URL).then(result => {
-        this.incentiveLoaidng = false;
+        this.incentiveSubmitLoaidng = false;
         this.incentiveTotalCount = 0;
         result.list.forEach(item => {
           this.incentiveEchartsData[item.monthTime + "月"] = item.point || 0;
@@ -994,12 +1192,23 @@ export default {
       }
     });
     this._getHomeData(this.incentiveData, INCENTIVE_URL).then(result => {
+      this.incentiveLoading = false;
+
       result.list.forEach(item => {
-        this.incentiveEchartsData[item.monthTime + "月"] = item.point;
+        var dataObj = Object.assign(
+          {},
+          {
+            name: item.monthTime + "月",
+            score: item.point
+          }
+        );
+        this.incentiveEchartsData.push(dataObj);
       });
+
       this.incentiveTotalCount =
         result.point === null ? 0 : parseInt(result.point);
       this.incentiveEchartsData = Object.assign(this.incentiveEchartsData, {});
+      this.incentiveEchartsShow = true;
     });
     this._getHomeData(this.incentiveData, WORL_URL).then(result => {
       if (result.length) {
@@ -1066,7 +1275,14 @@ export default {
       // 如果有数据显示
       if (result.list.length) {
         result.list.forEach(item => {
-          this.barData[item.townName] = item.score;
+          var dataObj = Object.assign(
+            {},
+            {
+              name: item.townName,
+              score: item.score
+            }
+          );
+          this.barData.push(dataObj);
         });
         this.countyEchartsName = result.list[0].indexName;
         this.counDateDefault =
@@ -1074,29 +1290,7 @@ export default {
         // 没有数据的默认为0
       } else {
         this.countyEchartsName = "暂无数据";
-        this.barData = {
-          葛岭镇: 0,
-          城峰镇: 0,
-          嵩口镇: 0,
-          清凉镇: 0,
-          梧桐镇: 0,
-          樟城镇: 0,
-          长庆镇: 0,
-          同安镇: 0,
-          大洋镇: 0,
-          塘前乡: 0,
-          富泉乡: 0,
-          岭路乡: 0,
-          赤锡乡: 0,
-          洑口乡: 0,
-          盖洋乡: 0,
-          东洋乡: 0,
-          霞拔乡: 0,
-          盘谷乡: 0,
-          红星乡: 0,
-          白云乡: 0,
-          丹云乡: 0
-        };
+        this.barData = this.townDefault;
       }
       this.countyEchartsShow = true;
     });
@@ -1136,8 +1330,16 @@ export default {
       }
       // 如果有数据显示
       if (result.list.length) {
+        console.log(result.list);
         result.list.forEach(item => {
-          this.lineData[item.townName] = item.score;
+          var dataObj = Object.assign(
+            {},
+            {
+              name: item.townName,
+              score: item.score
+            }
+          );
+          this.lineData.push(dataObj);
         });
         this.xisEchartsName = result.list[0].indexName;
         this.sixDateDefault =
@@ -1145,29 +1347,7 @@ export default {
         // 没有数据的默认为0
       } else {
         this.xisEchartsName = "暂无数据";
-        this.lineData = {
-          葛岭镇: 0,
-          城峰镇: 0,
-          嵩口镇: 0,
-          清凉镇: 0,
-          梧桐镇: 0,
-          樟城镇: 0,
-          长庆镇: 0,
-          同安镇: 0,
-          大洋镇: 0,
-          塘前乡: 0,
-          富泉乡: 0,
-          岭路乡: 0,
-          赤锡乡: 0,
-          洑口乡: 0,
-          盖洋乡: 0,
-          东洋乡: 0,
-          霞拔乡: 0,
-          盘谷乡: 0,
-          红星乡: 0,
-          白云乡: 0,
-          丹云乡: 0
-        };
+        this.lineData = this.townDefault;
       }
       this.sixEchartsShow = true;
     });

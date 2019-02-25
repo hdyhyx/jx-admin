@@ -19,7 +19,8 @@ function homeData(formData, keyOne) {
     dateTime: formData.dateTime,
     monthTime: formData.monthTime,
     value: formData.value,
-    indexName: formData.indexName
+    indexName: formData.indexName,
+    type: formData.type
   }
   return data
 }

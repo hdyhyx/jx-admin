@@ -37,6 +37,7 @@ export default {
       this.dom.resize();
     },
     bar() {
+      console.log(this.data);
       const option = {
         color: this.colors,
         tooltip: {
@@ -117,9 +118,9 @@ export default {
         ],
         series: [
           {
-            name: "排名",
+            name: "得分",
             type: "bar",
-            data: this.data.rank,
+            data: this.data.score,
             barWidth: "50",
             markLine: {
               lineStyle: {
@@ -130,9 +131,9 @@ export default {
             }
           },
           {
-            name: "得分",
+            name: "排名",
             type: "line",
-            data: this.data.score
+            data: this.data.rank
           }
         ]
       };
