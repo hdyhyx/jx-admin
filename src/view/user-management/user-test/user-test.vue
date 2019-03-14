@@ -71,7 +71,7 @@
           :on-success="handleSuccess"
           :format="['xls','xlsx']"
           :on-format-error="handleFormatError"
-          action="/api/evaluateUser/importEvaluateUser"
+          action="/evaluateUser/importEvaluateUser"
         >
           <Button icon="ios-cloud-upload-outline">上传测试对象</Button>
         </Upload>

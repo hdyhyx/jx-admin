@@ -138,7 +138,7 @@
           :on-success="handleSuccess"
           :format="['xls','xlsx']"
           :on-format-error="handleFormatError"
-          action="/api/sixScore/importSixScore"
+          action="/sixScore/importSixScore"
         >
           <Button icon="ios-cloud-upload-outline">上传分数</Button>
         </Upload>

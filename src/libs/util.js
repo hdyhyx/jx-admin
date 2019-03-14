@@ -364,4 +364,4 @@ export const localRead = (key) => {
 // export const HOST = "http://192.168.8.107:8080/api"
 export const HOST = "http://119.23.191.0:80"
 
-export const URL = "/api"
+export const URL = ""

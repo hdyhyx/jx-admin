@@ -23,37 +23,48 @@ export default {
     warnIndex: []
   },
   mutations: {
+    // 获取用户预警
     setwarnIndex(state, warnIndex) {
       state.warnIndex = warnIndex
     },
+    // 获取部门
     setDepartmentList(state, departmentList) {
       state.departmentList = departmentList
     },
+    // 察访督查预警
     setEmailWarning(state, emailWarning) {
       state.emailWarning = emailWarning
     },
+    // 权限
     setRole(state, role) {
       state.role = role
     },
+    // 所在部门
     setDepartment(state, department) {
       state.department = department
     },
+    // 头像
     setAvator(state, avatorPath) {
       state.avatorImgPath = avatorPath
     },
+    // 用户Id
     setUserId(state, id) {
       state.userId = id
     },
+    // 用户名
     setUserName(state, name) {
       state.userName = name
     },
+    // 用户权限
     setAccess(state, access) {
       state.access = access
     },
+    // token
     setToken(state, token) {
       state.token = token
       setToken(token)
     },
+    // 哈希值
     setHasGetInfo(state, status) {
       state.hasGetInfo = status
     }
